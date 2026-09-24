@@ -23,9 +23,13 @@
 
 | Pole | Wartość |
 | --- | --- |
-| URL Workera | |
-| Version ID po `secret put` | |
-| Test w przeglądarce — wynik, data | |
+| URL Workera | https://naleznosci.domblacha.workers.dev |
+| Version ID po `wrangler deploy` | `516aa680-d81a-45b2-8cb1-208275571deb` |
+| Version ID po `secret put` | `eb4620f6-471f-46de-bd4d-30b3e5a9d35f` (błędny sekret) → aktywna po poprawce: `e1983abd-f217-4a01-9aa9-52f3c3f605c7` |
+| KV namespace `SESSION` | `naleznosci-session` (`a2af1e0d1fad42c6b65575224d605946`) |
+| Sekrety | `SUPABASE_URL`, `SUPABASE_KEY` (`wrangler secret list`) |
+| Site URL w Supabase | https://naleznosci.domblacha.workers.dev |
+| Test w przeglądarce — wynik, data | PASS — rejestracja, logowanie, `/dashboard`, wylogowanie; konto testowe usunięte — 2026-09-24 |
 
 ## Faza 4: Auto-deploy z GitHuba
 
@@ -40,3 +44,6 @@
 <!-- Data — co się stało — co zrobiono -->
 
 - 2026-09-24 — Faza 2: projekt Supabase utworzono w regionie West EU (Ireland) zamiast Central EU (Frankfurt) z planu — zaakceptowane, region w UE, bez wpływu na dalsze fazy.
+- 2026-09-24 — Faza 3: pierwszy `wrangler deploy` zakończył się błędem rejestracji subdomeny workers.dev (wrangler próbował `10x-astro-starter`, nazwa zajęta); Worker nie powstał. Subdomena konta `domblacha.workers.dev` była już ustawiona w dashboardzie — ponowny deploy przeszedł.
+- 2026-09-24 — Faza 3: `supabase/config.toml` → `project_id = "naleznosci"` (prefiks lokalnych kontenerów). Odstępstwo od „bez zmian poza `wrangler.jsonc`” — zaakceptowane. Lokalny Supabase uruchomiony, `.env`/`.dev.vars` (gitignored) wskazują `127.0.0.1:54321`, `npm run smoke` lokalnie 8/8 PASS.
+- 2026-09-24 — Faza 3: rejestracja/logowanie na produkcji zwracało `Unexpected token 'e', "error code: 1003" is not valid JSON` (Cloudflare 1003 — nieprawidłowy host w zapytaniu do Supabase). Przyczyna: błędna wartość sekretu Workera. Sekrety ustawione ponownie — działa.

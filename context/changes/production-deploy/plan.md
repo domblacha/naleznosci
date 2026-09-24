@@ -300,23 +300,23 @@ Brak migracji danych. Przyszłe migracje SQL wdrażamy ręcznie (`supabase db pu
 
 #### Manual
 
-- [x] 2.1 Projekt we Frankfurcie, hasło DB w menedżerze haseł
-- [x] 2.2 *Confirm email* wyłączone, rejestracja włączona
-- [x] 2.3 Project URL i klucz `sb_publishable_…` w menedżerze haseł
-- [x] 2.4 Sekcja „Faza 2” w `deployment-log.md` uzupełniona
+- [x] 2.1 Projekt we Frankfurcie, hasło DB w menedżerze haseł — a93471a
+- [x] 2.2 *Confirm email* wyłączone, rejestracja włączona — a93471a
+- [x] 2.3 Project URL i klucz `sb_publishable_…` w menedżerze haseł — a93471a
+- [x] 2.4 Sekcja „Faza 2” w `deployment-log.md` uzupełniona — a93471a
 
 ### Phase 3: Pierwszy ręczny deploy i sekrety
 
 #### Automated
 
-- [ ] 3.1 `npx wrangler deploy` kończy się sukcesem z URL `naleznosci.<sub>.workers.dev`
-- [ ] 3.2 `npx wrangler secret list` zawiera `SUPABASE_URL` i `SUPABASE_KEY`
+- [x] 3.1 `npx wrangler deploy` kończy się sukcesem z URL `naleznosci.<sub>.workers.dev`
+- [x] 3.2 `npx wrangler secret list` zawiera `SUPABASE_URL` i `SUPABASE_KEY`
 
 #### Manual
 
-- [ ] 3.3 Rejestracja, logowanie, `/dashboard` i wylogowanie działają w przeglądarce
-- [ ] 3.4 Konto testowe usunięte z Supabase
-- [ ] 3.5 Sekcja „Faza 3” w `deployment-log.md` uzupełniona
+- [x] 3.3 Rejestracja, logowanie, `/dashboard` i wylogowanie działają w przeglądarce
+- [x] 3.4 Konto testowe usunięte z Supabase
+- [x] 3.5 Sekcja „Faza 3” w `deployment-log.md` uzupełniona
 
 ### Phase 4: Auto-deploy z GitHuba i dokumentacja
 
