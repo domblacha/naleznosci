@@ -322,13 +322,13 @@ Brak migracji danych. Przyszłe migracje SQL wdrażamy ręcznie (`supabase db pu
 
 #### Automated
 
-- [x] 4.1 README bez sekcji `## CI`, CLAUDE.md bez `ci.yml`
-- [x] 4.2 tech-stack podaje `cloudflare-workers`
-- [x] 4.3 Prettier check przechodzi dla README, CLAUDE.md i tech-stack
-- [x] 4.4 `wrangler deployments list` pokazuje nową wersję z auto-deployu
+- [x] 4.1 README bez sekcji `## CI`, CLAUDE.md bez `ci.yml` — 291badd
+- [x] 4.2 tech-stack podaje `cloudflare-workers` — 291badd
+- [x] 4.3 Prettier check przechodzi dla README, CLAUDE.md i tech-stack — 291badd
+- [x] 4.4 `wrangler deployments list` pokazuje nową wersję z auto-deployu — 291badd
 
 #### Manual
 
-- [x] 4.5 Build w Workers Builds zakończony sukcesem
-- [x] 4.6 Logowanie działa po auto-deployu
-- [x] 4.7 Sekcja „Faza 4” w `deployment-log.md` uzupełniona
+- [x] 4.5 Build w Workers Builds zakończony sukcesem — 291badd
+- [x] 4.6 Logowanie działa po auto-deployu — 291badd
+- [x] 4.7 Sekcja „Faza 4” w `deployment-log.md` uzupełniona — 291badd
