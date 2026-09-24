@@ -151,21 +151,33 @@ Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_
 
 ## Deployment
 
-This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/).
+This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/) as the `naleznosci` Worker (`https://naleznosci.domblacha.workers.dev`).
 
-1. Build the project:
+**Every push to `main` deploys to production.** The GitHub repo is connected to the Worker via [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/) (build command `npm run build`, deploy command `npx wrangler deploy`). There is no gate in between, so run `npm run build` locally before pushing.
+
+Manual (fallback) deploy from a clean `main`:
 
 ```bash
 npm run build
-```
-
-2. Deploy with Wrangler:
-
-```bash
 npx wrangler deploy
 ```
 
-Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
+Do not pass `--config`: `astro build` generates `dist/server/wrangler.json` and Wrangler picks it up via `.wrangler/deploy/config.json`.
+
+### Secrets
+
+`SUPABASE_URL` and `SUPABASE_KEY` (the `sb_publishable_…` key) exist only as Worker secrets — never in the repo, GitHub, or as dashboard build variables. Set them with the interactive prompt so the values do not end up in shell history:
+
+```bash
+npx wrangler secret put SUPABASE_URL
+npx wrangler secret put SUPABASE_KEY
+```
+
+The production Supabase project has **email confirmation disabled** (the built-in SMTP only delivers to organization members, and the app has no confirmation route).
+
+### Rollback
+
+Dashboard → Workers & Pages → `naleznosci` → Deployments → roll back to a previous version, then `git revert` the offending commit and push — otherwise the next push redeploys the bug.
 
 ## Smoke test
 
@@ -179,13 +191,6 @@ BASE_URL=http://localhost:4321 npm run smoke
 It needs a reachable Supabase instance (local or cloud) with email confirmation disabled.
 
 > **Note:** this script exists primarily to guard the development of the starter itself — it is a fast sanity check that dependency upgrades did not break the build, the Cloudflare adapter or the Supabase auth flow. It is **not** a substitute for a real test suite. Once you build your own product on top of this starter, add proper tests (unit, integration, end-to-end) suited to your application.
-
-## CI
-
-GitHub Actions runs two jobs on every push and PR to `main`:
-
-- **ci** — lint, `astro check` and build. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets for the build step.
-- **smoke** — starts a local Supabase via the Supabase CLI, builds, serves the production preview on the Cloudflare runtime and runs `npm run smoke` against it. No secrets required.
 
 ## License
 

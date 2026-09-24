@@ -309,22 +309,22 @@ Brak migracji danych. Przyszłe migracje SQL wdrażamy ręcznie (`supabase db pu
 
 #### Automated
 
-- [x] 3.1 `npx wrangler deploy` kończy się sukcesem z URL `naleznosci.<sub>.workers.dev`
-- [x] 3.2 `npx wrangler secret list` zawiera `SUPABASE_URL` i `SUPABASE_KEY`
+- [x] 3.1 `npx wrangler deploy` kończy się sukcesem z URL `naleznosci.<sub>.workers.dev` — 50bd756
+- [x] 3.2 `npx wrangler secret list` zawiera `SUPABASE_URL` i `SUPABASE_KEY` — 50bd756
 
 #### Manual
 
-- [x] 3.3 Rejestracja, logowanie, `/dashboard` i wylogowanie działają w przeglądarce
-- [x] 3.4 Konto testowe usunięte z Supabase
-- [x] 3.5 Sekcja „Faza 3” w `deployment-log.md` uzupełniona
+- [x] 3.3 Rejestracja, logowanie, `/dashboard` i wylogowanie działają w przeglądarce — 50bd756
+- [x] 3.4 Konto testowe usunięte z Supabase — 50bd756
+- [x] 3.5 Sekcja „Faza 3” w `deployment-log.md` uzupełniona — 50bd756
 
 ### Phase 4: Auto-deploy z GitHuba i dokumentacja
 
 #### Automated
 
-- [ ] 4.1 README bez sekcji `## CI`, CLAUDE.md bez `ci.yml`
-- [ ] 4.2 tech-stack podaje `cloudflare-workers`
-- [ ] 4.3 Prettier check przechodzi dla README, CLAUDE.md i tech-stack
+- [x] 4.1 README bez sekcji `## CI`, CLAUDE.md bez `ci.yml`
+- [x] 4.2 tech-stack podaje `cloudflare-workers`
+- [x] 4.3 Prettier check przechodzi dla README, CLAUDE.md i tech-stack
 - [ ] 4.4 `wrangler deployments list` pokazuje nową wersję z auto-deployu
 
 #### Manual

@@ -28,4 +28,3 @@
 
 - Scripts and pre-commit hooks (husky + lint-staged): @package.json
 - Setup, env vars, local Supabase, deployment: @README.md
-- CI jobs and required secrets: @.github/workflows/ci.yml
