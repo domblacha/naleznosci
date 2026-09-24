@@ -288,13 +288,13 @@ Brak migracji danych. Przyszłe migracje SQL wdrażamy ręcznie (`supabase db pu
 
 #### Automated
 
-- [ ] 1.1 `origin` wskazuje prywatne repo `naleznosci`
-- [ ] 1.2 Working tree czysty, `main` = `origin/main`
-- [ ] 1.3 `ci.yml` usunięty, `name` = `naleznosci` w `wrangler.jsonc`
+- [x] 1.1 `origin` wskazuje prywatne repo `naleznosci` — 7d08c00
+- [x] 1.2 Working tree czysty, `main` = `origin/main` — 7d08c00
+- [x] 1.3 `ci.yml` usunięty, `name` = `naleznosci` w `wrangler.jsonc` — 7d08c00
 
 #### Manual
 
-- [ ] 1.4 Repo widoczne na GitHubie jako prywatne, bez uruchomionych workflow
+- [x] 1.4 Repo widoczne na GitHubie jako prywatne, bez uruchomionych workflow — 7d08c00
 
 ### Phase 2: Produkcyjny projekt Supabase
 

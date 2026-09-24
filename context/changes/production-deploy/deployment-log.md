@@ -7,8 +7,8 @@
 
 | Pole | Wartość |
 | --- | --- |
-| Repo GitHub (URL) | |
-| Commit po pierwszym pushu | |
+| Repo GitHub (URL) | https://github.com/domblacha/naleznosci (private) |
+| Commit po pierwszym pushu | `7d08c00` |
 
 ## Faza 2: Produkcyjny projekt Supabase
 
