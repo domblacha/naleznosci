@@ -14,8 +14,10 @@
 
 | Pole | Wartość |
 | --- | --- |
-| Project ref | |
-| Region | |
+| Project ref | `womquliamvtreafdlizc` |
+| Region | West EU (Ireland) — `eu-west-1` |
+| Confirm email / sign-up | OFF / ON |
+| Klucze | Project URL + `sb_publishable_…` w menedżerze haseł |
 
 ## Faza 3: Pierwszy ręczny deploy i sekrety
 
@@ -36,3 +38,5 @@
 ## Incydenty / odstępstwa od planu
 
 <!-- Data — co się stało — co zrobiono -->
+
+- 2026-09-24 — Faza 2: projekt Supabase utworzono w regionie West EU (Ireland) zamiast Central EU (Frankfurt) z planu — zaakceptowane, region w UE, bez wpływu na dalsze fazy.

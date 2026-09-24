@@ -300,10 +300,10 @@ Brak migracji danych. Przyszłe migracje SQL wdrażamy ręcznie (`supabase db pu
 
 #### Manual
 
-- [ ] 2.1 Projekt we Frankfurcie, hasło DB w menedżerze haseł
-- [ ] 2.2 *Confirm email* wyłączone, rejestracja włączona
-- [ ] 2.3 Project URL i klucz `sb_publishable_…` w menedżerze haseł
-- [ ] 2.4 Sekcja „Faza 2” w `deployment-log.md` uzupełniona
+- [x] 2.1 Projekt we Frankfurcie, hasło DB w menedżerze haseł
+- [x] 2.2 *Confirm email* wyłączone, rejestracja włączona
+- [x] 2.3 Project URL i klucz `sb_publishable_…` w menedżerze haseł
+- [x] 2.4 Sekcja „Faza 2” w `deployment-log.md` uzupełniona
 
 ### Phase 3: Pierwszy ręczny deploy i sekrety
 
