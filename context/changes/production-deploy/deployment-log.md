@@ -35,9 +35,12 @@
 
 | Pole | Wartość |
 | --- | --- |
-| Commit wyzwalający | |
-| Version ID z Workers Builds | |
-| Wersja Node w logu buildu | |
+| Commit wyzwalający | `9a583f3` |
+| Version ID z Workers Builds | `f6fcb1a2-8c13-4350-8df1-b630952fbbb3` (aktywna ~45 s po pushu) |
+| Wersja Node w logu buildu | nie odnotowano (`.nvmrc` = 24.21.0) |
+| Test po auto-deployu — wynik, data | PASS — build w Workers Builds OK, logowanie działa, sekrety przetrwały deploy — 2026-09-24 |
+
+Repo podpięte w Dashboard → `naleznosci` → Settings → Builds ręcznie (wrangler 4.131.1 nie ma komendy do podpinania Git; token OAuth wranglera nie ma dostępu do API Workers Builds).
 
 ## Incydenty / odstępstwa od planu
 
