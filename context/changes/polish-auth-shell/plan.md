@@ -357,29 +357,29 @@ Brak migracji danych. Po wdrożeniu (push na `main` = produkcja) zakładki do `/
 
 #### Automated
 
-- [x] 2.1 `zod` jest w `dependencies`
-- [x] 2.2 Każda trasa API eksportuje `prerender = false`
-- [x] 2.3 Lint przechodzi: `npm run lint`
-- [x] 2.4 Build przechodzi: `npm run build`
-- [x] 2.5 Smoke test przechodzi przeciwko `npm run dev`: `npm run smoke`
+- [x] 2.1 `zod` jest w `dependencies` — 1909c0a
+- [x] 2.2 Każda trasa API eksportuje `prerender = false` — 1909c0a
+- [x] 2.3 Lint przechodzi: `npm run lint` — 1909c0a
+- [x] 2.4 Build przechodzi: `npm run build` — 1909c0a
+- [x] 2.5 Smoke test przechodzi przeciwko `npm run dev`: `npm run smoke` — 1909c0a
 
 #### Manual
 
-- [x] 2.6 Logowanie złym hasłem pokazuje „Nieprawidłowy e-mail lub hasło.”
-- [x] 2.7 Rejestracja istniejącym adresem pokazuje polski komunikat o istniejącym koncie
-- [x] 2.8 `/auth/signin?error=cokolwiek` pokazuje polski komunikat domyślny
+- [x] 2.6 Logowanie złym hasłem pokazuje „Nieprawidłowy e-mail lub hasło.” — 1909c0a
+- [x] 2.7 Rejestracja istniejącym adresem pokazuje polski komunikat o istniejącym koncie — 1909c0a
+- [x] 2.8 `/auth/signin?error=cokolwiek` pokazuje polski komunikat domyślny — 1909c0a
 
 ### Phase 3: Polskie teksty UI
 
 #### Automated
 
-- [ ] 3.1 Brak angielskich tekstów UI w `src/` (grep)
-- [ ] 3.2 Lint przechodzi: `npm run lint`
-- [ ] 3.3 Build przechodzi: `npm run build`
-- [ ] 3.4 Smoke test przechodzi przeciwko `npm run dev`: `npm run smoke`
+- [x] 3.1 Brak angielskich tekstów UI w `src/` (grep)
+- [x] 3.2 Lint przechodzi: `npm run lint`
+- [x] 3.3 Build przechodzi: `npm run build`
+- [x] 3.4 Smoke test przechodzi przeciwko `npm run dev`: `npm run smoke`
 
 #### Manual
 
-- [ ] 3.5 Pełny przepływ konta jest po polsku, także walidacja i stany „w toku”
-- [ ] 3.6 Podpowiedź przy haśle poprawnie odmienia 1, 2 i 5 brakujących znaków
-- [ ] 3.7 Polski `aria-label` przełącznika hasła i `lang="pl"`
+- [x] 3.5 Pełny przepływ konta jest po polsku, także walidacja i stany „w toku”
+- [x] 3.6 Podpowiedź przy haśle poprawnie odmienia 1, 2 i 5 brakujących znaków
+- [x] 3.7 Polski `aria-label` przełącznika hasła i `lang="pl"`
