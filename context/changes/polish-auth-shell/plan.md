@@ -343,31 +343,31 @@ Brak migracji danych. Po wdrożeniu (push na `main` = produkcja) zakładki do `/
 
 #### Automated
 
-- [x] 1.1 Lint przechodzi: `npm run lint`
-- [x] 1.2 Build przechodzi: `npm run build`
-- [x] 1.3 Brak odwołań do usuniętych plików i `/dashboard` w `src/`
-- [x] 1.4 Smoke test przechodzi przeciwko `npm run dev`: `npm run smoke`
+- [x] 1.1 Lint przechodzi: `npm run lint` — c08ba45
+- [x] 1.2 Build przechodzi: `npm run build` — c08ba45
+- [x] 1.3 Brak odwołań do usuniętych plików i `/dashboard` w `src/` — c08ba45
+- [x] 1.4 Smoke test przechodzi przeciwko `npm run dev`: `npm run smoke` — c08ba45
 
 #### Manual
 
-- [x] 1.5 Po zalogowaniu widać pusty ekran główny z e-mailem i wylogowaniem, bez treści startera
-- [x] 1.6 Zalogowany na `/auth/signup` trafia na `/`, a `/auth/confirm-email` nadal się otwiera
+- [x] 1.5 Po zalogowaniu widać pusty ekran główny z e-mailem i wylogowaniem, bez treści startera — c08ba45
+- [x] 1.6 Zalogowany na `/auth/signup` trafia na `/`, a `/auth/confirm-email` nadal się otwiera — c08ba45
 
 ### Phase 2: Kody błędów i konwencje API
 
 #### Automated
 
-- [ ] 2.1 `zod` jest w `dependencies`
-- [ ] 2.2 Każda trasa API eksportuje `prerender = false`
-- [ ] 2.3 Lint przechodzi: `npm run lint`
-- [ ] 2.4 Build przechodzi: `npm run build`
-- [ ] 2.5 Smoke test przechodzi przeciwko `npm run dev`: `npm run smoke`
+- [x] 2.1 `zod` jest w `dependencies`
+- [x] 2.2 Każda trasa API eksportuje `prerender = false`
+- [x] 2.3 Lint przechodzi: `npm run lint`
+- [x] 2.4 Build przechodzi: `npm run build`
+- [x] 2.5 Smoke test przechodzi przeciwko `npm run dev`: `npm run smoke`
 
 #### Manual
 
-- [ ] 2.6 Logowanie złym hasłem pokazuje „Nieprawidłowy e-mail lub hasło.”
-- [ ] 2.7 Rejestracja istniejącym adresem pokazuje polski komunikat o istniejącym koncie
-- [ ] 2.8 `/auth/signin?error=cokolwiek` pokazuje polski komunikat domyślny
+- [x] 2.6 Logowanie złym hasłem pokazuje „Nieprawidłowy e-mail lub hasło.”
+- [x] 2.7 Rejestracja istniejącym adresem pokazuje polski komunikat o istniejącym koncie
+- [x] 2.8 `/auth/signin?error=cokolwiek` pokazuje polski komunikat domyślny
 
 ### Phase 3: Polskie teksty UI
 

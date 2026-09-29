@@ -39,6 +39,11 @@ const steps = [
   ["home redirects anonymous user", () => request("/"), { status: 302, location: "/auth/signin" }],
   ["signin page renders", () => request("/auth/signin"), { status: 200 }],
   [
+    "signup rejects empty password",
+    () => request("/api/auth/signup", { method: "POST", form: { email, password: "" } }),
+    { status: 302, location: "/auth/signup?error=invalid_input" },
+  ],
+  [
     "signup creates account",
     () => request("/api/auth/signup", { method: "POST", form: { email, password } }),
     { status: 302, location: "/auth/confirm-email" },
@@ -46,7 +51,7 @@ const steps = [
   [
     "signin rejects wrong password",
     () => request("/api/auth/signin", { method: "POST", form: { email, password: "wrong" } }),
-    { status: 302, location: "/auth/signin?error=" },
+    { status: 302, location: "/auth/signin?error=invalid_credentials" },
   ],
   [
     "signin accepts correct password",
