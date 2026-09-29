@@ -41,7 +41,7 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 
 | ID   | Change ID                   | Outcome (user can …)                                                                   | Prerequisites | PRD refs                    | Status   |
 | ---- | --------------------------- | -------------------------------------------------------------------------------------- | ------------- | --------------------------- | -------- |
-| S-01 | polish-auth-shell           | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny | —             | FR-001                      | in-progress |
+| S-01 | polish-auth-shell           | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny | —             | FR-001                      | done        |
 | S-02 | add-and-edit-clients        | dodać i edytować klienta, a duplikat zostaje odrzucony                                 | S-01          | FR-002                      | proposed |
 | S-03 | invoice-escalation-list     | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur       | S-02          | US-01, FR-003, FR-005, FR-010 | proposed |
 | S-04 | interest-and-compensation   | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza             | S-03          | US-01, FR-007               | proposed |
@@ -94,7 +94,7 @@ Brak. Każdy element techniczny wchodzi w pierwszy wycinek, który go potrzebuje
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Auth już działa, więc to głównie tłumaczenie i sprzątanie — stoi pierwszy, bo każdy kolejny widok potrzebuje polskiej powłoki i chronionego ekranu głównego.
-- **Status:** in-progress
+- **Status:** done
 
 ### S-02: Dodawanie i edycja klientów
 
@@ -267,3 +267,5 @@ Brak. Każdy element techniczny wchodzi w pierwszy wycinek, który go potrzebuje
 ## Milestone History
 
 ## Done
+
+- **S-01: Użytkownik może zarejestrować się, zalogować i wylogować w polskim interfejsie, a po zalogowaniu trafia na chroniony, pusty ekran główny aplikacji (bez boilerplate'u startera).** — Archived 2026-09-29 → `context/archive/2026-09-29-polish-auth-shell/`. Lesson: —.
