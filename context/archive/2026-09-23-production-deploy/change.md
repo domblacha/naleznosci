@@ -1,10 +1,10 @@
 ---
 change_id: production-deploy
 title: Deployment produkcyjny — GitHub + Cloudflare Workers Builds + Supabase
-status: implemented
+status: archived
 created: 2026-09-23
-updated: 2026-09-24
-archived_at: null
+updated: 2026-09-29
+archived_at: 2026-09-29T17:21:29Z
 ---
 
 ## Notes
