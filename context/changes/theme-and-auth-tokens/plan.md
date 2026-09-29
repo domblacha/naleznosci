@@ -341,6 +341,67 @@ Kontrakt musi przetrwać następną sesję: commit z literałem koloru w widoku 
 
 ---
 
+## Phase 5: Styl shadcn lyra zamiast new-york
+
+### Overview
+
+Dodane po fazie 2 na prośbę użytkownika. Przełączamy styl komponentów z `new-york` na `lyra` i przegenerowujemy komponenty `ui`, żeby wizualnie pasowały do ostrych rogów i palety stone + amber. Faza jest ostatnia, bo dotyka wygenerowanych plików `ui`, a fazy 3–4 z nich tylko korzystają (bez edycji plików `ui`). Po niej wracają bramki skanu literałów, lintu i buildu.
+
+### Changes Required:
+
+#### 1. Metadane shadcn
+
+**File**: `components.json`
+
+**Intent**: Nowe `shadcn add` mają generować styl lyra.
+
+**Contract**: `style: "lyra"`. Reszta pól bez zmian (`baseColor: "stone"` z fazy 2). Jeśli CLI wymaga innego zapisu stylu lub dodatkowych pól (np. czcionka), użyj tego, co podaje `npx shadcn@latest --help` / dokumentacja lyra, i odnotuj różnicę.
+
+#### 2. Przegenerowanie komponentów
+
+**File**: `src/components/ui/{button,input,label,card,alert}.tsx`
+
+**Intent**: Komponenty w stylu lyra zamiast new-york.
+
+**Contract**: `npx shadcn@latest add button input label card alert --overwrite`. Plików nie edytujemy ręcznie. Po `add` sprawdź `git diff src/styles/global.css package.json`: zmiany od CLI wykraczające poza styl (kolory, `--radius`, nowe zmienne) cofnij, wartości palety zostają z fazy 2. Jeśli lyra wymaga czcionki lub zmiennej w `global.css`, dodaj tylko to i opisz w notatce fazy.
+
+#### 3. Reguła w CLAUDE.md
+
+**File**: `CLAUDE.md`
+
+**Intent**: Reguła shadcn nie może wskazywać nieaktualnego stylu.
+
+**Contract**: W punkcie `shadcn/ui` w `Key conventions` zamiast `"new-york" style variant` wpisz `"lyra" style variant`.
+
+#### 4. Dopasowanie widoków
+
+**File**: `src/components/auth/*.tsx`, `src/components/*.astro`, `src/pages/**/*.astro`
+
+**Intent**: Widoki działają z nowymi komponentami bez literałów koloru.
+
+**Contract**: Tylko poprawki wymuszone zmianą API/klas komponentów (np. rozmiary, warianty). Bez nowych nadpisań kolorów przez `className`.
+
+### Success Criteria:
+
+#### Automated Verification:
+
+- `grep -n '"style"' components.json` pokazuje `lyra`
+- `grep -rn "new-york" components.json CLAUDE.md src` zwraca 0 linii
+- Skan literałów zwraca 0 linii (dla `src/pages/dev/ui.astro` także)
+- Lint przechodzi: `npm run lint`
+- Build przechodzi: `npm run build`
+- Smoke auth przechodzi: `npm run smoke`
+
+#### Manual Verification:
+
+- `/auth/signin`, `/auth/signup`, `/auth/confirm-email`, `/` i `/dev/ui` wyglądają spójnie w stylu lyra: zrzut na desktopie i przy 375px
+- Fokus, disabled, error i pending nadal działają (regresja względem fazy 3)
+- Rogi nadal ostre (`border-radius` = `0px`)
+
+**Implementation Note**: Po automatycznej weryfikacji zatrzymaj się na ręczne potwierdzenie.
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests:
@@ -382,34 +443,34 @@ Brak danych do migracji. Rollback to revert commitów fazy. Po wdrożeniu na `ma
 
 #### Automated
 
-- [x] 1.1 Pliki komponentów istnieją: `ls src/components/ui/{input,label,card,alert}.tsx`
-- [x] 1.2 Skan literałów (Critical Implementation Details) zwraca 0 linii
-- [x] 1.3 `bg-cosmic` nie występuje: `grep -rn "bg-cosmic" src` zwraca 0 linii
-- [x] 1.4 Lint przechodzi: `npm run lint`
-- [x] 1.5 Build przechodzi: `npm run build`
+- [x] 1.1 Pliki komponentów istnieją: `ls src/components/ui/{input,label,card,alert}.tsx` — 1b59228
+- [x] 1.2 Skan literałów (Critical Implementation Details) zwraca 0 linii — 1b59228
+- [x] 1.3 `bg-cosmic` nie występuje: `grep -rn "bg-cosmic" src` zwraca 0 linii — 1b59228
+- [x] 1.4 Lint przechodzi: `npm run lint` — 1b59228
+- [x] 1.5 Build przechodzi: `npm run build` — 1b59228
 
 #### Manual
 
-- [x] 1.6 `/auth/signin`, `/auth/signup`, `/auth/confirm-email` i `/` renderują się jasno i czytelnie: zrzut na desktopie i przy 375px
-- [x] 1.7 Logowanie z błędnym hasłem pokazuje komunikat w `Alert` destructive, a błędy pól są czerwone (`destructive`)
-- [x] 1.8 `git diff src/styles/global.css` zawiera tylko usunięcie `bg-cosmic`, bez zmian od `shadcn add`
+- [x] 1.6 `/auth/signin`, `/auth/signup`, `/auth/confirm-email` i `/` renderują się jasno i czytelnie: zrzut na desktopie i przy 375px — 1b59228
+- [x] 1.7 Logowanie z błędnym hasłem pokazuje komunikat w `Alert` destructive, a błędy pól są czerwone (`destructive`) — 1b59228
+- [x] 1.8 `git diff src/styles/global.css` zawiera tylko usunięcie `bg-cosmic`, bez zmian od `shadcn add` — 1b59228
 
 ### Phase 2: Wartości palety (stone + amber, ostre rogi)
 
 #### Automated
 
-- [ ] 2.1 `grep -n "oklch(0.555 0.163 48.998)" src/styles/global.css` znajduje `--primary` w `:root`
-- [ ] 2.2 `grep -n "calc(var(--radius) \* 1.4)" src/styles/global.css` znajduje proporcjonalne `--radius-xl`
-- [ ] 2.3 `grep -n "dark" src/layouts/Layout.astro` zwraca 0 linii
-- [ ] 2.4 Skan literałów zwraca 0 linii
-- [ ] 2.5 Lint przechodzi: `npm run lint`
-- [ ] 2.6 Build przechodzi: `npm run build`
+- [x] 2.1 `grep -n "oklch(0.555 0.163 48.998)" src/styles/global.css` znajduje `--primary` w `:root`
+- [x] 2.2 `grep -n "calc(var(--radius) \* 1.4)" src/styles/global.css` znajduje proporcjonalne `--radius-xl`
+- [x] 2.3 `grep -n "dark" src/layouts/Layout.astro` zwraca 0 linii
+- [x] 2.4 Skan literałów zwraca 0 linii
+- [x] 2.5 Lint przechodzi: `npm run lint`
+- [x] 2.6 Build przechodzi: `npm run build`
 
 #### Manual
 
-- [ ] 2.7 Przycisk główny jest bursztynowy z jasnym tekstem, a tło i karta białe z ciepłym obramowaniem: zrzut na desktopie i przy 375px
-- [ ] 2.8 Rogi karty, pól, przycisku i alertu są ostre (DevTools: obliczone `border-radius` = `0px`)
-- [ ] 2.9 Ekran główny i Topbar pasują do ekranów konta
+- [x] 2.7 Przycisk główny jest bursztynowy z jasnym tekstem, a tło i karta białe z ciepłym obramowaniem: zrzut na desktopie i przy 375px
+- [x] 2.8 Rogi karty, pól, przycisku i alertu są ostre (DevTools: obliczone `border-radius` = `0px`)
+- [x] 2.9 Ekran główny i Topbar pasują do ekranów konta
 
 ### Phase 3: Stany, dostępność i kitchen sink
 
@@ -443,3 +504,20 @@ Brak danych do migracji. Rollback to revert commitów fazy. Po wdrożeniu na `ma
 
 - [ ] 4.5 Blok UI w `CLAUDE.md` jest krótki, jednoznaczny i wskazuje ścieżki, które istnieją
 - [ ] 4.6 Komunikat błędu ESLint jest zrozumiały i mówi, czego użyć zamiast literału
+
+### Phase 5: Styl shadcn lyra zamiast new-york
+
+#### Automated
+
+- [ ] 5.1 `grep -n '"style"' components.json` pokazuje `lyra`
+- [ ] 5.2 `grep -rn "new-york" components.json CLAUDE.md src` zwraca 0 linii
+- [ ] 5.3 Skan literałów zwraca 0 linii (dla `src/pages/dev/ui.astro` także)
+- [ ] 5.4 Lint przechodzi: `npm run lint`
+- [ ] 5.5 Build przechodzi: `npm run build`
+- [ ] 5.6 Smoke auth przechodzi: `npm run smoke`
+
+#### Manual
+
+- [ ] 5.7 `/auth/signin`, `/auth/signup`, `/auth/confirm-email`, `/` i `/dev/ui` wyglądają spójnie w stylu lyra: zrzut na desktopie i przy 375px
+- [ ] 5.8 Fokus, disabled, error i pending nadal działają (regresja względem fazy 3)
+- [ ] 5.9 Rogi nadal ostre (`border-radius` = `0px`)
