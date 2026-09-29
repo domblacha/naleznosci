@@ -1,8 +1,18 @@
 ---
-import Welcome from "@/components/Welcome.astro";
+import Topbar from "@/components/Topbar.astro";
 import Layout from "@/layouts/Layout.astro";
 ---
 
-<Layout>
-  <Welcome />
+<Layout title="Należności">
+  <div class="bg-cosmic min-h-screen p-4">
+    <Topbar />
+    <div class="flex items-center justify-center py-16">
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center text-white backdrop-blur-xl">
+        <h1 class="mb-4 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+          Należności
+        </h1>
+        <p class="text-blue-100/80">Tutaj pojawią się Twoje faktury.</p>
+      </div>
+    </div>
+  </div>
 </Layout>

@@ -1,7 +1,10 @@
 import { defineMiddleware } from "astro:middleware";
 import { createClient } from "@/lib/supabase";
 
-const PROTECTED_ROUTES = ["/dashboard"];
+// Prefix-matched protected routes (future routes). "/" is protected separately with an exact match,
+// because a "/" prefix would match every path and cause a redirect loop.
+const PROTECTED_ROUTES: string[] = [];
+const AUTH_PAGES = ["/auth/signin", "/auth/signup"];
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const supabase = createClient(context.request.headers, context.cookies);
@@ -15,10 +18,15 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.user = null;
   }
 
-  if (PROTECTED_ROUTES.some((route) => context.url.pathname.startsWith(route))) {
-    if (!context.locals.user) {
-      return context.redirect("/auth/signin");
-    }
+  const { pathname } = context.url;
+
+  if (context.locals.user && AUTH_PAGES.includes(pathname)) {
+    return context.redirect("/");
+  }
+
+  const isProtected = pathname === "/" || PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
+  if (isProtected && !context.locals.user) {
+    return context.redirect("/auth/signin");
   }
 
   return next();
