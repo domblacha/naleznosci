@@ -373,13 +373,13 @@ Brak migracji danych. Po wdrożeniu (push na `main` = produkcja) zakładki do `/
 
 #### Automated
 
-- [x] 3.1 Brak angielskich tekstów UI w `src/` (grep)
-- [x] 3.2 Lint przechodzi: `npm run lint`
-- [x] 3.3 Build przechodzi: `npm run build`
-- [x] 3.4 Smoke test przechodzi przeciwko `npm run dev`: `npm run smoke`
+- [x] 3.1 Brak angielskich tekstów UI w `src/` (grep) — 335ff58
+- [x] 3.2 Lint przechodzi: `npm run lint` — 335ff58
+- [x] 3.3 Build przechodzi: `npm run build` — 335ff58
+- [x] 3.4 Smoke test przechodzi przeciwko `npm run dev`: `npm run smoke` — 335ff58
 
 #### Manual
 
-- [x] 3.5 Pełny przepływ konta jest po polsku, także walidacja i stany „w toku”
-- [x] 3.6 Podpowiedź przy haśle poprawnie odmienia 1, 2 i 5 brakujących znaków
-- [x] 3.7 Polski `aria-label` przełącznika hasła i `lang="pl"`
+- [x] 3.5 Pełny przepływ konta jest po polsku, także walidacja i stany „w toku” — 335ff58
+- [x] 3.6 Podpowiedź przy haśle poprawnie odmienia 1, 2 i 5 brakujących znaków — 335ff58
+- [x] 3.7 Polski `aria-label` przełącznika hasła i `lang="pl"` — 335ff58
