@@ -4,6 +4,7 @@ import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { ServerError } from "@/components/auth/ServerError";
+import { useSubmitPending } from "@/components/hooks/use-submit-pending";
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth-config";
 
 function charactersLeft(n: number) {
@@ -22,6 +23,7 @@ export default function SignUpForm({ serverError }: Props) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { pending, markPending } = useSubmitPending();
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
 
   function validate() {
@@ -56,13 +58,15 @@ export default function SignUpForm({ serverError }: Props) {
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     if (!validate()) {
       e.preventDefault();
+      return;
     }
+    markPending();
   }
 
   const passwordHint =
-    !errors.password && password.length > 0 && password.length < MIN_PASSWORD_LENGTH ? (
-      <p className="text-muted-foreground mt-1 text-xs">{charactersLeft(MIN_PASSWORD_LENGTH - password.length)}</p>
-    ) : undefined;
+    !errors.password && password.length > 0 && password.length < MIN_PASSWORD_LENGTH
+      ? charactersLeft(MIN_PASSWORD_LENGTH - password.length)
+      : undefined;
 
   return (
     <form method="POST" action="/api/auth/signup" className="space-y-4" onSubmit={handleSubmit} noValidate>
@@ -128,7 +132,7 @@ export default function SignUpForm({ serverError }: Props) {
 
       <ServerError message={serverError} />
 
-      <SubmitButton pendingText="Tworzenie konta..." icon={<UserPlus className="size-4" />}>
+      <SubmitButton pending={pending} pendingText="Tworzenie konta..." icon={<UserPlus className="size-4" />}>
         Załóż konto
       </SubmitButton>
     </form>

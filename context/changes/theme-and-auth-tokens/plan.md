@@ -459,37 +459,37 @@ Brak danych do migracji. Rollback to revert commitów fazy. Po wdrożeniu na `ma
 
 #### Automated
 
-- [x] 2.1 `grep -n "oklch(0.555 0.163 48.998)" src/styles/global.css` znajduje `--primary` w `:root`
-- [x] 2.2 `grep -n "calc(var(--radius) \* 1.4)" src/styles/global.css` znajduje proporcjonalne `--radius-xl`
-- [x] 2.3 `grep -n "dark" src/layouts/Layout.astro` zwraca 0 linii
-- [x] 2.4 Skan literałów zwraca 0 linii
-- [x] 2.5 Lint przechodzi: `npm run lint`
-- [x] 2.6 Build przechodzi: `npm run build`
+- [x] 2.1 `grep -n "oklch(0.555 0.163 48.998)" src/styles/global.css` znajduje `--primary` w `:root` — 475128e
+- [x] 2.2 `grep -n "calc(var(--radius) \* 1.4)" src/styles/global.css` znajduje proporcjonalne `--radius-xl` — 475128e
+- [x] 2.3 `grep -n "dark" src/layouts/Layout.astro` zwraca 0 linii — 475128e
+- [x] 2.4 Skan literałów zwraca 0 linii — 475128e
+- [x] 2.5 Lint przechodzi: `npm run lint` — 475128e
+- [x] 2.6 Build przechodzi: `npm run build` — 475128e
 
 #### Manual
 
-- [x] 2.7 Przycisk główny jest bursztynowy z jasnym tekstem, a tło i karta białe z ciepłym obramowaniem: zrzut na desktopie i przy 375px
-- [x] 2.8 Rogi karty, pól, przycisku i alertu są ostre (DevTools: obliczone `border-radius` = `0px`)
-- [x] 2.9 Ekran główny i Topbar pasują do ekranów konta
+- [x] 2.7 Przycisk główny jest bursztynowy z jasnym tekstem, a tło i karta białe z ciepłym obramowaniem: zrzut na desktopie i przy 375px — 475128e
+- [x] 2.8 Rogi karty, pól, przycisku i alertu są ostre (DevTools: obliczone `border-radius` = `0px`) — 475128e
+- [x] 2.9 Ekran główny i Topbar pasują do ekranów konta — 475128e
 
 ### Phase 3: Stany, dostępność i kitchen sink
 
 #### Automated
 
-- [ ] 3.1 `grep -rn "useFormStatus" src` zwraca 0 linii
-- [ ] 3.2 Skan literałów rozszerzony o `src/pages/dev/ui.astro` zwraca 0 linii
-- [ ] 3.3 Lint przechodzi: `npm run lint`
-- [ ] 3.4 Build przechodzi: `npm run build`
-- [ ] 3.5 `/dev/ui` zwraca 404 w buildzie produkcyjnym: `npm run preview` + `curl -s -o /dev/null -w "%{http_code}" http://localhost:4321/dev/ui` → `404`
-- [ ] 3.6 Smoke auth przechodzi (dev + Supabase z wyłączonym potwierdzaniem): `npm run smoke`
+- [x] 3.1 `grep -rn "useFormStatus" src` zwraca 0 linii
+- [x] 3.2 Skan literałów rozszerzony o `src/pages/dev/ui.astro` zwraca 0 linii
+- [x] 3.3 Lint przechodzi: `npm run lint`
+- [x] 3.4 Build przechodzi: `npm run build`
+- [x] 3.5 `/dev/ui` zwraca 404 w buildzie produkcyjnym: `npm run preview` + `curl -s -o /dev/null -w "%{http_code}" http://localhost:4321/dev/ui` → `404`
+- [x] 3.6 Smoke auth przechodzi (dev + Supabase z wyłączonym potwierdzaniem): `npm run smoke`
 
 #### Manual
 
-- [ ] 3.7 `/dev/ui` pokazuje wszystkie 7 stanów (default, hover, focus-visible, disabled, error, loading, empty = N/A): zrzut na desktopie i przy 375px
-- [ ] 3.8 Tab przez `/auth/signup`: widoczny pierścień `--ring` na każdym polu, przełączniku hasła, przycisku i linku
-- [ ] 3.9 Poprawne dane + „Zaloguj się”: przycisk pokazuje „Logowanie...” i jest zablokowany do przekierowania. Błędne dane + Wstecz: przycisk nie jest zablokowany
-- [ ] 3.10 DevTools → Accessibility: pole z błędem ma `aria-invalid=true`, a opis wskazuje tekst błędu
-- [ ] 3.11 Kontrast w jasnym motywie ≥ 4.5:1 dla `primary-foreground` na `primary`, `muted-foreground` na `background`/`card` i tekstu `destructive` na `destructive/10`. Wynik zapisany w notatce fazy
+- [x] 3.7 `/dev/ui` pokazuje wszystkie 7 stanów (default, hover, focus-visible, disabled, error, loading, empty = N/A): zrzut na desktopie i przy 375px
+- [x] 3.8 Tab przez `/auth/signup`: widoczny pierścień `--ring` na każdym polu, przełączniku hasła, przycisku i linku
+- [x] 3.9 Poprawne dane + „Zaloguj się”: przycisk pokazuje „Logowanie...” i jest zablokowany do przekierowania. Błędne dane + Wstecz: przycisk nie jest zablokowany
+- [x] 3.10 DevTools → Accessibility: pole z błędem ma `aria-invalid=true`, a opis wskazuje tekst błędu
+- [x] 3.11 Kontrast w jasnym motywie ≥ 4.5:1 dla `primary-foreground` na `primary`, `muted-foreground` na `background`/`card` i tekstu `destructive` na `destructive/10`. Wynik zapisany w notatce fazy
 
 ### Phase 4: Guard — reguła ESLint i blok UI w CLAUDE.md
 

@@ -1,29 +1,19 @@
 import type { ReactNode } from "react";
-import { useFormStatus } from "react-dom";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface SubmitButtonProps {
+  pending: boolean;
   pendingText: string;
   icon: ReactNode;
   children: ReactNode;
 }
 
-export function SubmitButton({ pendingText, icon, children }: SubmitButtonProps) {
-  const { pending } = useFormStatus();
-
+export function SubmitButton({ pending, pendingText, icon, children }: SubmitButtonProps) {
   return (
     <Button type="submit" disabled={pending} className="w-full">
-      {pending ? (
-        <span className="flex items-center gap-2">
-          <span className="size-4 animate-spin rounded-full border-2 border-current/30 border-t-current" />
-          {pendingText}
-        </span>
-      ) : (
-        <span className="flex items-center gap-2">
-          {icon}
-          {children}
-        </span>
-      )}
+      {pending ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : icon}
+      {pending ? pendingText : children}
     </Button>
   );
 }

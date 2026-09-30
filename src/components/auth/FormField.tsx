@@ -12,7 +12,7 @@ interface FormFieldProps {
   onChange: (value: string) => void;
   placeholder?: string;
   error?: string;
-  hint?: ReactNode;
+  hint?: string;
   icon: ReactNode;
   endContent?: ReactNode;
 }
@@ -46,19 +46,22 @@ export function FormField({
             onChange(e.target.value);
           }}
           placeholder={placeholder}
-          aria-invalid={error ? true : undefined}
+          aria-invalid={!!error}
+          aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
           className="pl-10"
         />
         {endContent}
       </div>
       {error ? (
-        <p className="text-destructive mt-1 flex items-center gap-1 text-xs">
+        <p id={`${id}-error`} className="text-destructive mt-1 flex items-center gap-1 text-xs">
           <CircleAlert className="size-3" />
           {error}
         </p>
-      ) : (
-        hint
-      )}
+      ) : hint ? (
+        <p id={`${id}-hint`} className="text-muted-foreground mt-1 text-xs">
+          {hint}
+        </p>
+      ) : null}
     </div>
   );
 }
