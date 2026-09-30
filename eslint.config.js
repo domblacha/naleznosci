@@ -70,6 +70,32 @@ const astroConfig = defineConfig({
   },
 });
 
+// Same pattern as the literal scan in context/changes/theme-and-auth-tokens/plan.md. esquery regexes cannot contain "/".
+const colorLiteralPattern = String.raw`#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(|oklch\(|-\[[0-9.]+(px|rem)\]|\b(bg|text|border|ring|outline|from|via|to|fill|stroke|shadow|divide)-(slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|white|black)\b`;
+
+const colorLiteralMessage =
+  "Literał koloru, klasa palety Tailwind lub wartość arbitralna w widoku. Użyj klas z tokenów ról (np. bg-primary, text-muted-foreground, border-destructive) z src/styles/global.css albo komponentu z src/components/ui/.";
+
+const colorLiteralSelectors = [
+  "JSXAttribute[name.name=/^(class|className)$/]",
+  'JSXAttribute[name.namespace.name="class"]',
+  'CallExpression[callee.name="cn"]',
+].flatMap((scope) => [
+  `${scope} Literal[value=/${colorLiteralPattern}/]`,
+  `${scope} TemplateElement[value.raw=/${colorLiteralPattern}/]`,
+]);
+
+const viewTokensConfig = defineConfig({
+  files: ["src/pages/**/*.{astro,tsx}", "src/components/**/*.{astro,tsx}", "src/layouts/**/*.astro"],
+  ignores: ["src/components/ui/**"],
+  rules: {
+    "no-restricted-syntax": [
+      "error",
+      ...colorLiteralSelectors.map((selector) => ({ selector, message: colorLiteralMessage })),
+    ],
+  },
+});
+
 const scriptsConfig = defineConfig({
   files: ["scripts/**/*.mjs"],
   extends: [tseslint.configs.disableTypeChecked],
@@ -84,6 +110,7 @@ export default defineConfig(
   eslintPluginAstro.configs["flat/recommended"],
   eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
   astroConfig,
+  viewTokensConfig,
   scriptsConfig,
   eslintPluginPrettier,
 );

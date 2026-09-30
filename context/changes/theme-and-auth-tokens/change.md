@@ -3,7 +3,7 @@ change_id: theme-and-auth-tokens
 title: Paleta kolorów w tokenach i ekrany konta oparte na tokenach
 status: implementing
 created: 2026-09-29
-updated: 2026-09-29
+updated: 2026-09-30
 archived_at: null
 ---
 

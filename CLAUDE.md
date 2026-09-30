@@ -12,6 +12,14 @@
 - **Services/helpers** go in `src/lib/` (or `src/lib/services/` for extracted business logic).
 - **Shared types** (entities, DTOs) go in `src/types.ts`.
 
+## UI
+
+- **Tokens**: values live in `src/styles/global.css` (`:root`/`.dark`, published by `@theme inline`). Add new colors only as roles there, never as raw values in `@theme inline`.
+- **Components**: `src/components/ui/` — check it before building a new one; add missing ones with `npx shadcn@latest add [name]`.
+- **No color literals, Tailwind palette classes or arbitrary values** (`bg-purple-600`, `#fff`, `w-[13px]`) in views. ESLint enforces this (`no-restricted-syntax` in `eslint.config.js`).
+- **Do not override colors of `ui` components** via `className`; use their variants.
+- **`/dev/ui`** is the dev-only kitchen sink of component states — extend it whenever you add a form component.
+
 ## Architecture
 
 **Astro 7 SSR app** with React 19 islands, Tailwind 4, Supabase auth, and shadcn/ui components. Deployed to Cloudflare Workers via `output: "server"` (see `astro.config.mjs`).

@@ -476,34 +476,34 @@ Brak danych do migracji. Rollback to revert commitów fazy. Po wdrożeniu na `ma
 
 #### Automated
 
-- [x] 3.1 `grep -rn "useFormStatus" src` zwraca 0 linii
-- [x] 3.2 Skan literałów rozszerzony o `src/pages/dev/ui.astro` zwraca 0 linii
-- [x] 3.3 Lint przechodzi: `npm run lint`
-- [x] 3.4 Build przechodzi: `npm run build`
-- [x] 3.5 `/dev/ui` zwraca 404 w buildzie produkcyjnym: `npm run preview` + `curl -s -o /dev/null -w "%{http_code}" http://localhost:4321/dev/ui` → `404`
-- [x] 3.6 Smoke auth przechodzi (dev + Supabase z wyłączonym potwierdzaniem): `npm run smoke`
+- [x] 3.1 `grep -rn "useFormStatus" src` zwraca 0 linii — c1a339e
+- [x] 3.2 Skan literałów rozszerzony o `src/pages/dev/ui.astro` zwraca 0 linii — c1a339e
+- [x] 3.3 Lint przechodzi: `npm run lint` — c1a339e
+- [x] 3.4 Build przechodzi: `npm run build` — c1a339e
+- [x] 3.5 `/dev/ui` zwraca 404 w buildzie produkcyjnym: `npm run preview` + `curl -s -o /dev/null -w "%{http_code}" http://localhost:4321/dev/ui` → `404` — c1a339e
+- [x] 3.6 Smoke auth przechodzi (dev + Supabase z wyłączonym potwierdzaniem): `npm run smoke` — c1a339e
 
 #### Manual
 
-- [x] 3.7 `/dev/ui` pokazuje wszystkie 7 stanów (default, hover, focus-visible, disabled, error, loading, empty = N/A): zrzut na desktopie i przy 375px
-- [x] 3.8 Tab przez `/auth/signup`: widoczny pierścień `--ring` na każdym polu, przełączniku hasła, przycisku i linku
-- [x] 3.9 Poprawne dane + „Zaloguj się”: przycisk pokazuje „Logowanie...” i jest zablokowany do przekierowania. Błędne dane + Wstecz: przycisk nie jest zablokowany
-- [x] 3.10 DevTools → Accessibility: pole z błędem ma `aria-invalid=true`, a opis wskazuje tekst błędu
-- [x] 3.11 Kontrast w jasnym motywie ≥ 4.5:1 dla `primary-foreground` na `primary`, `muted-foreground` na `background`/`card` i tekstu `destructive` na `destructive/10`. Wynik zapisany w notatce fazy
+- [x] 3.7 `/dev/ui` pokazuje wszystkie 7 stanów (default, hover, focus-visible, disabled, error, loading, empty = N/A): zrzut na desktopie i przy 375px — c1a339e
+- [x] 3.8 Tab przez `/auth/signup`: widoczny pierścień `--ring` na każdym polu, przełączniku hasła, przycisku i linku — c1a339e
+- [x] 3.9 Poprawne dane + „Zaloguj się”: przycisk pokazuje „Logowanie...” i jest zablokowany do przekierowania. Błędne dane + Wstecz: przycisk nie jest zablokowany — c1a339e
+- [x] 3.10 DevTools → Accessibility: pole z błędem ma `aria-invalid=true`, a opis wskazuje tekst błędu — c1a339e
+- [x] 3.11 Kontrast w jasnym motywie ≥ 4.5:1 dla `primary-foreground` na `primary`, `muted-foreground` na `background`/`card` i tekstu `destructive` na `destructive/10`. Wynik zapisany w notatce fazy — c1a339e
 
 ### Phase 4: Guard — reguła ESLint i blok UI w CLAUDE.md
 
 #### Automated
 
-- [ ] 4.1 Lint przechodzi na czystym drzewie: `npm run lint`
-- [ ] 4.2 Próba: tymczasowy `className="bg-purple-600"` w pliku `src/components/auth/*.tsx` oraz `class="text-blue-200"` w `src/pages/auth/*.astro` dają błąd `no-restricted-syntax` w `npm run lint`. Po próbie cofnięte
-- [ ] 4.3 Próba: ten sam literał w `src/components/ui/button.tsx` nie daje błędu (wyjątek działa). Po próbie cofnięte
-- [ ] 4.4 `grep -n "## UI" CLAUDE.md` znajduje sekcję
+- [x] 4.1 Lint przechodzi na czystym drzewie: `npm run lint`
+- [x] 4.2 Próba: tymczasowy `className="bg-purple-600"` w pliku `src/components/auth/*.tsx` oraz `class="text-blue-200"` w `src/pages/auth/*.astro` dają błąd `no-restricted-syntax` w `npm run lint`. Po próbie cofnięte
+- [x] 4.3 Próba: ten sam literał w `src/components/ui/button.tsx` nie daje błędu (wyjątek działa). Po próbie cofnięte
+- [x] 4.4 `grep -n "## UI" CLAUDE.md` znajduje sekcję
 
 #### Manual
 
-- [ ] 4.5 Blok UI w `CLAUDE.md` jest krótki, jednoznaczny i wskazuje ścieżki, które istnieją
-- [ ] 4.6 Komunikat błędu ESLint jest zrozumiały i mówi, czego użyć zamiast literału
+- [x] 4.5 Blok UI w `CLAUDE.md` jest krótki, jednoznaczny i wskazuje ścieżki, które istnieją
+- [x] 4.6 Komunikat błędu ESLint jest zrozumiały i mówi, czego użyć zamiast literału
 
 ### Phase 5: Styl shadcn lyra zamiast new-york
 
