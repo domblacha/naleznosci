@@ -495,29 +495,29 @@ Brak danych do migracji. Rollback to revert commitów fazy. Po wdrożeniu na `ma
 
 #### Automated
 
-- [x] 4.1 Lint przechodzi na czystym drzewie: `npm run lint`
-- [x] 4.2 Próba: tymczasowy `className="bg-purple-600"` w pliku `src/components/auth/*.tsx` oraz `class="text-blue-200"` w `src/pages/auth/*.astro` dają błąd `no-restricted-syntax` w `npm run lint`. Po próbie cofnięte
-- [x] 4.3 Próba: ten sam literał w `src/components/ui/button.tsx` nie daje błędu (wyjątek działa). Po próbie cofnięte
-- [x] 4.4 `grep -n "## UI" CLAUDE.md` znajduje sekcję
+- [x] 4.1 Lint przechodzi na czystym drzewie: `npm run lint` — 65d4c9d
+- [x] 4.2 Próba: tymczasowy `className="bg-purple-600"` w pliku `src/components/auth/*.tsx` oraz `class="text-blue-200"` w `src/pages/auth/*.astro` dają błąd `no-restricted-syntax` w `npm run lint`. Po próbie cofnięte — 65d4c9d
+- [x] 4.3 Próba: ten sam literał w `src/components/ui/button.tsx` nie daje błędu (wyjątek działa). Po próbie cofnięte — 65d4c9d
+- [x] 4.4 `grep -n "## UI" CLAUDE.md` znajduje sekcję — 65d4c9d
 
 #### Manual
 
-- [x] 4.5 Blok UI w `CLAUDE.md` jest krótki, jednoznaczny i wskazuje ścieżki, które istnieją
-- [x] 4.6 Komunikat błędu ESLint jest zrozumiały i mówi, czego użyć zamiast literału
+- [x] 4.5 Blok UI w `CLAUDE.md` jest krótki, jednoznaczny i wskazuje ścieżki, które istnieją — 65d4c9d
+- [x] 4.6 Komunikat błędu ESLint jest zrozumiały i mówi, czego użyć zamiast literału — 65d4c9d
 
 ### Phase 5: Styl shadcn lyra zamiast new-york
 
 #### Automated
 
-- [ ] 5.1 `grep -n '"style"' components.json` pokazuje `lyra`
-- [ ] 5.2 `grep -rn "new-york" components.json CLAUDE.md src` zwraca 0 linii
-- [ ] 5.3 Skan literałów zwraca 0 linii (dla `src/pages/dev/ui.astro` także)
-- [ ] 5.4 Lint przechodzi: `npm run lint`
-- [ ] 5.5 Build przechodzi: `npm run build`
-- [ ] 5.6 Smoke auth przechodzi: `npm run smoke`
+- [x] 5.1 `grep -n '"style"' components.json` pokazuje `lyra`
+- [x] 5.2 `grep -rn "new-york" components.json CLAUDE.md src` zwraca 0 linii
+- [x] 5.3 Skan literałów zwraca 0 linii (dla `src/pages/dev/ui.astro` także)
+- [x] 5.4 Lint przechodzi: `npm run lint`
+- [x] 5.5 Build przechodzi: `npm run build`
+- [x] 5.6 Smoke auth przechodzi: `npm run smoke`
 
 #### Manual
 
-- [ ] 5.7 `/auth/signin`, `/auth/signup`, `/auth/confirm-email`, `/` i `/dev/ui` wyglądają spójnie w stylu lyra: zrzut na desktopie i przy 375px
-- [ ] 5.8 Fokus, disabled, error i pending nadal działają (regresja względem fazy 3)
-- [ ] 5.9 Rogi nadal ostre (`border-radius` = `0px`)
+- [x] 5.7 `/auth/signin`, `/auth/signup`, `/auth/confirm-email`, `/` i `/dev/ui` wyglądają spójnie w stylu lyra: zrzut na desktopie i przy 375px
+- [x] 5.8 Fokus, disabled, error i pending nadal działają (regresja względem fazy 3)
+- [x] 5.9 Rogi nadal ostre (`border-radius` = `0px`)
