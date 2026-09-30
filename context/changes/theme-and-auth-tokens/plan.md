@@ -509,15 +509,15 @@ Brak danych do migracji. Rollback to revert commitów fazy. Po wdrożeniu na `ma
 
 #### Automated
 
-- [x] 5.1 `grep -n '"style"' components.json` pokazuje `lyra`
-- [x] 5.2 `grep -rn "new-york" components.json CLAUDE.md src` zwraca 0 linii
-- [x] 5.3 Skan literałów zwraca 0 linii (dla `src/pages/dev/ui.astro` także)
-- [x] 5.4 Lint przechodzi: `npm run lint`
-- [x] 5.5 Build przechodzi: `npm run build`
-- [x] 5.6 Smoke auth przechodzi: `npm run smoke`
+- [x] 5.1 `grep -n '"style"' components.json` pokazuje `lyra` — 27bca26
+- [x] 5.2 `grep -rn "new-york" components.json CLAUDE.md src` zwraca 0 linii — 27bca26
+- [x] 5.3 Skan literałów zwraca 0 linii (dla `src/pages/dev/ui.astro` także) — 27bca26
+- [x] 5.4 Lint przechodzi: `npm run lint` — 27bca26
+- [x] 5.5 Build przechodzi: `npm run build` — 27bca26
+- [x] 5.6 Smoke auth przechodzi: `npm run smoke` — 27bca26
 
 #### Manual
 
-- [x] 5.7 `/auth/signin`, `/auth/signup`, `/auth/confirm-email`, `/` i `/dev/ui` wyglądają spójnie w stylu lyra: zrzut na desktopie i przy 375px
-- [x] 5.8 Fokus, disabled, error i pending nadal działają (regresja względem fazy 3)
-- [x] 5.9 Rogi nadal ostre (`border-radius` = `0px`)
+- [x] 5.7 `/auth/signin`, `/auth/signup`, `/auth/confirm-email`, `/` i `/dev/ui` wyglądają spójnie w stylu lyra: zrzut na desktopie i przy 375px — 27bca26
+- [x] 5.8 Fokus, disabled, error i pending nadal działają (regresja względem fazy 3) — 27bca26
+- [x] 5.9 Rogi nadal ostre (`border-radius` = `0px`) — 27bca26
