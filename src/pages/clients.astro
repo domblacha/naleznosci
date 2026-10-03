@@ -1,0 +1,40 @@
+---
+import Topbar from "@/components/Topbar.astro";
+import Layout from "@/layouts/Layout.astro";
+import { ClientsManager } from "@/components/clients/ClientsManager";
+import { createClient } from "@/lib/supabase";
+import { listClients } from "@/lib/services/clients";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import type { Client } from "@/types";
+
+export const prerender = false;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+let clients: Client[] = [];
+let loadError: string | null = null;
+if (!supabase) {
+  loadError = "Lista klientów jest niedostępna: brak konfiguracji serwera.";
+} else {
+  try {
+    clients = await listClients(supabase);
+  } catch {
+    loadError = "Nie udało się wczytać klientów. Odśwież stronę.";
+  }
+}
+---
+
+<Layout title="Klienci">
+  <div class="min-h-screen p-4">
+    <Topbar />
+    <main class="mx-auto max-w-3xl space-y-4 py-8">
+      <h1 class="text-3xl font-bold text-foreground">Klienci</h1>
+      {loadError ? (
+        <Alert variant="destructive" className="text-destructive">
+          <AlertDescription className="text-destructive">{loadError}</AlertDescription>
+        </Alert>
+      ) : (
+        <ClientsManager initialClients={clients} client:load />
+      )}
+    </main>
+  </div>
+</Layout>

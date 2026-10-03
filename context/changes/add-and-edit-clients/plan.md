@@ -423,30 +423,30 @@ Nowa tabela, brak istniejących danych. Migracja jest jednokierunkowa. Ewentualn
 
 #### Automated
 
-- [x] 2.1 Lint i typy przechodzą: `npm run lint && npx astro check`
-- [x] 2.2 Testy jednostkowe nadal przechodzą: `npm test`
-- [x] 2.3 Smoke przechodzi na dev serwerze z lokalnym Supabase: `npm run dev` + `npm run smoke`
+- [x] 2.1 Lint i typy przechodzą: `npm run lint && npx astro check` — 304f6bd
+- [x] 2.2 Testy jednostkowe nadal przechodzą: `npm test` — 304f6bd
+- [x] 2.3 Smoke przechodzi na dev serwerze z lokalnym Supabase: `npm run dev` + `npm run smoke` — 304f6bd
 
 #### Manual
 
-- [x] 2.4 Niezalogowany `GET /clients` w przeglądarce przekierowuje na `/auth/signin`
+- [x] 2.4 Niezalogowany `GET /clients` w przeglądarce przekierowuje na `/auth/signin` — 304f6bd
 
 ### Phase 3: UI listy i dialogu
 
 #### Automated
 
-- [ ] 3.1 Lint (w tym zakaz literałów kolorów) i typy przechodzą: `npm run lint && npx astro check`
-- [ ] 3.2 Build przechodzi: `npm run build`
-- [ ] 3.3 Testy i smoke nadal przechodzą: `npm test` + `npm run smoke`
+- [x] 3.1 Lint (w tym zakaz literałów kolorów) i typy przechodzą: `npm run lint && npx astro check`
+- [x] 3.2 Build przechodzi: `npm run build`
+- [x] 3.3 Testy i smoke nadal przechodzą: `npm test` + `npm run smoke`
 
 #### Manual
 
-- [ ] 3.4 Dodanie klienta z NIP `PL 123-456-32-18` zapisuje go i pokazuje na liście jako `1234563218`, bez przeładowania strony
-- [ ] 3.5 Ponowne dodanie tego NIP pokazuje „Klient z tym NIP-em już istnieje.” pod polem NIP, a dialog zostaje otwarty z wpisanymi danymi
-- [ ] 3.6 NIP `1234563219` (zła suma kontrolna) jest odrzucany przed wysłaniem
-- [ ] 3.7 Edycja zmienia wiersz na liście; przełącznik rekompensaty zachowuje stan po odświeżeniu strony
-- [ ] 3.8 Stan pusty, dialog i Topbar wyglądają poprawnie w jasnym i ciemnym motywie oraz na szerokości telefonu; fokus wraca do przycisku po zamknięciu dialogu
-- [ ] 3.9 `/dev/ui` pokazuje nowe stany
+- [x] 3.4 Dodanie klienta z NIP `PL 123-456-32-18` zapisuje go i pokazuje na liście jako `1234563218`, bez przeładowania strony
+- [x] 3.5 Ponowne dodanie tego NIP pokazuje „Klient z tym NIP-em już istnieje.” pod polem NIP, a dialog zostaje otwarty z wpisanymi danymi
+- [x] 3.6 NIP `1234563219` (zła suma kontrolna) jest odrzucany przed wysłaniem
+- [x] 3.7 Edycja zmienia wiersz na liście; przełącznik rekompensaty zachowuje stan po odświeżeniu strony
+- [x] 3.8 Stan pusty, dialog i Topbar wyglądają poprawnie w jasnym i ciemnym motywie oraz na szerokości telefonu; fokus wraca do przycisku po zamknięciu dialogu
+- [x] 3.9 `/dev/ui` pokazuje nowe stany
 
 ### Phase 4: Wdrożenie migracji i produkcji
 
