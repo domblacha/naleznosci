@@ -410,26 +410,26 @@ Nowa tabela, brak istniejących danych. Migracja jest jednokierunkowa. Ewentualn
 
 #### Automated
 
-- [x] 1.1 Migracja aplikuje się lokalnie od zera: `npx supabase db reset`
-- [x] 1.2 Testy jednostkowe przechodzą: `npm test`
-- [x] 1.3 Lint przechodzi: `npm run lint`
-- [x] 1.4 Typy przechodzą: `npx astro check`
+- [x] 1.1 Migracja aplikuje się lokalnie od zera: `npx supabase db reset` — a4efef2
+- [x] 1.2 Testy jednostkowe przechodzą: `npm test` — a4efef2
+- [x] 1.3 Lint przechodzi: `npm run lint` — a4efef2
+- [x] 1.4 Typy przechodzą: `npx astro check` — a4efef2
 
 #### Manual
 
-- [x] 1.5 W lokalnym Studio tabela `clients` ma włączone RLS i 8 polityk (4 × `authenticated`, 4 × `anon`), bez polityki `FOR ALL`
+- [x] 1.5 W lokalnym Studio tabela `clients` ma włączone RLS i 8 polityk (4 × `authenticated`, 4 × `anon`), bez polityki `FOR ALL` — a4efef2
 
 ### Phase 2: API i ochrona tras
 
 #### Automated
 
-- [ ] 2.1 Lint i typy przechodzą: `npm run lint && npx astro check`
-- [ ] 2.2 Testy jednostkowe nadal przechodzą: `npm test`
-- [ ] 2.3 Smoke przechodzi na dev serwerze z lokalnym Supabase: `npm run dev` + `npm run smoke`
+- [x] 2.1 Lint i typy przechodzą: `npm run lint && npx astro check`
+- [x] 2.2 Testy jednostkowe nadal przechodzą: `npm test`
+- [x] 2.3 Smoke przechodzi na dev serwerze z lokalnym Supabase: `npm run dev` + `npm run smoke`
 
 #### Manual
 
-- [ ] 2.4 Niezalogowany `GET /clients` w przeglądarce przekierowuje na `/auth/signin`
+- [x] 2.4 Niezalogowany `GET /clients` w przeglądarce przekierowuje na `/auth/signin`
 
 ### Phase 3: UI listy i dialogu
 
