@@ -42,7 +42,7 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | ID   | Change ID                   | Outcome (user can …)                                                                   | Prerequisites | PRD refs                    | Status   |
 | ---- | --------------------------- | -------------------------------------------------------------------------------------- | ------------- | --------------------------- | -------- |
 | S-01 | polish-auth-shell           | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny | —             | FR-001                      | done        |
-| S-02 | add-and-edit-clients        | dodać i edytować klienta, a duplikat zostaje odrzucony                                 | S-01          | FR-002                      | proposed |
+| S-02 | add-and-edit-clients        | dodać i edytować klienta, a duplikat zostaje odrzucony                                 | S-01          | FR-002                      | in-progress |
 | S-03 | invoice-escalation-list     | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur       | S-02          | US-01, FR-003, FR-005, FR-010 | proposed |
 | S-04 | interest-and-compensation   | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza             | S-03          | US-01, FR-007               | proposed |
 | S-05 | collective-reminder         | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka            | S-04          | US-01, FR-008, FR-011       | proposed |
@@ -107,7 +107,7 @@ Brak. Każdy element techniczny wchodzi w pierwszy wycinek, który go potrzebuje
 - **Unknowns:**
   - Czy NIP normalizować (spacje, myślniki, prefiks PL) przed wykrywaniem duplikatów? — Owner: user. Block: no.
 - **Risk:** Pierwsza tabela domenowa — tu ustala się wzorzec izolacji danych właściciela, który powtarzają wszystkie następne wycinki; błąd tu przecieka wszędzie.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-03: Faktura w grupie właściwego etapu na liście
 
@@ -252,6 +252,7 @@ Brak. Każdy element techniczny wchodzi w pierwszy wycinek, który go potrzebuje
 ## Open Roadmap Questions
 
 1. **Czy zakres MVP zmieści się w budżecie 3 tygodni po godzinach?** — 13 wymagań koniecznych przy budżecie 3 tygodni po godzinach to ciasny zakres; przy opóźnieniu pierwsze do ograniczenia są FR-014 (S-12) i sortowanie z FR-010 (S-11). Owner: user. Block: roadmap-wide (no — nie blokuje planowania).
+2. **Wdrożenie na produkcję i migracje w CI/CD** — Dziś push na `main` wdraża tylko kod, a migracje (`supabase db push`) trzeba stosować ręcznie przed pushem; rollback Workera nie cofa schematu. Do czasu uporządkowania wdrożenia i migracji w CI/CD **development jest wyłącznie lokalny** — nie wypychamy na `main` i nie stosujemy migracji na produkcji. Faza 4 zmiany `add-and-edit-clients` (migracja na produkcji, smoke na produkcji) czeka na tę decyzję. Owner: user. Block: wdrożenie na produkcję (no — nie blokuje lokalnego developmentu).
 
 ## Parked
 

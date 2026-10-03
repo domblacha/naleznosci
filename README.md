@@ -112,7 +112,14 @@ npx supabase stop
 
 The local Studio UI is available at `http://localhost:54323`.
 
-No database tables or migrations are required — this project uses Supabase Auth's built-in `auth.users` table only.
+Schema changes live in `supabase/migrations/`. Apply them to the local database with:
+
+```bash
+npx supabase db reset       # recreate the local DB from scratch and apply all migrations
+npx supabase migration up   # apply only new migrations, keeping local data
+```
+
+The `public.clients` table (with RLS) comes from the `create_clients` migration.
 
 ### Using a cloud Supabase project instead
 
@@ -175,6 +182,18 @@ npx wrangler secret put SUPABASE_KEY
 
 The production Supabase project has **email confirmation disabled** (the built-in SMTP only delivers to organization members, and the app has no confirmation route).
 
+### Migracje
+
+Push na `main` wdraża tylko kod — schemat bazy trzeba zastosować osobno i **przed** pushem kodu, który z niego korzysta (w przeciwnym razie strony korzystające z nowej tabeli zwracają błąd do czasu migracji).
+
+```bash
+npx supabase link --project-ref <ref>   # jednorazowo, powiązanie z produkcyjnym projektem
+npx supabase migration list             # porównaj stan lokalny i zdalny
+npx supabase db push                    # zastosuj nowe migracje na produkcji
+```
+
+Rollback Workera **nie cofa schematu**. Wycofanie zmiany w bazie wymaga nowej migracji (np. `drop table`).
+
 ### Rollback
 
 Dashboard → Workers & Pages → `naleznosci` → Deployments → roll back to a previous version, then `git revert` the offending commit and push — otherwise the next push redeploys the bug.
@@ -188,7 +207,7 @@ npm run dev            # or: npm run build && npm run preview
 BASE_URL=http://localhost:4321 npm run smoke
 ```
 
-It needs a reachable Supabase instance (local or cloud) with email confirmation disabled.
+It needs a reachable Supabase instance (local or cloud) with email confirmation disabled. The client steps (create/edit, duplicates, isolation between two users) additionally require the `create_clients` migration to be applied on that instance.
 
 > **Note:** this script exists primarily to guard the development of the starter itself — it is a fast sanity check that dependency upgrades did not break the build, the Cloudflare adapter or the Supabase auth flow. It is **not** a substitute for a real test suite. Once you build your own product on top of this starter, add proper tests (unit, integration, end-to-end) suited to your application.
 
