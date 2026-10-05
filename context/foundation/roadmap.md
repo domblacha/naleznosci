@@ -44,7 +44,7 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | F-01 | deploy-pipeline-with-migrations | (foundation) merge na `main` przechodzi kontrole, stosuje migracje na produkcji i dopiero wtedy wdraża kod | —             | NFR (izolacja danych właściciela) | done        |
 | S-01 | polish-auth-shell               | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny              | —             | FR-001                            | done        |
 | S-02 | add-and-edit-clients            | dodać i edytować klienta, a duplikat zostaje odrzucony                                                     | S-01, F-01    | FR-002                            | done        |
-| S-03 | invoice-escalation-list         | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur                           | S-02          | US-01, FR-003, FR-005, FR-010     | in-progress |
+| S-03 | invoice-escalation-list         | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur                           | S-02          | US-01, FR-003, FR-005, FR-010     | done |
 | S-04 | interest-and-compensation       | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza                                 | S-03          | US-01, FR-007                     | proposed    |
 | S-05 | collective-reminder             | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka                                | S-04          | US-01, FR-008, FR-011             | proposed    |
 | S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | proposed    |
@@ -137,7 +137,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Unknowns:**
   - Czy próg „+3” oznacza etap 1 od 3. dnia po terminie włącznie (i analogicznie dla pozostałych progów)? — Owner: user. Block: no. **Rozstrzygnięte (decyzja z planowania 2026-10-05):** progi są włączne, a dzień terminu to „bieżące” (0 dni po terminie).
 - **Risk:** Gwiazda przewodnia — reguła etapu musi być deterministyczna (wymóg z Kryteriów sukcesu), więc ten wycinek wprowadza też automatyczną weryfikację reguły na przypadkach brzegowych (dzień terminu, północ czasu polskiego, etap 4 jako końcowy).
-- **Status:** in-progress
+- **Status:** done
 
 ### S-04: Odsetki i rekompensata na liście
 
@@ -291,3 +291,4 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Zmiana poza wycinkami: Ekrany konta i powłoka na tokenach kolorów i komponentach shadcn (paleta stone + amber, ostre rogi, styl lyra, stany i dostępność, reguła ESLint + blok UI w `CLAUDE.md`)** — Archived 2026-10-03 → `context/archive/2026-09-29-theme-and-auth-tokens/`. Zrobione przed S-02 (`add-and-edit-clients`), żeby formularz klienta odziedziczył tokeny i komponenty; brak pozycji w roadmapie (Change ID `theme-and-auth-tokens`). Lesson: `className` zamiast `class` na komponentach React w `.astro` (`context/foundation/lessons.md`).
 - **S-02: Użytkownik może dodać klienta (opcjonalny NIP, przełącznik „naliczaj rekompensatę” domyślnie włączony), edytować go i widzi listę swoich klientów; duplikat (po NIP, a bez NIP po nazwie bez rozróżniania wielkości liter) zostaje odrzucony.** — Archived 2026-10-05 → `context/archive/2026-10-03-add-and-edit-clients/`. Lesson: —.
 - **F-01: (foundation) praca idzie przez gałąź funkcji i PR, na którym CI uruchamia lint, testy, sprawdzenie typów i build; merge na `main` ponownie przechodzi te kontrole, stosuje oczekujące migracje na produkcyjnej bazie i dopiero po nich wdraża kod — w jednym potoku, ze ścisłą kolejnością baza → kod. Dotychczasowy auto-deploy z `main` przestaje wdrażać równolegle.** — Archived 2026-10-05 → `context/archive/2026-10-04-deploy-pipeline-with-migrations/`. Lesson: —.
+- **S-03: Użytkownik może dodać fakturę (numer, kwota, termin) do klienta i widzi ją na liście otwartych faktur w grupie: bieżące, po terminie przed pierwszym progiem albo etap 1–4 — wg dni po terminie liczonych w czasie polskim i domyślnych progów +3/+7/+14/+30.** — Archived 2026-10-05 → `context/archive/2026-10-05-invoice-escalation-list/`. Lesson: —.
