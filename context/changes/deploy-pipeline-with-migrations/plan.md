@@ -263,26 +263,26 @@ Ta zmiana nie dodaje migracji. Uruchamia pierwszą (`create_clients`) na produkc
 
 #### Automated
 
-- [x] 1.1 Na gałęzi przechodzą kontrole lokalnie: `npm run lint && npx astro check && npm run build`
-- [x] 1.2 Workflow jest poprawnym YAML-em: `npx --yes yaml-lint .github/workflows/ci.yml` (albo `actionlint`, jeśli dostępny)
+- [x] 1.1 Na gałęzi przechodzą kontrole lokalnie: `npm run lint && npx astro check && npm run build` — d00277c
+- [x] 1.2 Workflow jest poprawnym YAML-em: `npx --yes yaml-lint .github/workflows/ci.yml` (albo `actionlint`, jeśli dostępny) — d00277c
 
 #### Manual
 
-- [x] 1.3 W diffie gałęzi względem `origin/main` jest tylko workflow i folder `context/changes/deploy-pipeline-with-migrations/`
+- [x] 1.3 W diffie gałęzi względem `origin/main` jest tylko workflow i folder `context/changes/deploy-pipeline-with-migrations/` — d00277c
 
 ### Phase 2: Przygotowanie produkcji i pusty przebieg
 
 #### Automated
 
-- [ ] 2.1 Na PR `checks` jest zielony, a `deploy` się nie uruchamia: `gh pr checks <nr>`
-- [ ] 2.2 Po merge przebieg na `main` jest zielony w obu jobach: `gh run list --branch main --limit 1`
-- [ ] 2.3 Log kroku `db push` nie zgłasza żadnych zastosowanych migracji: `gh run view <id> --log`
+- [x] 2.1 Na PR `checks` jest zielony, a `deploy` się nie uruchamia: `gh pr checks <nr>`
+- [x] 2.2 Po merge przebieg na `main` jest zielony w obu jobach: `gh run list --branch main --limit 1`
+- [x] 2.3 Log kroku `db push` nie zgłasza żadnych zastosowanych migracji: `gh run view <id> --log`
 
 #### Manual
 
-- [ ] 2.4 Workers Builds w dashboardzie nie ma podłączonego repo, a merge nie wywołał buildu po stronie Cloudflare
-- [ ] 2.5 Produkcja działa jak przed zmianą: logowanie na `https://naleznosci.domblacha.workers.dev/auth/signin` przechodzi
-- [ ] 2.6 Dashboard Cloudflare → Deployments pokazuje nowe wdrożenie z GitHub Actions (wrangler), a nie z Workers Builds
+- [x] 2.4 Workers Builds w dashboardzie nie ma podłączonego repo, a merge nie wywołał buildu po stronie Cloudflare
+- [x] 2.5 Produkcja działa jak przed zmianą: logowanie na `https://naleznosci.domblacha.workers.dev/auth/signin` przechodzi
+- [x] 2.6 Dashboard Cloudflare → Deployments pokazuje nowe wdrożenie z GitHub Actions (wrangler), a nie z Workers Builds
 
 ### Phase 3: S-02 przez potok
 
