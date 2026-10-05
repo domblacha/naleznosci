@@ -483,11 +483,11 @@ Nowa tabela i dodatkowe ograniczenie `unique (id, user_id)` na `clients`, które
 
 #### Automated
 
-- [ ] 4.1 Job `checks` na PR jest zielony: `gh pr checks`
-- [ ] 4.2 Job `deploy` po merge jest zielony: `gh run list --branch main --limit 1`
-- [ ] 4.3 Migracja jest zastosowana na produkcji: `npx supabase migration list` pokazuje `create_invoices` po obu stronach
+- [x] 4.1 Job `checks` na PR jest zielony: `gh pr checks` — ea5aa11
+- [x] 4.2 Job `deploy` po merge jest zielony: `gh run list --branch main --limit 1` — ea5aa11
+- [x] 4.3 Migracja jest zastosowana na produkcji: `npx supabase migration list` pokazuje `create_invoices` po obu stronach — ea5aa11
 
 #### Manual
 
-- [ ] 4.4 Smoke na produkcji przechodzi (za zgodą użytkownika, bo zostawia konta testowe): `BASE_URL=https://naleznosci.domblacha.workers.dev npm run smoke`
-- [ ] 4.5 Na produkcji dodana faktura z terminem sprzed 3 dni jest w grupie „Etap 1”
+- [x] 4.4 Smoke na produkcji przechodzi (za zgodą użytkownika, bo zostawia konta testowe): `BASE_URL=https://naleznosci.domblacha.workers.dev npm run smoke` — ea5aa11
+- [x] 4.5 Na produkcji dodana faktura z terminem sprzed 3 dni jest w grupie „Etap 1” — ea5aa11

@@ -1,7 +1,7 @@
 ---
 change_id: invoice-escalation-list
 title: Lista otwartych faktur pogrupowana po etapach eskalacji
-status: implementing
+status: implemented
 created: 2026-10-05
 updated: 2026-10-05
 ---
