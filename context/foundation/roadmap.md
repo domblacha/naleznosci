@@ -41,10 +41,10 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 
 | ID   | Change ID                   | Outcome (user can …)                                                                   | Prerequisites | PRD refs                    | Status   |
 | ---- | --------------------------- | -------------------------------------------------------------------------------------- | ------------- | --------------------------- | -------- |
-| F-01 | deploy-pipeline-with-migrations | (foundation) merge na `main` przechodzi kontrole, stosuje migracje na produkcji i dopiero wtedy wdraża kod | — | NFR (izolacja danych właściciela) | in-progress |
+| F-01 | deploy-pipeline-with-migrations | (foundation) merge na `main` przechodzi kontrole, stosuje migracje na produkcji i dopiero wtedy wdraża kod | — | NFR (izolacja danych właściciela) | done |
 | S-01 | polish-auth-shell           | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny | —             | FR-001                      | done        |
 | S-02 | add-and-edit-clients        | dodać i edytować klienta, a duplikat zostaje odrzucony                                 | S-01, F-01    | FR-002                      | done        |
-| S-03 | invoice-escalation-list     | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur       | S-02          | US-01, FR-003, FR-005, FR-010 | proposed |
+| S-03 | invoice-escalation-list     | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur       | S-02          | US-01, FR-003, FR-005, FR-010 | ready    |
 | S-04 | interest-and-compensation   | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza             | S-03          | US-01, FR-007               | proposed |
 | S-05 | collective-reminder         | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka            | S-04          | US-01, FR-008, FR-011       | proposed |
 | S-06 | mark-invoice-paid           | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                 | S-04          | US-02, FR-004, FR-006, FR-010 | proposed |
@@ -69,14 +69,14 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 
 ## Baseline
 
-What's already in place in the codebase as of `2026-09-25` (auto-researched + user-confirmed).
+What's already in place in the codebase as of `2026-09-25` (auto-researched + user-confirmed; odświeżone 2026-10-05 po S-01, S-02 i F-01).
 Foundations below assume these are present and do NOT re-scaffold them.
 
-- **Frontend:** partial — framework skonfigurowany (Astro + React + Tailwind + shadcn, `src/layouts/Layout.astro`), ale strony startera (Welcome, Banner, index) to boilerplate do usunięcia; brak widoków produktu; interfejs po angielsku (`lang="en"`).
-- **Backend / API:** partial — istnieją tylko endpointy auth (`src/pages/api/auth/*`); brak API domenowego.
-- **Data:** absent — klient Supabase jest (`src/lib/supabase.ts`), ale brak migracji, tabel i polityk RLS.
+- **Frontend:** partial — polska powłoka i ekrany konta (S-01), tokeny kolorów i komponenty shadcn, widok klientów `src/pages/clients.astro` (S-02); brak widoków faktur.
+- **Backend / API:** partial — endpointy auth i klientów (`src/pages/api/auth/*`, `src/pages/api/clients/*`); brak API faktur.
+- **Data:** partial — tabela `clients` z RLS (`supabase/migrations/20261003120000_create_clients.sql`) ustala wzorzec izolacji danych właściciela; brak tabel faktur i ustawień.
 - **Auth:** present — rejestracja, logowanie, wylogowanie i middleware chroniący trasy (`src/middleware.ts`); formularze po angielsku.
-- **Deploy / infra:** partial (korekta 2026-10-04) — kod: Cloudflare Workers z auto-deployem z `main` przez Workers Builds i produkcyjny projekt Supabase (README §Deployment); brak: automatycznego stosowania migracji na produkcji i kontroli (lint/testy/build) przed wdrożeniem — push kodu zależnego od nowej tabeli psuje produkcję do czasu ręcznego `db push`. Luka otwiera F-01.
+- **Deploy / infra:** present (od 2026-10-05, F-01) — GitHub Actions (`.github/workflows/ci.yml`): kontrole na PR, a po merge na `main` migracje na produkcji przed `wrangler deploy`; Workers Builds odłączony (README §Deployment).
 - **Observability:** partial — włączone observability Workers (`wrangler.jsonc`); brak śledzenia błędów.
 
 ## Foundations
@@ -97,7 +97,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
   - Czy migracje na produkcji mają wymagać ręcznego zatwierdzenia w potoku (bramka środowiska), czy iść automatycznie po zielonych kontrolach? — Owner: user. Block: no.
   - Czy dodawać podgląd wdrożenia per PR? — Owner: user. Block: no.
 - **Risk:** Stoi teraz, bo lokalny `main` ma już kod zależny od pierwszej migracji — zwykły push zepsułby produkcję; jedna migracja i pusta produkcja to najtańszy moment. Ryzyko: podwójne wdrożenie, jeśli stary auto-deploy nie zostanie wyłączony, oraz dane dostępowe do produkcyjnej bazy w sekretach CI.
-- **Status:** in-progress
+- **Status:** done
 
 ## Slices
 
@@ -137,7 +137,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Unknowns:**
   - Czy próg „+3” oznacza etap 1 od 3. dnia po terminie włącznie (i analogicznie dla pozostałych progów)? — Owner: user. Block: no.
 - **Risk:** Gwiazda przewodnia — reguła etapu musi być deterministyczna (wymóg z Kryteriów sukcesu), więc ten wycinek wprowadza też automatyczną weryfikację reguły na przypadkach brzegowych (dzień terminu, północ czasu polskiego, etap 4 jako końcowy).
-- **Status:** proposed
+- **Status:** ready
 
 ### S-04: Odsetki i rekompensata na liście
 
@@ -253,10 +253,10 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 
 | Roadmap ID | Change ID                   | Suggested issue title                                        | Ready for `/10x-plan` | Notes                                  |
 | ---------- | --------------------------- | ------------------------------------------------------------ | --------------------- | -------------------------------------- |
-| F-01       | deploy-pipeline-with-migrations | Potok CI/CD: kontrole na PR, migracje przed wdrożeniem kodu | yes | Run `/10x-plan deploy-pipeline-with-migrations` |
-| S-01       | polish-auth-shell           | Polski interfejs konta i pusty ekran główny                  | yes                   | Run `/10x-plan polish-auth-shell`      |
-| S-02       | add-and-edit-clients        | Dodawanie i edycja klientów z wykrywaniem duplikatów         | no                    | W toku; faza 4 czeka na F-01           |
-| S-03       | invoice-escalation-list     | Lista otwartych faktur pogrupowana po etapach eskalacji      | no                    | Czeka na S-02; gwiazda przewodnia      |
+| F-01       | deploy-pipeline-with-migrations | Potok CI/CD: kontrole na PR, migracje przed wdrożeniem kodu | no                    | Done 2026-10-05                        |
+| S-01       | polish-auth-shell           | Polski interfejs konta i pusty ekran główny                  | no                    | Done 2026-09-29                        |
+| S-02       | add-and-edit-clients        | Dodawanie i edycja klientów z wykrywaniem duplikatów         | no                    | Done 2026-10-05                        |
+| S-03       | invoice-escalation-list     | Lista otwartych faktur pogrupowana po etapach eskalacji      | yes                   | Run `/10x-plan invoice-escalation-list`; gwiazda przewodnia |
 | S-04       | interest-and-compensation   | Odsetki i rekompensata przy przeterminowanych fakturach      | no                    | Czeka na S-03                          |
 | S-05       | collective-reminder         | Zbiorcze ponaglenie per klient do schowka                    | no                    | Czeka na S-04                          |
 | S-06       | mark-invoice-paid           | Oznaczanie faktury jako zapłaconej + widok historii          | no                    | Czeka na S-04                          |
@@ -270,7 +270,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 ## Open Roadmap Questions
 
 1. **Czy zakres MVP zmieści się w budżecie 3 tygodni po godzinach?** — 13 wymagań koniecznych przy budżecie 3 tygodni po godzinach to ciasny zakres; przy opóźnieniu pierwsze do ograniczenia są FR-014 (S-12) i sortowanie z FR-010 (S-11). Owner: user. Block: roadmap-wide (no — nie blokuje planowania).
-2. ~~**Wdrożenie na produkcję i migracje w CI/CD**~~ — Rozwiązane 2026-10-04 → **F-01 `deploy-pipeline-with-migrations`** (potok: kontrole na PR, a po merge na `main` migracje przed wdrożeniem kodu). Do czasu wdrożenia F-01 obowiązuje dotychczasowa reguła: **development wyłącznie lokalny**, bez pushu na `main` i bez migracji na produkcji. Owner: user. Block: —.
+2. ~~**Wdrożenie na produkcję i migracje w CI/CD**~~ — Rozwiązane 2026-10-04 → **F-01 `deploy-pipeline-with-migrations`** (potok: kontrole na PR, a po merge na `main` migracje przed wdrożeniem kodu). F-01 wdrożony 2026-10-05: zmiany idą przez gałąź i PR, migracje stosuje potok (README §Migracje). Owner: user. Block: —.
 
 ## Parked
 
@@ -290,3 +290,4 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **S-01: Użytkownik może zarejestrować się, zalogować i wylogować w polskim interfejsie, a po zalogowaniu trafia na chroniony, pusty ekran główny aplikacji (bez boilerplate'u startera).** — Archived 2026-09-29 → `context/archive/2026-09-29-polish-auth-shell/`. Lesson: —.
 - **Zmiana poza wycinkami: Ekrany konta i powłoka na tokenach kolorów i komponentach shadcn (paleta stone + amber, ostre rogi, styl lyra, stany i dostępność, reguła ESLint + blok UI w `CLAUDE.md`)** — Archived 2026-10-03 → `context/archive/2026-09-29-theme-and-auth-tokens/`. Zrobione przed S-02 (`add-and-edit-clients`), żeby formularz klienta odziedziczył tokeny i komponenty; brak pozycji w roadmapie (Change ID `theme-and-auth-tokens`). Lesson: `className` zamiast `class` na komponentach React w `.astro` (`context/foundation/lessons.md`).
 - **S-02: Użytkownik może dodać klienta (opcjonalny NIP, przełącznik „naliczaj rekompensatę” domyślnie włączony), edytować go i widzi listę swoich klientów; duplikat (po NIP, a bez NIP po nazwie bez rozróżniania wielkości liter) zostaje odrzucony.** — Archived 2026-10-05 → `context/archive/2026-10-03-add-and-edit-clients/`. Lesson: —.
+- **F-01: (foundation) praca idzie przez gałąź funkcji i PR, na którym CI uruchamia lint, testy, sprawdzenie typów i build; merge na `main` ponownie przechodzi te kontrole, stosuje oczekujące migracje na produkcyjnej bazie i dopiero po nich wdraża kod — w jednym potoku, ze ścisłą kolejnością baza → kod. Dotychczasowy auto-deploy z `main` przestaje wdrażać równolegle.** — Archived 2026-10-05 → `context/archive/2026-10-04-deploy-pipeline-with-migrations/`. Lesson: —.
