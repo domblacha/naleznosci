@@ -1,7 +1,7 @@
 ---
 change_id: deploy-pipeline-with-migrations
 title: Potok wdrożenia z migracjami
-status: implementing
+status: implemented
 created: 2026-10-04
 updated: 2026-10-05
 ---
