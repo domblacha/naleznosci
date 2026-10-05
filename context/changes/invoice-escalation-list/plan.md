@@ -450,34 +450,34 @@ Nowa tabela i dodatkowe ograniczenie `unique (id, user_id)` na `clients`, które
 
 #### Automated
 
-- [x] 2.1 Migracja stosuje się od zera: `npx supabase db reset`
-- [x] 2.2 Testy schematu i reguły przechodzą: `npm test`
-- [x] 2.3 Lint przechodzi: `npm run lint`
-- [x] 2.4 Typy przechodzą: `npx astro check`
-- [x] 2.5 Smoke przechodzi lokalnie (z `npm run dev` i lokalnym Supabase): `npm run smoke`
+- [x] 2.1 Migracja stosuje się od zera: `npx supabase db reset` — b3b976f
+- [x] 2.2 Testy schematu i reguły przechodzą: `npm test` — b3b976f
+- [x] 2.3 Lint przechodzi: `npm run lint` — b3b976f
+- [x] 2.4 Typy przechodzą: `npx astro check` — b3b976f
+- [x] 2.5 Smoke przechodzi lokalnie (z `npm run dev` i lokalnym Supabase): `npm run smoke` — b3b976f
 
 #### Manual
 
-- [x] 2.6 W Studio (`localhost:54323`) tabela `invoices` ma RLS i 8 polityk, a `clients` ma ograniczenie `clients_id_user_key`
+- [x] 2.6 W Studio (`localhost:54323`) tabela `invoices` ma RLS i 8 polityk, a `clients` ma ograniczenie `clients_id_user_key` — b3b976f
 
 ### Phase 3: Widok listy i dialog
 
 #### Automated
 
-- [ ] 3.1 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
-- [ ] 3.2 Typy przechodzą: `npx astro check`
-- [ ] 3.3 Testy przechodzą: `npm test`
-- [ ] 3.4 Build przechodzi: `npm run build`
-- [ ] 3.5 Smoke przechodzi lokalnie: `npm run smoke`
+- [x] 3.1 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
+- [x] 3.2 Typy przechodzą: `npx astro check`
+- [x] 3.3 Testy przechodzą: `npm test`
+- [x] 3.4 Build przechodzi: `npm run build`
+- [x] 3.5 Smoke przechodzi lokalnie: `npm run smoke`
 
 #### Manual
 
-- [ ] 3.6 Faktury z terminem dziś, wczoraj, 3, 7, 14, 30 i 100 dni temu trafiają kolejno do: bieżące, przed etapem 1, etap 1, 2, 3, 4, 4
-- [ ] 3.7 Grupy idą od etapu 4 do bieżących, puste są ukryte, a w grupie najstarszy termin jest pierwszy
-- [ ] 3.8 Dodana faktura pojawia się w grupie bez przeładowania, a po odświeżeniu jest w tym samym miejscu
-- [ ] 3.9 Duplikat numeru (inna wielkość liter) daje komunikat pod numerem, a błędna kwota pod kwotą
-- [ ] 3.10 Stany puste (bez klientów, bez faktur) wyglądają poprawnie; dialog jest obsługiwalny klawiaturą, a fokus wraca na przycisk
-- [ ] 3.11 `/dev/ui` pokazuje stany formularza i listy w trybie jasnym i ciemnym
+- [x] 3.6 Faktury z terminem dziś, wczoraj, 3, 7, 14, 30 i 100 dni temu trafiają kolejno do: bieżące, przed etapem 1, etap 1, 2, 3, 4, 4
+- [x] 3.7 Grupy idą od etapu 4 do bieżących, puste są ukryte, a w grupie najstarszy termin jest pierwszy
+- [x] 3.8 Dodana faktura pojawia się w grupie bez przeładowania, a po odświeżeniu jest w tym samym miejscu
+- [x] 3.9 Duplikat numeru (inna wielkość liter) daje komunikat pod numerem, a błędna kwota pod kwotą
+- [x] 3.10 Stany puste (bez klientów, bez faktur) wyglądają poprawnie; dialog jest obsługiwalny klawiaturą, a fokus wraca na przycisk
+- [x] 3.11 `/dev/ui` pokazuje stany formularza i listy w trybie jasnym i ciemnym
 
 ### Phase 4: Wdrożenie
 
