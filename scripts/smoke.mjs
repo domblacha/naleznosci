@@ -109,7 +109,55 @@ function clientSteps() {
         }),
       { status: 404, check: (a) => a.body?.error === "not_found" },
     ],
-    ["user B: same NIP as A is allowed", post(jarB, { name: nameA, nip: "1234563218" }), { status: 201 }],
+    [
+      "user B: same NIP as A is allowed",
+      post(jarB, { name: nameA, nip: "1234563218" }),
+      { status: 201, check: created("b") },
+    ],
+  ];
+}
+
+function daysAgo(days) {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() - days);
+  return date.toISOString().slice(0, 10);
+}
+
+function invoiceSteps() {
+  const number = `FV/1/${stamp}`;
+  const dueDate = daysAgo(40);
+  const post = (jar, json) => () => request("/api/invoices", { method: "POST", json, jar });
+  return [
+    [
+      "invoices API rejects anonymous user",
+      post(new Map(), { clientId: clientIds.noNip, number, amount: "1", dueDate }),
+      { status: 401 },
+    ],
+    [
+      "invoice A: create 40 days overdue",
+      () => post(jar, { clientId: clientIds.noNip, number, amount: "1 234,56", dueDate })(),
+      { status: 201, check: (a) => a.body?.invoice?.amountGrosze === 123456 },
+    ],
+    [
+      "invoice A: same number, other case -> duplicate_number",
+      () => post(jar, { clientId: clientIds.noNip, number: number.toLowerCase(), amount: "1", dueDate })(),
+      { status: 409, check: (a) => a.body?.error === "duplicate_number" },
+    ],
+    [
+      "invoice A: zero amount -> 400",
+      () => post(jar, { clientId: clientIds.noNip, number: `FV/2/${stamp}`, amount: "0", dueDate })(),
+      { status: 400, check: (a) => a.body?.error === "invalid_input" && Boolean(a.body?.fieldErrors?.amount) },
+    ],
+    [
+      "invoice B: client of A -> client_not_found",
+      () => post(jarB, { clientId: clientIds.a, number: `FV/3/${stamp}`, amount: "1", dueDate })(),
+      { status: 404, check: (a) => a.body?.error === "client_not_found" },
+    ],
+    [
+      "invoice B: same number as A is allowed",
+      () => post(jarB, { clientId: clientIds.b, number, amount: "1", dueDate })(),
+      { status: 201 },
+    ],
   ];
 }
 
@@ -149,6 +197,7 @@ const steps = [
   ["home renders for signed-in user", () => request("/"), { status: 200 }],
   ["signin page redirects signed-in user", () => request("/auth/signin"), { status: 302, location: "/" }],
   ...clientSteps(),
+  ...invoiceSteps(),
   [
     "signout clears session",
     () => request("/api/auth/signout", { method: "POST" }),

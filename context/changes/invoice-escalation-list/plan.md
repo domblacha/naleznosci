@@ -438,27 +438,27 @@ Nowa tabela i dodatkowe ograniczenie `unique (id, user_id)` na `clients`, które
 
 #### Automated
 
-- [x] 1.1 Testy reguły przechodzą: `npm test`
-- [x] 1.2 Lint przechodzi: `npm run lint`
-- [x] 1.3 Typy przechodzą: `npx astro check`
+- [x] 1.1 Testy reguły przechodzą: `npm test` — 4246a16
+- [x] 1.2 Lint przechodzi: `npm run lint` — 4246a16
+- [x] 1.3 Typy przechodzą: `npx astro check` — 4246a16
 
 #### Manual
 
-- [x] 1.4 Przegląd tabeli przypadków w teście: progi włączne, dzień terminu w „bieżące”, etap 4 końcowy — zgodnie z decyzją z planowania
+- [x] 1.4 Przegląd tabeli przypadków w teście: progi włączne, dzień terminu w „bieżące”, etap 4 końcowy — zgodnie z decyzją z planowania — 4246a16
 
 ### Phase 2: Dane i API
 
 #### Automated
 
-- [ ] 2.1 Migracja stosuje się od zera: `npx supabase db reset`
-- [ ] 2.2 Testy schematu i reguły przechodzą: `npm test`
-- [ ] 2.3 Lint przechodzi: `npm run lint`
-- [ ] 2.4 Typy przechodzą: `npx astro check`
-- [ ] 2.5 Smoke przechodzi lokalnie (z `npm run dev` i lokalnym Supabase): `npm run smoke`
+- [x] 2.1 Migracja stosuje się od zera: `npx supabase db reset`
+- [x] 2.2 Testy schematu i reguły przechodzą: `npm test`
+- [x] 2.3 Lint przechodzi: `npm run lint`
+- [x] 2.4 Typy przechodzą: `npx astro check`
+- [x] 2.5 Smoke przechodzi lokalnie (z `npm run dev` i lokalnym Supabase): `npm run smoke`
 
 #### Manual
 
-- [ ] 2.6 W Studio (`localhost:54323`) tabela `invoices` ma RLS i 8 polityk, a `clients` ma ograniczenie `clients_id_user_key`
+- [x] 2.6 W Studio (`localhost:54323`) tabela `invoices` ma RLS i 8 polityk, a `clients` ma ograniczenie `clients_id_user_key`
 
 ### Phase 3: Widok listy i dialog
 

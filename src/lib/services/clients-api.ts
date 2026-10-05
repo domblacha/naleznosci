@@ -5,10 +5,7 @@ import { clientInputSchema } from "@/lib/client-schemas";
 import type { ClientResult } from "@/lib/services/clients";
 import type { ClientInput } from "@/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
-
-function json(body: unknown, status: number) {
-  return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
-}
+import { json } from "@/lib/http";
 
 const STATUS_BY_CODE = { duplicate_nip: 409, duplicate_name: 409, not_found: 404, unknown: 500 } as const;
 
