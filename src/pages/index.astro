@@ -1,19 +1,44 @@
 ---
 import Topbar from "@/components/Topbar.astro";
 import Layout from "@/layouts/Layout.astro";
-import { Card, CardContent } from "@/components/ui/card";
+import { InvoicesManager } from "@/components/invoices/InvoicesManager";
+import { createClient } from "@/lib/supabase";
+import { listClients } from "@/lib/services/clients";
+import { listInvoices } from "@/lib/services/invoices";
+import { todayInPoland } from "@/lib/escalation";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import type { Client, Invoice } from "@/types";
+
+export const prerender = false;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+let invoices: Invoice[] = [];
+let clients: Client[] = [];
+let loadError: string | null = null;
+if (!supabase) {
+  loadError = "Lista faktur jest niedostępna: brak konfiguracji serwera.";
+} else {
+  try {
+    [invoices, clients] = await Promise.all([listInvoices(supabase), listClients(supabase)]);
+  } catch {
+    loadError = "Nie udało się wczytać faktur. Odśwież stronę.";
+  }
+}
+const today = todayInPoland(new Date());
 ---
 
-<Layout title="Należności">
+<Layout title="Faktury">
   <div class="min-h-screen p-4">
     <Topbar />
-    <div class="flex items-center justify-center py-16">
-      <Card className="text-center">
-        <CardContent>
-          <h1 class="mb-4 text-3xl font-bold text-foreground">Należności</h1>
-          <p class="text-muted-foreground">Tutaj pojawią się Twoje faktury.</p>
-        </CardContent>
-      </Card>
-    </div>
+    <main class="mx-auto max-w-3xl space-y-4 py-8">
+      <h1 class="text-3xl font-bold text-foreground">Faktury</h1>
+      {loadError ? (
+        <Alert variant="destructive" className="text-destructive">
+          <AlertDescription className="text-destructive">{loadError}</AlertDescription>
+        </Alert>
+      ) : (
+        <InvoicesManager initialInvoices={invoices} clients={clients} today={today} client:load />
+      )}
+    </main>
   </div>
 </Layout>
