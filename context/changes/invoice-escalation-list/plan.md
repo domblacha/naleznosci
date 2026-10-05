@@ -464,20 +464,20 @@ Nowa tabela i dodatkowe ograniczenie `unique (id, user_id)` na `clients`, które
 
 #### Automated
 
-- [x] 3.1 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
-- [x] 3.2 Typy przechodzą: `npx astro check`
-- [x] 3.3 Testy przechodzą: `npm test`
-- [x] 3.4 Build przechodzi: `npm run build`
-- [x] 3.5 Smoke przechodzi lokalnie: `npm run smoke`
+- [x] 3.1 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint` — 07568ab
+- [x] 3.2 Typy przechodzą: `npx astro check` — 07568ab
+- [x] 3.3 Testy przechodzą: `npm test` — 07568ab
+- [x] 3.4 Build przechodzi: `npm run build` — 07568ab
+- [x] 3.5 Smoke przechodzi lokalnie: `npm run smoke` — 07568ab
 
 #### Manual
 
-- [x] 3.6 Faktury z terminem dziś, wczoraj, 3, 7, 14, 30 i 100 dni temu trafiają kolejno do: bieżące, przed etapem 1, etap 1, 2, 3, 4, 4
-- [x] 3.7 Grupy idą od etapu 4 do bieżących, puste są ukryte, a w grupie najstarszy termin jest pierwszy
-- [x] 3.8 Dodana faktura pojawia się w grupie bez przeładowania, a po odświeżeniu jest w tym samym miejscu
-- [x] 3.9 Duplikat numeru (inna wielkość liter) daje komunikat pod numerem, a błędna kwota pod kwotą
-- [x] 3.10 Stany puste (bez klientów, bez faktur) wyglądają poprawnie; dialog jest obsługiwalny klawiaturą, a fokus wraca na przycisk
-- [x] 3.11 `/dev/ui` pokazuje stany formularza i listy w trybie jasnym i ciemnym
+- [x] 3.6 Faktury z terminem dziś, wczoraj, 3, 7, 14, 30 i 100 dni temu trafiają kolejno do: bieżące, przed etapem 1, etap 1, 2, 3, 4, 4 — 07568ab
+- [x] 3.7 Grupy idą od etapu 4 do bieżących, puste są ukryte, a w grupie najstarszy termin jest pierwszy — 07568ab
+- [x] 3.8 Dodana faktura pojawia się w grupie bez przeładowania, a po odświeżeniu jest w tym samym miejscu — 07568ab
+- [x] 3.9 Duplikat numeru (inna wielkość liter) daje komunikat pod numerem, a błędna kwota pod kwotą — 07568ab
+- [x] 3.10 Stany puste (bez klientów, bez faktur) wyglądają poprawnie; dialog jest obsługiwalny klawiaturą, a fokus wraca na przycisk — 07568ab
+- [x] 3.11 `/dev/ui` pokazuje stany formularza i listy w trybie jasnym i ciemnym — 07568ab
 
 ### Phase 4: Wdrożenie
 
