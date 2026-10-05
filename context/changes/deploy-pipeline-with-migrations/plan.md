@@ -274,21 +274,21 @@ Ta zmiana nie dodaje migracji. Uruchamia pierwszą (`create_clients`) na produkc
 
 #### Automated
 
-- [x] 2.1 Na PR `checks` jest zielony, a `deploy` się nie uruchamia: `gh pr checks <nr>`
-- [x] 2.2 Po merge przebieg na `main` jest zielony w obu jobach: `gh run list --branch main --limit 1`
-- [x] 2.3 Log kroku `db push` nie zgłasza żadnych zastosowanych migracji: `gh run view <id> --log`
+- [x] 2.1 Na PR `checks` jest zielony, a `deploy` się nie uruchamia: `gh pr checks <nr>` — 78f550b
+- [x] 2.2 Po merge przebieg na `main` jest zielony w obu jobach: `gh run list --branch main --limit 1` — 78f550b
+- [x] 2.3 Log kroku `db push` nie zgłasza żadnych zastosowanych migracji: `gh run view <id> --log` — 78f550b
 
 #### Manual
 
-- [x] 2.4 Workers Builds w dashboardzie nie ma podłączonego repo, a merge nie wywołał buildu po stronie Cloudflare
-- [x] 2.5 Produkcja działa jak przed zmianą: logowanie na `https://naleznosci.domblacha.workers.dev/auth/signin` przechodzi
-- [x] 2.6 Dashboard Cloudflare → Deployments pokazuje nowe wdrożenie z GitHub Actions (wrangler), a nie z Workers Builds
+- [x] 2.4 Workers Builds w dashboardzie nie ma podłączonego repo, a merge nie wywołał buildu po stronie Cloudflare — 78f550b
+- [x] 2.5 Produkcja działa jak przed zmianą: logowanie na `https://naleznosci.domblacha.workers.dev/auth/signin` przechodzi — 78f550b
+- [x] 2.6 Dashboard Cloudflare → Deployments pokazuje nowe wdrożenie z GitHub Actions (wrangler), a nie z Workers Builds — 78f550b
 
 ### Phase 3: S-02 przez potok
 
 #### Automated
 
-- [ ] 3.1 Lokalnie po rebase: `npm run lint && npx astro check && npm test && npm run build`
+- [x] 3.1 Lokalnie po rebase: `npm run lint && npx astro check && npm test && npm run build`
 - [ ] 3.2 Na PR `checks` (z krokiem `npm test`) jest zielony: `gh pr checks <nr>`
 - [ ] 3.3 Po merge oba joby są zielone, a log `db push` pokazuje zastosowanie `20261003120000_create_clients.sql`: `gh run view <id> --log`
 - [ ] 3.4 `npx supabase migration list` pokazuje `20261003120000` lokalnie i zdalnie
