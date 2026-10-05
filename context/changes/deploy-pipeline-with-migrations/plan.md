@@ -288,12 +288,12 @@ Ta zmiana nie dodaje migracji. Uruchamia pierwszą (`create_clients`) na produkc
 
 #### Automated
 
-- [x] 3.1 Lokalnie po rebase: `npm run lint && npx astro check && npm test && npm run build`
-- [ ] 3.2 Na PR `checks` (z krokiem `npm test`) jest zielony: `gh pr checks <nr>`
-- [ ] 3.3 Po merge oba joby są zielone, a log `db push` pokazuje zastosowanie `20261003120000_create_clients.sql`: `gh run view <id> --log`
-- [ ] 3.4 `npx supabase migration list` pokazuje `20261003120000` lokalnie i zdalnie
+- [x] 3.1 Lokalnie po rebase: `npm run lint && npx astro check && npm test && npm run build` — f8a03dc
+- [x] 3.2 Na PR `checks` (z krokiem `npm test`) jest zielony: `gh pr checks <nr>` — f8a03dc
+- [x] 3.3 Po merge oba joby są zielone, a log `db push` pokazuje zastosowanie `20261003120000_create_clients.sql`: `gh run view <id> --log` — f8a03dc
+- [x] 3.4 `npx supabase migration list` pokazuje `20261003120000` lokalnie i zdalnie — f8a03dc
 
 #### Manual
 
-- [ ] 3.5 Na produkcji `/clients` ładuje się po zalogowaniu (dalsze kontrole: faza 4 `add-and-edit-clients`)
-- [ ] 3.6 README czytany od zera wystarcza do zrozumienia, jak wdrożyć zmianę z migracją
+- [x] 3.5 Na produkcji `/clients` ładuje się po zalogowaniu (dalsze kontrole: faza 4 `add-and-edit-clients`) — f8a03dc
+- [x] 3.6 README czytany od zera wystarcza do zrozumienia, jak wdrożyć zmianę z migracją — f8a03dc
