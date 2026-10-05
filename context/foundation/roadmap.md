@@ -3,7 +3,7 @@ project: Należności
 version: 1
 status: draft
 created: 2026-09-25
-updated: 2026-10-03
+updated: 2026-10-05
 prd_version: 1
 main_goal: speed
 top_blocker: none
@@ -24,7 +24,7 @@ milestone_status: open
 
 - **Intent:** Właściciel JDG może założyć konto, wprowadzić klientów i faktury, widzieć je w deterministycznych etapach eskalacji z poprawnie wyliczonymi odsetkami i rekompensatą, wygenerować jedno zbiorcze ponaglenie per klient oraz zamykać faktury (zapłata, anulowanie, wstrzymanie) — pełny zakres wymagań koniecznych PRD.
 - **Source materials:** `context/foundation/prd.md` (v1)
-- **Done when:** every S-NN below is `done`.
+- **Done when:** every F-NN and S-NN below is `done`.
 - **Scope anchors:** FR-001 – FR-011, FR-013, FR-014 (wszystkie must-have); US-01 – US-03. FR-012 (nice-to-have) jest odłożony — patrz `## Parked`.
 
 ## Vision recap
@@ -41,8 +41,9 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 
 | ID   | Change ID                   | Outcome (user can …)                                                                   | Prerequisites | PRD refs                    | Status   |
 | ---- | --------------------------- | -------------------------------------------------------------------------------------- | ------------- | --------------------------- | -------- |
+| F-01 | deploy-pipeline-with-migrations | (foundation) merge na `main` przechodzi kontrole, stosuje migracje na produkcji i dopiero wtedy wdraża kod | — | NFR (izolacja danych właściciela) | in-progress |
 | S-01 | polish-auth-shell           | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny | —             | FR-001                      | done        |
-| S-02 | add-and-edit-clients        | dodać i edytować klienta, a duplikat zostaje odrzucony                                 | S-01          | FR-002                      | proposed |
+| S-02 | add-and-edit-clients        | dodać i edytować klienta, a duplikat zostaje odrzucony                                 | S-01, F-01    | FR-002                      | in-progress |
 | S-03 | invoice-escalation-list     | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur       | S-02          | US-01, FR-003, FR-005, FR-010 | proposed |
 | S-04 | interest-and-compensation   | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza             | S-03          | US-01, FR-007               | proposed |
 | S-05 | collective-reminder         | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka            | S-04          | US-01, FR-008, FR-011       | proposed |
@@ -60,7 +61,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 
 | Stream | Theme                    | Chain                                              | Note                                                                                   |
 | ------ | ------------------------ | -------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| A      | Od konta do ponaglenia   | `S-01` → `S-02` → `S-03` → `S-04` → `S-05` → `S-12` | Ścieżka wymagań koniecznych do głównego kryterium sukcesu; `S-12` jest pierwszy do cięcia. |
+| A      | Od konta do ponaglenia   | `S-01` + `F-01` → `S-02` → `S-03` → `S-04` → `S-05` → `S-12` | Ścieżka wymagań koniecznych do głównego kryterium sukcesu; `F-01` wpięty przed `S-02`, bo to pierwsza zmiana z migracją; `S-12` jest pierwszy do cięcia. |
 | B      | Cykl życia faktury       | `S-06` → `S-07` → `S-08`                           | Dołącza do A przy `S-04`; może iść równolegle z `S-05`.                                |
 | C      | Porządek w klientach     | `S-09`                                             | Dołącza do A przy `S-03`; niezależny od reszty.                                        |
 | D      | Konfiguracja reguły      | `S-10`                                             | Dołącza do A przy `S-04`; do tego czasu działają wartości domyślne.                    |
@@ -75,12 +76,28 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Backend / API:** partial — istnieją tylko endpointy auth (`src/pages/api/auth/*`); brak API domenowego.
 - **Data:** absent — klient Supabase jest (`src/lib/supabase.ts`), ale brak migracji, tabel i polityk RLS.
 - **Auth:** present — rejestracja, logowanie, wylogowanie i middleware chroniący trasy (`src/middleware.ts`); formularze po angielsku.
-- **Deploy / infra:** present — Cloudflare Workers z auto-deployem z `main` przez Workers Builds; produkcyjny projekt Supabase (README §Deployment).
+- **Deploy / infra:** partial (korekta 2026-10-04) — kod: Cloudflare Workers z auto-deployem z `main` przez Workers Builds i produkcyjny projekt Supabase (README §Deployment); brak: automatycznego stosowania migracji na produkcji i kontroli (lint/testy/build) przed wdrożeniem — push kodu zależnego od nowej tabeli psuje produkcję do czasu ręcznego `db push`. Luka otwiera F-01.
 - **Observability:** partial — włączone observability Workers (`wrangler.jsonc`); brak śledzenia błędów.
 
 ## Foundations
 
-Brak. Każdy element techniczny wchodzi w pierwszy wycinek, który go potrzebuje: pierwsza tabela z izolacją danych właściciela — w S-02, reguła etapu i jej automatyczna weryfikacja — w S-03. Auth i deploy są już obecne (patrz `## Baseline`).
+Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrzebuje: pierwsza tabela z izolacją danych właściciela — w S-02, reguła etapu i jej automatyczna weryfikacja — w S-03. Auth jest już obecny (patrz `## Baseline`).
+
+### F-01: Potok wdrożenia z migracjami
+
+- **Outcome:** (foundation) praca idzie przez gałąź funkcji i PR, na którym CI uruchamia lint, testy, sprawdzenie typów i build; merge na `main` ponownie przechodzi te kontrole, stosuje oczekujące migracje na produkcyjnej bazie i dopiero po nich wdraża kod — w jednym potoku, ze ścisłą kolejnością baza → kod. Dotychczasowy auto-deploy z `main` przestaje wdrażać równolegle.
+- **Change ID:** deploy-pipeline-with-migrations
+- **PRD refs:** NFR (dane widoczne wyłącznie dla właściciela — polityki izolacji muszą faktycznie istnieć na produkcji); `tech-stack.md` (auto-deploy z `main`); `infrastructure.md` (rejestr ryzyk: rollback kodu nie cofa migracji)
+- **Unlocks:** wdrożenie produkcyjne S-02 (faza 4 `add-and-edit-clients`, w tym smoke na produkcji jako test akceptacyjny); każdy kolejny wycinek z migracją (S-03, S-06 – S-10, S-12); zamyka Open Roadmap Question #2
+- **Prerequisites:** —
+- **Parallel with:** S-03 (rozwój lokalny trwa; wdrożenie czeka na F-01)
+- **Blockers:** —
+- **Unknowns:**
+  - Czy wymuszać „tylko przez PR” regułami gałęzi? Dla prywatnego repo wymaga to płatnego planu GitHuba; bez niego reguła jest umowna, a kolejność baza → kod i tak gwarantuje potok. — Owner: user. Block: no.
+  - Czy migracje na produkcji mają wymagać ręcznego zatwierdzenia w potoku (bramka środowiska), czy iść automatycznie po zielonych kontrolach? — Owner: user. Block: no.
+  - Czy dodawać podgląd wdrożenia per PR? — Owner: user. Block: no.
+- **Risk:** Stoi teraz, bo lokalny `main` ma już kod zależny od pierwszej migracji — zwykły push zepsułby produkcję; jedna migracja i pusta produkcja to najtańszy moment. Ryzyko: podwójne wdrożenie, jeśli stary auto-deploy nie zostanie wyłączony, oraz dane dostępowe do produkcyjnej bazy w sekretach CI.
+- **Status:** in-progress
 
 ## Slices
 
@@ -101,13 +118,13 @@ Brak. Każdy element techniczny wchodzi w pierwszy wycinek, który go potrzebuje
 - **Outcome:** Użytkownik może dodać klienta (opcjonalny NIP, przełącznik „naliczaj rekompensatę” domyślnie włączony), edytować go i widzi listę swoich klientów; duplikat (po NIP, a bez NIP po nazwie bez rozróżniania wielkości liter) zostaje odrzucony.
 - **Change ID:** add-and-edit-clients
 - **PRD refs:** FR-002, NFR (dane widoczne wyłącznie dla właściciela)
-- **Prerequisites:** S-01
+- **Prerequisites:** S-01, F-01 (wdrożenie produkcyjne — faza 4)
 - **Parallel with:** —
 - **Blockers:** —
 - **Unknowns:**
   - Czy NIP normalizować (spacje, myślniki, prefiks PL) przed wykrywaniem duplikatów? — Owner: user. Block: no.
-- **Risk:** Pierwsza tabela domenowa — tu ustala się wzorzec izolacji danych właściciela, który powtarzają wszystkie następne wycinki; błąd tu przecieka wszędzie.
-- **Status:** proposed
+- **Risk:** Pierwsza tabela domenowa — tu ustala się wzorzec izolacji danych właściciela, który powtarzają wszystkie następne wycinki; błąd tu przecieka wszędzie. Fazy 1–3 są gotowe lokalnie; faza 4 (produkcja) idzie pierwszym uruchomieniem potoku z F-01.
+- **Status:** in-progress
 
 ### S-03: Faktura w grupie właściwego etapu na liście
 
@@ -236,8 +253,9 @@ Brak. Każdy element techniczny wchodzi w pierwszy wycinek, który go potrzebuje
 
 | Roadmap ID | Change ID                   | Suggested issue title                                        | Ready for `/10x-plan` | Notes                                  |
 | ---------- | --------------------------- | ------------------------------------------------------------ | --------------------- | -------------------------------------- |
+| F-01       | deploy-pipeline-with-migrations | Potok CI/CD: kontrole na PR, migracje przed wdrożeniem kodu | yes | Run `/10x-plan deploy-pipeline-with-migrations` |
 | S-01       | polish-auth-shell           | Polski interfejs konta i pusty ekran główny                  | yes                   | Run `/10x-plan polish-auth-shell`      |
-| S-02       | add-and-edit-clients        | Dodawanie i edycja klientów z wykrywaniem duplikatów         | no                    | Czeka na S-01                          |
+| S-02       | add-and-edit-clients        | Dodawanie i edycja klientów z wykrywaniem duplikatów         | no                    | W toku; faza 4 czeka na F-01           |
 | S-03       | invoice-escalation-list     | Lista otwartych faktur pogrupowana po etapach eskalacji      | no                    | Czeka na S-02; gwiazda przewodnia      |
 | S-04       | interest-and-compensation   | Odsetki i rekompensata przy przeterminowanych fakturach      | no                    | Czeka na S-03                          |
 | S-05       | collective-reminder         | Zbiorcze ponaglenie per klient do schowka                    | no                    | Czeka na S-04                          |
@@ -252,6 +270,7 @@ Brak. Każdy element techniczny wchodzi w pierwszy wycinek, który go potrzebuje
 ## Open Roadmap Questions
 
 1. **Czy zakres MVP zmieści się w budżecie 3 tygodni po godzinach?** — 13 wymagań koniecznych przy budżecie 3 tygodni po godzinach to ciasny zakres; przy opóźnieniu pierwsze do ograniczenia są FR-014 (S-12) i sortowanie z FR-010 (S-11). Owner: user. Block: roadmap-wide (no — nie blokuje planowania).
+2. ~~**Wdrożenie na produkcję i migracje w CI/CD**~~ — Rozwiązane 2026-10-04 → **F-01 `deploy-pipeline-with-migrations`** (potok: kontrole na PR, a po merge na `main` migracje przed wdrożeniem kodu). Do czasu wdrożenia F-01 obowiązuje dotychczasowa reguła: **development wyłącznie lokalny**, bez pushu na `main` i bez migracji na produkcji. Owner: user. Block: —.
 
 ## Parked
 

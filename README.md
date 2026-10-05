@@ -112,7 +112,14 @@ npx supabase stop
 
 The local Studio UI is available at `http://localhost:54323`.
 
-No database tables or migrations are required — this project uses Supabase Auth's built-in `auth.users` table only.
+Schema changes live in `supabase/migrations/`. Apply them to the local database with:
+
+```bash
+npx supabase db reset       # recreate the local DB from scratch and apply all migrations
+npx supabase migration up   # apply only new migrations, keeping local data
+```
+
+The `public.clients` table (with RLS) comes from the `create_clients` migration.
 
 ### Using a cloud Supabase project instead
 
@@ -140,12 +147,12 @@ Users can then sign in immediately after sign-up without clicking a confirmation
 
 ### Auth routes
 
-| Route                 | Description                                                             |
-| --------------------- | ----------------------------------------------------------------------- |
-| `/auth/signin`        | Email/password sign-in form                                             |
-| `/auth/signup`        | Email/password sign-up form                                             |
-| `/auth/confirm-email` | Post-signup "check your inbox" page                                     |
-| `/`                   | Protected home screen (redirects to `/auth/signin` if unauthenticated)  |
+| Route                 | Description                                                            |
+| --------------------- | ---------------------------------------------------------------------- |
+| `/auth/signin`        | Email/password sign-in form                                            |
+| `/auth/signup`        | Email/password sign-up form                                            |
+| `/auth/confirm-email` | Post-signup "check your inbox" page                                    |
+| `/`                   | Protected home screen (redirects to `/auth/signin` if unauthenticated) |
 
 Route protection is handled in `src/middleware.ts`. `/` is protected with an exact match; add further paths (prefix-matched) to the `PROTECTED_ROUTES` array there to require authentication. Signed-in users visiting `/auth/signin` or `/auth/signup` are redirected to `/`.
 
@@ -153,18 +160,43 @@ Route protection is handled in `src/middleware.ts`. `/` is protected with an exa
 
 This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/) as the `naleznosci` Worker (`https://naleznosci.domblacha.workers.dev`).
 
-**Every push to `main` deploys to production.** The GitHub repo is connected to the Worker via [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/) (build command `npm run build`, deploy command `npx wrangler deploy`). There is no gate in between, so run `npm run build` locally before pushing.
+Deployment runs in GitHub Actions (`.github/workflows/ci.yml`). Workers Builds is disconnected, so the workflow is the only thing that deploys.
 
-Manual (fallback) deploy from a clean `main`:
+| Event          | Jobs                                                                                      |
+| -------------- | ----------------------------------------------------------------------------------------- |
+| Pull request   | `checks`: `astro sync` → lint → `astro check` → `npm test` → build                        |
+| Push to `main` | `checks`, then `deploy`: build → `supabase link` + `supabase db push` → `wrangler deploy` |
+
+`deploy` runs in strict order: a broken build never touches the database, and code never ships ahead of the schema it needs. Runs are serialized (`concurrency: production`, no cancellation), so a second merge waits for a migration in progress.
+
+**Work on a branch and merge through a PR — never push to `main` directly.** Branch protection is not available on the free plan for private repos, so this is a convention. Review migration SQL on the PR: merging applies it to production.
+
+### Repository secrets
+
+Used only by the `deploy` job (Settings → Secrets and variables → Actions → _Repository secrets_):
+
+| Secret                  | Where to get it                                                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `CLOUDFLARE_API_TOKEN`  | Cloudflare → My Profile → API Tokens, template "Edit Cloudflare Workers"                                                 |
+| `CLOUDFLARE_ACCOUNT_ID` | `npx wrangler whoami`, or the Workers dashboard sidebar                                                                  |
+| `SUPABASE_ACCESS_TOKEN` | Supabase → Account → Access Tokens; scope to the production project, Read on Project Settings, API Keys, API Key Secrets |
+| `SUPABASE_DB_PASSWORD`  | Supabase → Project Settings → Database (reset there if lost)                                                             |
+| `SUPABASE_PROJECT_REF`  | Supabase → Project Settings → General → Project ID                                                                       |
+
+### Manual (fallback) deploy
+
+From a clean, up-to-date `main` — migrations first, then code:
 
 ```bash
+npx supabase link --project-ref <ref>
+npx supabase db push
 npm run build
 npx wrangler deploy
 ```
 
 Do not pass `--config`: `astro build` generates `dist/server/wrangler.json` and Wrangler picks it up via `.wrangler/deploy/config.json`.
 
-### Secrets
+### Worker secrets
 
 `SUPABASE_URL` and `SUPABASE_KEY` (the `sb_publishable_…` key) exist only as Worker secrets — never in the repo, GitHub, or as dashboard build variables. Set them with the interactive prompt so the values do not end up in shell history:
 
@@ -175,9 +207,27 @@ npx wrangler secret put SUPABASE_KEY
 
 The production Supabase project has **email confirmation disabled** (the built-in SMTP only delivers to organization members, and the app has no confirmation route).
 
+### Migracje
+
+Migracje stosuje potok: nowy plik w `supabase/migrations/` trafia na produkcję w jobie `deploy` po merge PR-a, zawsze przed wdrożeniem kodu. Nie uruchamiaj `db push` ręcznie przed merge.
+
+Diagnostyka (porównanie stanu lokalnego i zdalnego):
+
+```bash
+npx supabase link --project-ref <ref>   # jednorazowo
+npx supabase migration list
+```
+
+Gdy `deploy` padnie:
+
+- **Na `supabase db push`** — kod się nie wdraża, produkcja zostaje na starym schemacie i starym kodzie. Napraw migrację nową migracją przez PR (nie edytuj już zastosowanego pliku).
+- **Na `wrangler deploy` po udanym `db push`** — produkcja ma nowy schemat i stary kod. Actions → przebieg → **Re-run failed jobs**: `db push` jest idempotentny (zastosowane migracje są pomijane), więc ponowienie tylko dokończy wdrożenie.
+
+Rollback Workera **nie cofa schematu**. Wycofanie zmiany w bazie wymaga nowej migracji (np. `drop table`), wdrożonej przez PR.
+
 ### Rollback
 
-Dashboard → Workers & Pages → `naleznosci` → Deployments → roll back to a previous version, then `git revert` the offending commit and push — otherwise the next push redeploys the bug.
+Dashboard → Workers & Pages → `naleznosci` → Deployments → roll back to a previous version, then revert the offending commit in a PR and merge it — otherwise the next merge redeploys the bug.
 
 ## Smoke test
 
@@ -188,7 +238,7 @@ npm run dev            # or: npm run build && npm run preview
 BASE_URL=http://localhost:4321 npm run smoke
 ```
 
-It needs a reachable Supabase instance (local or cloud) with email confirmation disabled.
+It needs a reachable Supabase instance (local or cloud) with email confirmation disabled. The client steps (create/edit, duplicates, isolation between two users) additionally require the `create_clients` migration to be applied on that instance.
 
 > **Note:** this script exists primarily to guard the development of the starter itself — it is a fast sanity check that dependency upgrades did not break the build, the Cloudflare adapter or the Supabase auth flow. It is **not** a substitute for a real test suite. Once you build your own product on top of this starter, add proper tests (unit, integration, end-to-end) suited to your application.
 

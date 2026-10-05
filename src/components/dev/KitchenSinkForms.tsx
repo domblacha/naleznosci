@@ -1,5 +1,9 @@
 import { Lock, LogIn, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { ClientFormView } from "@/components/clients/ClientFormDialog";
+import { ClientsManager } from "@/components/clients/ClientsManager";
 import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { ServerError } from "@/components/auth/ServerError";
@@ -65,6 +69,61 @@ export function KitchenSinkForms() {
       </Section>
       <Section title="ServerError">
         <ServerError message="Nieprawidłowy e-mail lub hasło" />
+      </Section>
+      <Section title="Switch: włączony / wyłączony">
+        <div className="flex items-center gap-2">
+          <Switch id="ks-switch-on" checked onCheckedChange={noop} />
+          <Label htmlFor="ks-switch-on">Włączony</Label>
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch id="ks-switch-off" checked={false} onCheckedChange={noop} />
+          <Label htmlFor="ks-switch-off">Wyłączony</Label>
+        </div>
+      </Section>
+      <Section title="Formularz klienta: domyślny">
+        <ClientFormView
+          idPrefix="ks-client-default"
+          name=""
+          nip=""
+          chargeCompensation
+          errors={{}}
+          pending={false}
+          onNameChange={noop}
+          onNipChange={noop}
+          onChargeCompensationChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Formularz klienta: błąd duplikatu NIP">
+        <ClientFormView
+          idPrefix="ks-client-duplicate"
+          name="Acme Sp. z o.o."
+          nip="1234563218"
+          chargeCompensation
+          errors={{ nip: "Klient z tym NIP-em już istnieje." }}
+          pending={false}
+          onNameChange={noop}
+          onNipChange={noop}
+          onChargeCompensationChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Formularz klienta: pending">
+        <ClientFormView
+          idPrefix="ks-client-pending"
+          name="Acme Sp. z o.o."
+          nip="1234563218"
+          chargeCompensation={false}
+          errors={{}}
+          pending
+          onNameChange={noop}
+          onNipChange={noop}
+          onChargeCompensationChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Lista klientów: pusta">
+        <ClientsManager initialClients={[]} />
       </Section>
       <Section title="PasswordToggle">
         <div className="relative h-9 w-40">

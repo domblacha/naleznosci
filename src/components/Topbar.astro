@@ -2,13 +2,34 @@
 import { Button } from "@/components/ui/button";
 
 const { user } = Astro.locals;
+const { pathname } = Astro.url;
+
+const links = [
+  { href: "/", label: "Faktury" },
+  { href: "/clients", label: "Klienci" },
+];
 ---
 
 <div class="mb-4 flex items-center justify-between rounded-xl border bg-card px-4 py-2 text-sm text-card-foreground">
+  <nav class="flex items-center gap-4" aria-label="Główna nawigacja">
+    {links.map((link) => {
+      const active = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+      return (
+        <a
+          href={link.href}
+          aria-current={active ? "page" : undefined}
+          class:list={["font-medium", active ? "text-foreground" : "text-muted-foreground hover:text-foreground"]}
+        >
+          {link.label}
+        </a>
+      );
+    })}
+  </nav>
   <span class="text-muted-foreground">{user?.email}</span>
   <form method="POST" action="/api/auth/signout">
     <Button type="submit" variant="link">
-      Wyloguj
+      {" "}
+      Wyloguj{" "}
     </Button>
   </form>
 </div>
