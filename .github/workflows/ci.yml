@@ -18,6 +18,8 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      # Type-aware lint needs Astro's generated types (.astro/), absent in a fresh checkout.
+      - run: npx astro sync
       - run: npm run lint
       - run: npx astro check
       - run: npm run build
