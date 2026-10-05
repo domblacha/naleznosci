@@ -43,7 +43,7 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | ---- | --------------------------- | -------------------------------------------------------------------------------------- | ------------- | --------------------------- | -------- |
 | F-01 | deploy-pipeline-with-migrations | (foundation) merge na `main` przechodzi kontrole, stosuje migracje na produkcji i dopiero wtedy wdraża kod | — | NFR (izolacja danych właściciela) | in-progress |
 | S-01 | polish-auth-shell           | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny | —             | FR-001                      | done        |
-| S-02 | add-and-edit-clients        | dodać i edytować klienta, a duplikat zostaje odrzucony                                 | S-01, F-01    | FR-002                      | in-progress |
+| S-02 | add-and-edit-clients        | dodać i edytować klienta, a duplikat zostaje odrzucony                                 | S-01, F-01    | FR-002                      | done        |
 | S-03 | invoice-escalation-list     | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur       | S-02          | US-01, FR-003, FR-005, FR-010 | proposed |
 | S-04 | interest-and-compensation   | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza             | S-03          | US-01, FR-007               | proposed |
 | S-05 | collective-reminder         | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka            | S-04          | US-01, FR-008, FR-011       | proposed |
@@ -124,7 +124,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Unknowns:**
   - Czy NIP normalizować (spacje, myślniki, prefiks PL) przed wykrywaniem duplikatów? — Owner: user. Block: no.
 - **Risk:** Pierwsza tabela domenowa — tu ustala się wzorzec izolacji danych właściciela, który powtarzają wszystkie następne wycinki; błąd tu przecieka wszędzie. Fazy 1–3 są gotowe lokalnie; faza 4 (produkcja) idzie pierwszym uruchomieniem potoku z F-01.
-- **Status:** in-progress
+- **Status:** done
 
 ### S-03: Faktura w grupie właściwego etapu na liście
 
@@ -289,3 +289,4 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 
 - **S-01: Użytkownik może zarejestrować się, zalogować i wylogować w polskim interfejsie, a po zalogowaniu trafia na chroniony, pusty ekran główny aplikacji (bez boilerplate'u startera).** — Archived 2026-09-29 → `context/archive/2026-09-29-polish-auth-shell/`. Lesson: —.
 - **Zmiana poza wycinkami: Ekrany konta i powłoka na tokenach kolorów i komponentach shadcn (paleta stone + amber, ostre rogi, styl lyra, stany i dostępność, reguła ESLint + blok UI w `CLAUDE.md`)** — Archived 2026-10-03 → `context/archive/2026-09-29-theme-and-auth-tokens/`. Zrobione przed S-02 (`add-and-edit-clients`), żeby formularz klienta odziedziczył tokeny i komponenty; brak pozycji w roadmapie (Change ID `theme-and-auth-tokens`). Lesson: `className` zamiast `class` na komponentach React w `.astro` (`context/foundation/lessons.md`).
+- **S-02: Użytkownik może dodać klienta (opcjonalny NIP, przełącznik „naliczaj rekompensatę” domyślnie włączony), edytować go i widzi listę swoich klientów; duplikat (po NIP, a bez NIP po nazwie bez rozróżniania wielkości liter) zostaje odrzucony.** — Archived 2026-10-05 → `context/archive/2026-10-03-add-and-edit-clients/`. Lesson: —.
