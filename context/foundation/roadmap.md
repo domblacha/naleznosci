@@ -70,12 +70,12 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 
 ## Baseline
 
-What's already in place in the codebase as of `2026-09-25` (auto-researched + user-confirmed; odświeżone 2026-10-06 po S-01, S-02, S-03, S-04 i F-01).
+What's already in place in the codebase as of `2026-09-25` (auto-researched + user-confirmed; odświeżone 2026-10-06 po S-01, S-02, S-03, S-04, S-05 i F-01).
 Foundations below assume these are present and do NOT re-scaffold them.
 
-- **Frontend:** partial — polska powłoka i ekrany konta (S-01), tokeny kolorów i komponenty shadcn, widok klientów `src/pages/clients.astro` (S-02) oraz lista otwartych faktur z dialogiem dodawania na `/` (`src/components/invoices/`, S-03) z kolumnami odsetek i rekompensaty (S-04); brak widoków historii i ponagleń.
+- **Frontend:** partial — polska powłoka i ekrany konta (S-01), tokeny kolorów i komponenty shadcn, widok klientów `src/pages/clients.astro` (S-02) oraz lista otwartych faktur z dialogiem dodawania na `/` (`src/components/invoices/`, S-03) z kolumnami odsetek i rekompensaty (S-04) i sekcją „Ponaglenia” z dialogiem kopiowania zbiorczego ponaglenia do schowka (S-05); brak widoku historii.
 - **Backend / API:** partial — endpointy auth, klientów i `POST /api/invoices` (`src/pages/api/auth/*`, `src/pages/api/clients/*`, `src/pages/api/invoices/index.ts`); brak edycji i anulowania faktur.
-- **Data:** partial — tabele `clients` i `invoices` z RLS (`supabase/migrations/20261003120000_create_clients.sql`, migracja `create_invoices`; złożony FK `(client_id, user_id)` wymusza przynależność klienta do właściciela); reguła etapu w `src/lib/escalation.ts` i wyliczenia odsetek i rekompensaty w `src/lib/charges.ts` (BigInt, grosze, stała `DEFAULT_CHARGE_SETTINGS`), obie z testami; brak tabeli ustawień.
+- **Data:** partial — tabele `clients` i `invoices` z RLS (`supabase/migrations/20261003120000_create_clients.sql`, migracja `create_invoices`; złożony FK `(client_id, user_id)` wymusza przynależność klienta do właściciela); reguła etapu w `src/lib/escalation.ts` i wyliczenia odsetek i rekompensaty w `src/lib/charges.ts` (BigInt, grosze, stała `DEFAULT_CHARGE_SETTINGS`), obie z testami; składanie i render ponagleń w `src/lib/reminder.ts` ze stałymi szablonami w `src/lib/reminder-templates.ts` (z testami, wyłącznie w przeglądarce, bez API); brak tabeli ustawień.
 - **Auth:** present — rejestracja, logowanie, wylogowanie i middleware chroniący trasy (`src/middleware.ts`); formularze po angielsku.
 - **Deploy / infra:** present (od 2026-10-05, F-01) — GitHub Actions (`.github/workflows/ci.yml`): kontrole na PR, a po merge na `main` migracje na produkcji przed `wrangler deploy`; Workers Builds odłączony (README §Deployment).
 - **Observability:** partial — włączone observability Workers (`wrangler.jsonc`); brak śledzenia błędów.
@@ -199,7 +199,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Parallel with:** S-05, S-09, S-10, S-11, S-12
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Dotyka trzech reguł naraz (etap, odsetki, blokada edycji), więc stoi po nich wszystkich — wznowienie może „przeskoczyć” kilka etapów i to trzeba zweryfikować.
+- **Risk:** Dotyka trzech reguł naraz (etap, odsetki, blokada edycji), więc stoi po nich wszystkich — wznowienie może „przeskoczyć” kilka etapów i to trzeba zweryfikować. Wykluczenie wstrzymanych z ponagleń dochodzi w `buildClientReminders` (`src/lib/reminder.ts`), obok filtra etapów.
 - **Status:** proposed
 
 ### S-09: Dezaktywacja i przywracanie klienta
@@ -247,7 +247,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Parallel with:** S-06, S-07, S-08, S-09, S-10, S-11
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** PRD wskazuje FR-014 jako pierwsze do cięcia przy opóźnieniu — ostatni na ścieżce, a S-05 działa bez niego na szablonach domyślnych.
+- **Risk:** PRD wskazuje FR-014 jako pierwsze do cięcia przy opóźnieniu — ostatni na ścieżce, a S-05 działa bez niego na szablonach domyślnych. `renderReminder` przyjmuje szablony jako parametr (`REMINDER_TEMPLATES` to wartość domyślna), więc S-12 zmienia tylko ich źródło; nieznane pola zostają w tekście bez zmian.
 - **Status:** proposed
 
 ### S-13: Dane nadawcy w ponagleniu
@@ -261,27 +261,27 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Unknowns:**
   - Które pola są wymagane, a które opcjonalne, i czy walidować numer konta (IBAN PL) oraz NIP nadawcy? — Owner: user. Block: no.
   - Co ponaglenie pokazuje, gdy profil jest pusty: brak bloku nadawcy czy podpowiedź do uzupełnienia profilu? — Owner: user. Block: no.
-- **Risk:** Nowa tabela z RLS (jeden profil na właściciela) i nowy widok. Powinien wejść przed S-12 — jeśli szablony użytkownika zostaną zapisane wcześniej, dodanie pola `{nadawca}` wymaga ich aktualizacji.
+- **Risk:** Nowa tabela z RLS (jeden profil na właściciela) i nowy widok. Powinien wejść przed S-12 — jeśli szablony użytkownika zostaną zapisane wcześniej, dodanie pola `{nadawca}` wymaga ich aktualizacji. Technicznie to nowy wpis w mapie pól `renderReminder` (`src/lib/reminder.ts`) i miejsce na niego pod „Z poważaniem” w 4 szablonach.
 - **Status:** proposed
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID                       | Suggested issue title                                       | Ready for `/10x-plan` | Notes                                                                            |
-| ---------- | ------------------------------- | ----------------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------- |
-| F-01       | deploy-pipeline-with-migrations | Potok CI/CD: kontrole na PR, migracje przed wdrożeniem kodu | no                    | Done 2026-10-05                                                                  |
-| S-01       | polish-auth-shell               | Polski interfejs konta i pusty ekran główny                 | no                    | Done 2026-09-29                                                                  |
-| S-02       | add-and-edit-clients            | Dodawanie i edycja klientów z wykrywaniem duplikatów        | no                    | Done 2026-10-05                                                                  |
-| S-03       | invoice-escalation-list         | Lista otwartych faktur pogrupowana po etapach eskalacji     | no                    | Done 2026-10-05; gwiazda przewodnia                                              |
-| S-04       | interest-and-compensation       | Odsetki i rekompensata przy przeterminowanych fakturach     | no                    | Done 2026-10-06                                                                  |
-| S-05       | collective-reminder             | Zbiorcze ponaglenie per klient do schowka                   | yes                   | Odblokowany przez S-04; `/10x-plan collective-reminder`                          |
-| S-06       | mark-invoice-paid               | Oznaczanie faktury jako zapłaconej + widok historii         | yes                   | Odblokowany przez S-04; `/10x-plan mark-invoice-paid`                            |
-| S-07       | invoice-edit-and-cancel         | Edycja (z blokadą po terminie) i anulowanie faktury         | no                    | Czeka na S-06                                                                    |
-| S-08       | pause-and-resume-escalation     | Wstrzymanie i wznowienie eskalacji faktury                  | no                    | Czeka na S-07                                                                    |
-| S-09       | client-deactivate-restore       | Dezaktywacja i przywracanie klienta                         | yes                   | Odblokowany przez S-03; `/10x-plan client-deactivate-restore`                    |
-| S-10       | escalation-settings             | Ustawienia progów, stopy odsetek i rekompensaty             | yes                   | Odblokowany przez S-04; `/10x-plan escalation-settings`                          |
-| S-11       | invoice-list-filter-sort        | Filtrowanie i sortowanie listy faktur                       | yes                   | Odblokowany przez S-03; kandydat do cięcia; `/10x-plan invoice-list-filter-sort` |
-| S-12       | editable-reminder-templates     | Edytowalne szablony ponagleń                                | no                    | Czeka na S-05; pierwszy do cięcia                                                |
-| S-13       | sender-profile                  | Profil nadawcy wstawiany do ponagleń                        | no                    | Czeka na S-05; najlepiej przed S-12                                              |
+| Roadmap ID | Change ID                       | Suggested issue title                                       | Ready for `/10x-plan` | Notes                                                                                        |
+| ---------- | ------------------------------- | ----------------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------------- |
+| F-01       | deploy-pipeline-with-migrations | Potok CI/CD: kontrole na PR, migracje przed wdrożeniem kodu | no                    | Done 2026-10-05                                                                              |
+| S-01       | polish-auth-shell               | Polski interfejs konta i pusty ekran główny                 | no                    | Done 2026-09-29                                                                              |
+| S-02       | add-and-edit-clients            | Dodawanie i edycja klientów z wykrywaniem duplikatów        | no                    | Done 2026-10-05                                                                              |
+| S-03       | invoice-escalation-list         | Lista otwartych faktur pogrupowana po etapach eskalacji     | no                    | Done 2026-10-05; gwiazda przewodnia                                                          |
+| S-04       | interest-and-compensation       | Odsetki i rekompensata przy przeterminowanych fakturach     | no                    | Done 2026-10-06                                                                              |
+| S-05       | collective-reminder             | Zbiorcze ponaglenie per klient do schowka                   | no                    | Wdrożony 2026-10-06 (PR #9), po przeglądzie; do `/10x-archive collective-reminder`           |
+| S-06       | mark-invoice-paid               | Oznaczanie faktury jako zapłaconej + widok historii         | yes                   | Odblokowany przez S-04; `/10x-plan mark-invoice-paid`                                        |
+| S-07       | invoice-edit-and-cancel         | Edycja (z blokadą po terminie) i anulowanie faktury         | no                    | Czeka na S-06                                                                                |
+| S-08       | pause-and-resume-escalation     | Wstrzymanie i wznowienie eskalacji faktury                  | no                    | Czeka na S-07                                                                                |
+| S-09       | client-deactivate-restore       | Dezaktywacja i przywracanie klienta                         | yes                   | Odblokowany przez S-03; `/10x-plan client-deactivate-restore`                                |
+| S-10       | escalation-settings             | Ustawienia progów, stopy odsetek i rekompensaty             | yes                   | Odblokowany przez S-04; `/10x-plan escalation-settings`                                      |
+| S-11       | invoice-list-filter-sort        | Filtrowanie i sortowanie listy faktur                       | yes                   | Odblokowany przez S-03; kandydat do cięcia; `/10x-plan invoice-list-filter-sort`             |
+| S-12       | editable-reminder-templates     | Edytowalne szablony ponagleń                                | yes                   | Odblokowany przez S-05; po S-13; pierwszy do cięcia; `/10x-plan editable-reminder-templates` |
+| S-13       | sender-profile                  | Profil nadawcy wstawiany do ponagleń                        | yes                   | Odblokowany przez S-05; przed S-12; `/10x-plan sender-profile`                               |
 
 ## Open Roadmap Questions
 

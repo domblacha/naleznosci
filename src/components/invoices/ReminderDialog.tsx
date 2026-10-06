@@ -18,7 +18,6 @@ import { renderReminder, type ClientReminder } from "@/lib/reminder";
 
 interface ReminderDialogViewProps {
   idPrefix: string;
-  reminder: ClientReminder;
   text: string;
   status: CopyStatus;
   onTextChange: (value: string) => void;
@@ -26,15 +25,7 @@ interface ReminderDialogViewProps {
   onClose?: () => void;
 }
 
-export function ReminderDialogView({
-  idPrefix,
-  reminder,
-  text,
-  status,
-  onTextChange,
-  onCopy,
-  onClose,
-}: ReminderDialogViewProps) {
+export function ReminderDialogView({ idPrefix, text, status, onTextChange, onCopy, onClose }: ReminderDialogViewProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fieldId = `${idPrefix}-text`;
 
@@ -45,13 +36,6 @@ export function ReminderDialogView({
 
   return (
     <div className="space-y-4">
-      <DialogHeader>
-        <DialogTitle>Ponaglenie — {reminder.clientName}</DialogTitle>
-        <DialogDescription>
-          Etap {reminder.stage} · Faktury: {reminder.items.length} · Razem do zapłaty:{" "}
-          {formatAmount(reminder.totalGrosze)}
-        </DialogDescription>
-      </DialogHeader>
       <div>
         <Label htmlFor={fieldId} className="mb-1">
           Treść ponaglenia
@@ -111,15 +95,23 @@ function ReminderContent({
   const [text, setText] = useState(() => renderReminder(reminder, today));
   const { status, copy } = useCopyToClipboard();
   return (
-    <ReminderDialogView
-      idPrefix="reminder"
-      reminder={reminder}
-      text={text}
-      status={status}
-      onTextChange={setText}
-      onCopy={() => void copy(text)}
-      onClose={onClose}
-    />
+    <>
+      <DialogHeader>
+        <DialogTitle>Ponaglenie — {reminder.clientName}</DialogTitle>
+        <DialogDescription>
+          Etap {reminder.stage} · Faktury: {reminder.items.length} · Razem do zapłaty:{" "}
+          {formatAmount(reminder.totalGrosze)}
+        </DialogDescription>
+      </DialogHeader>
+      <ReminderDialogView
+        idPrefix="reminder"
+        text={text}
+        status={status}
+        onTextChange={setText}
+        onCopy={() => void copy(text)}
+        onClose={onClose}
+      />
+    </>
   );
 }
 
