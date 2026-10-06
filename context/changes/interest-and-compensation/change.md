@@ -1,7 +1,7 @@
 ---
 change_id: interest-and-compensation
 title: Odsetki i rekompensata przy przeterminowanych fakturach
-status: implemented
+status: impl_reviewed
 created: 2026-10-06
 updated: 2026-10-06
 ---
