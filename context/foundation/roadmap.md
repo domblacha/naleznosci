@@ -25,7 +25,7 @@ milestone_status: open
 - **Intent:** Właściciel JDG może założyć konto, wprowadzić klientów i faktury, widzieć je w deterministycznych etapach eskalacji z poprawnie wyliczonymi odsetkami i rekompensatą, wygenerować jedno zbiorcze ponaglenie per klient oraz zamykać faktury (zapłata, anulowanie, wstrzymanie) — pełny zakres wymagań koniecznych PRD.
 - **Source materials:** `context/foundation/prd.md` (v1)
 - **Done when:** every F-NN and S-NN below is `done`.
-- **Scope anchors:** FR-001 – FR-011, FR-013, FR-014 (wszystkie must-have); US-01 – US-03. FR-012 (nice-to-have) jest odłożony — patrz `## Parked`.
+- **Scope anchors:** FR-001 – FR-011, FR-013, FR-014 (wszystkie must-have); US-01 – US-03. FR-012 (nice-to-have) jest odłożony — patrz `## Parked`. S-13 (dane nadawcy) dodany 2026-10-06 z planowania S-05, poza PRD v1.
 
 ## Vision recap
 
@@ -46,7 +46,7 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | S-02 | add-and-edit-clients            | dodać i edytować klienta, a duplikat zostaje odrzucony                                                     | S-01, F-01    | FR-002                            | done     |
 | S-03 | invoice-escalation-list         | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur                           | S-02          | US-01, FR-003, FR-005, FR-010     | done     |
 | S-04 | interest-and-compensation       | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza                                 | S-03          | US-01, FR-007                     | done     |
-| S-05 | collective-reminder             | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka                                | S-04          | US-01, FR-008, FR-011             | proposed |
+| S-05 | collective-reminder             | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka                                | S-04          | US-01, FR-008, FR-011             | in-progress |
 | S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | proposed |
 | S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | proposed |
 | S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | proposed |
@@ -54,18 +54,19 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | proposed |
 | S-11 | invoice-list-filter-sort        | filtrować listę po kliencie i sortować po dniach po terminie lub kwocie                                    | S-03          | FR-010                            | proposed |
 | S-12 | editable-reminder-templates     | edytować 4 szablony treści ponagleń                                                                        | S-05          | FR-014                            | proposed |
+| S-13 | sender-profile                  | podać dane nadawcy (firma, NIP, adres, numer konta), które ponaglenie wstawia samo                         | S-05          | — (poza PRD v1); FR-011           | proposed |
 
 ## Streams
 
 Navigation aid — groups items that share a Prerequisites chain. Canonical ordering still lives in the dependency graph below; this table is the proposed reading order across parallel tracks.
 
-| Stream | Theme                  | Chain                                                        | Note                                                                                                                                                     |
-| ------ | ---------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A      | Od konta do ponaglenia | `S-01` + `F-01` → `S-02` → `S-03` → `S-04` → `S-05` → `S-12` | Ścieżka wymagań koniecznych do głównego kryterium sukcesu; `F-01` wpięty przed `S-02`, bo to pierwsza zmiana z migracją; `S-12` jest pierwszy do cięcia. |
-| B      | Cykl życia faktury     | `S-06` → `S-07` → `S-08`                                     | Dołącza do A przy `S-04`; może iść równolegle z `S-05`.                                                                                                  |
-| C      | Porządek w klientach   | `S-09`                                                       | Dołącza do A przy `S-03`; niezależny od reszty.                                                                                                          |
-| D      | Konfiguracja reguły    | `S-10`                                                       | Dołącza do A przy `S-04`; do tego czasu działają wartości domyślne.                                                                                      |
-| E      | Wygoda listy           | `S-11`                                                       | Dołącza do A przy `S-03`; sortowanie PRD wskazuje jako drugie do cięcia.                                                                                 |
+| Stream | Theme                  | Chain                                                                 | Note                                                                                                                                                                                                                                                    |
+| ------ | ---------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A      | Od konta do ponaglenia | `S-01` + `F-01` → `S-02` → `S-03` → `S-04` → `S-05` → `S-13` → `S-12` | Ścieżka wymagań koniecznych do głównego kryterium sukcesu; `F-01` wpięty przed `S-02`, bo to pierwsza zmiana z migracją; `S-13` przed `S-12`, żeby pole `{nadawca}` było w szablonach, zanim użytkownik zapisze własne; `S-12` jest pierwszy do cięcia. |
+| B      | Cykl życia faktury     | `S-06` → `S-07` → `S-08`                                              | Dołącza do A przy `S-04`; może iść równolegle z `S-05`.                                                                                                                                                                                                 |
+| C      | Porządek w klientach   | `S-09`                                                                | Dołącza do A przy `S-03`; niezależny od reszty.                                                                                                                                                                                                         |
+| D      | Konfiguracja reguły    | `S-10`                                                                | Dołącza do A przy `S-04`; do tego czasu działają wartości domyślne.                                                                                                                                                                                     |
+| E      | Wygoda listy           | `S-11`                                                                | Dołącza do A przy `S-03`; sortowanie PRD wskazuje jako drugie do cięcia.                                                                                                                                                                                |
 
 ## Baseline
 
@@ -163,7 +164,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Unknowns:**
   - Jakie domyślne treści mają 4 szablony tonów (etap 1–4)? — Owner: user. Block: no.
 - **Risk:** Zamyka główne kryterium sukcesu; szablony są na razie stałe, żeby edytowalność (S-12) dało się uciąć bez ruszania ponaglenia.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-06: Oznaczenie faktury jako zapłaconej
 
@@ -249,6 +250,20 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Risk:** PRD wskazuje FR-014 jako pierwsze do cięcia przy opóźnieniu — ostatni na ścieżce, a S-05 działa bez niego na szablonach domyślnych.
 - **Status:** proposed
 
+### S-13: Dane nadawcy w ponagleniu
+
+- **Outcome:** Użytkownik może zapisać w profilu swoje dane nadawcy (nazwa firmy, NIP, adres, numer konta), a generowane ponaglenie wstawia je samo w miejsce podpisu (pole `{nadawca}` w szablonach) — bez ręcznego dopisywania przy każdym ponagleniu.
+- **Change ID:** sender-profile
+- **PRD refs:** — (poza PRD v1; decyzja z planowania S-05 2026-10-06); dotyczy FR-011, NFR (dane widoczne wyłącznie dla właściciela)
+- **Prerequisites:** S-05
+- **Parallel with:** S-06, S-07, S-08, S-09, S-10, S-11
+- **Blockers:** —
+- **Unknowns:**
+  - Które pola są wymagane, a które opcjonalne, i czy walidować numer konta (IBAN PL) oraz NIP nadawcy? — Owner: user. Block: no.
+  - Co ponaglenie pokazuje, gdy profil jest pusty: brak bloku nadawcy czy podpowiedź do uzupełnienia profilu? — Owner: user. Block: no.
+- **Risk:** Nowa tabela z RLS (jeden profil na właściciela) i nowy widok. Powinien wejść przed S-12 — jeśli szablony użytkownika zostaną zapisane wcześniej, dodanie pola `{nadawca}` wymaga ich aktualizacji.
+- **Status:** proposed
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID                       | Suggested issue title                                       | Ready for `/10x-plan` | Notes                                                                            |
@@ -266,6 +281,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 | S-10       | escalation-settings             | Ustawienia progów, stopy odsetek i rekompensaty             | yes                   | Odblokowany przez S-04; `/10x-plan escalation-settings`                          |
 | S-11       | invoice-list-filter-sort        | Filtrowanie i sortowanie listy faktur                       | yes                   | Odblokowany przez S-03; kandydat do cięcia; `/10x-plan invoice-list-filter-sort` |
 | S-12       | editable-reminder-templates     | Edytowalne szablony ponagleń                                | no                    | Czeka na S-05; pierwszy do cięcia                                                |
+| S-13       | sender-profile                  | Profil nadawcy wstawiany do ponagleń                        | no                    | Czeka na S-05; najlepiej przed S-12                                              |
 
 ## Open Roadmap Questions
 

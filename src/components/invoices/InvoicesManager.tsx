@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { InvoiceFormDialog } from "@/components/invoices/InvoiceFormDialog";
 import { compensationGrosze, interestGrosze } from "@/lib/charges";
 import { DEFAULT_THRESHOLDS, groupInvoices, type EscalationGroup } from "@/lib/escalation";
+import { formatAmount, formatDate } from "@/lib/format";
 import type { Client, Invoice } from "@/types";
 
 interface Props {
@@ -24,17 +25,6 @@ const GROUP_LABELS: Record<EscalationGroup, string> = {
   pre_threshold: "Po terminie, przed etapem 1",
   current: "Bieżące",
 };
-
-const currencyFormat = new Intl.NumberFormat("pl-PL", { style: "currency", currency: "PLN" });
-
-function formatAmount(grosze: number): string {
-  return currencyFormat.format(grosze / 100);
-}
-
-function formatDate(iso: string): string {
-  const [year, month, day] = iso.split("-");
-  return `${day}.${month}.${year}`;
-}
 
 export function InvoicesManager({ initialInvoices, clients, today }: Props) {
   const [invoices, setInvoices] = useState(initialInvoices);
