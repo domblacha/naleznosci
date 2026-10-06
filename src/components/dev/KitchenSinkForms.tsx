@@ -245,7 +245,6 @@ export function KitchenSinkForms() {
           <Section title="ReminderDialogView: default">
             <ReminderDialogView
               idPrefix="ks-reminder-default"
-              reminder={sampleReminder}
               text={sampleReminderText}
               status="idle"
               onTextChange={noop}
@@ -255,7 +254,6 @@ export function KitchenSinkForms() {
           <Section title="ReminderDialogView: copied">
             <ReminderDialogView
               idPrefix="ks-reminder-copied"
-              reminder={sampleReminder}
               text={sampleReminderText}
               status="copied"
               onTextChange={noop}
@@ -265,7 +263,6 @@ export function KitchenSinkForms() {
           <Section title="ReminderDialogView: copy error">
             <ReminderDialogView
               idPrefix="ks-reminder-error"
-              reminder={sampleReminder}
               text={sampleReminderText}
               status="error"
               onTextChange={noop}
