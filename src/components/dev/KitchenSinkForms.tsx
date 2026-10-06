@@ -6,6 +6,8 @@ import { ClientFormView } from "@/components/clients/ClientFormDialog";
 import { ClientsManager } from "@/components/clients/ClientsManager";
 import { InvoiceFormView } from "@/components/invoices/InvoiceFormDialog";
 import { InvoicesManager } from "@/components/invoices/InvoicesManager";
+import { ReminderDialogView } from "@/components/invoices/ReminderDialog";
+import { buildClientReminders, renderReminder } from "@/lib/reminder";
 import type { Client, Invoice } from "@/types";
 import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
@@ -61,6 +63,11 @@ const sampleInvoices: Invoice[] = [
   sampleInvoice(5, 0, "FV/2026/10/002", 10000, "2026-10-04"),
   sampleInvoice(6, 1, "FV/2026/10/005", 75000, "2026-10-20"),
 ];
+
+const sampleReminder = buildClientReminders(sampleInvoices, SAMPLE_TODAY).find(
+  (r) => r.clientId === sampleClients[0].id,
+);
+const sampleReminderText = sampleReminder ? renderReminder(sampleReminder, SAMPLE_TODAY) : "";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -233,8 +240,49 @@ export function KitchenSinkForms() {
           onSubmit={noop}
         />
       </Section>
+      {sampleReminder ? (
+        <>
+          <Section title="ReminderDialogView: default">
+            <ReminderDialogView
+              idPrefix="ks-reminder-default"
+              reminder={sampleReminder}
+              text={sampleReminderText}
+              status="idle"
+              onTextChange={noop}
+              onCopy={noop}
+            />
+          </Section>
+          <Section title="ReminderDialogView: copied">
+            <ReminderDialogView
+              idPrefix="ks-reminder-copied"
+              reminder={sampleReminder}
+              text={sampleReminderText}
+              status="copied"
+              onTextChange={noop}
+              onCopy={noop}
+            />
+          </Section>
+          <Section title="ReminderDialogView: copy error">
+            <ReminderDialogView
+              idPrefix="ks-reminder-error"
+              reminder={sampleReminder}
+              text={sampleReminderText}
+              status="error"
+              onTextChange={noop}
+              onCopy={noop}
+            />
+          </Section>
+        </>
+      ) : null}
       <Section title="Lista faktur: grupy">
         <InvoicesManager initialInvoices={sampleInvoices} clients={sampleClients} today={SAMPLE_TODAY} />
+      </Section>
+      <Section title="Ponaglenia: pusty stan">
+        <InvoicesManager
+          initialInvoices={[sampleInvoice(6, 1, "FV/2026/10/005", 75000, "2026-10-20")]}
+          clients={sampleClients}
+          today={SAMPLE_TODAY}
+        />
       </Section>
       <Section title="Lista faktur: brak faktur">
         <InvoicesManager initialInvoices={[]} clients={sampleClients} today={SAMPLE_TODAY} />

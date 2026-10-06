@@ -148,12 +148,12 @@ Users can then sign in immediately after sign-up without clicking a confirmation
 
 ### Auth routes
 
-| Route                 | Description                                                                                                                         |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `/auth/signin`        | Email/password sign-in form                                                                                                         |
-| `/auth/signup`        | Email/password sign-up form                                                                                                         |
-| `/auth/confirm-email` | Post-signup "check your inbox" page                                                                                                 |
-| `/`                   | Protected list of open invoices with interest and compensation per overdue invoice (redirects to `/auth/signin` if unauthenticated) |
+| Route                 | Description                                                                                                                                                                                                                   |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/auth/signin`        | Email/password sign-in form                                                                                                                                                                                                   |
+| `/auth/signup`        | Email/password sign-up form                                                                                                                                                                                                   |
+| `/auth/confirm-email` | Post-signup "check your inbox" page                                                                                                                                                                                           |
+| `/`                   | Protected list of open invoices with interest and compensation per overdue invoice, plus a reminders section that copies a collective reminder for a client to the clipboard (redirects to `/auth/signin` if unauthenticated) |
 
 Route protection is handled in `src/middleware.ts`. `/` is protected with an exact match; add further paths (prefix-matched) to the `PROTECTED_ROUTES` array there to require authentication. Signed-in users visiting `/auth/signin` or `/auth/signup` are redirected to `/`.
 
