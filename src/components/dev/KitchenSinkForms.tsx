@@ -44,6 +44,7 @@ function sampleInvoice(
     id: `00000000-0000-4000-9000-00000000000${id}`,
     clientId: sampleClients[clientIndex].id,
     clientName: sampleClients[clientIndex].name,
+    clientChargesCompensation: sampleClients[clientIndex].chargeCompensation,
     number,
     amountGrosze,
     dueDate,
@@ -53,6 +54,7 @@ function sampleInvoice(
 
 const sampleInvoices: Invoice[] = [
   sampleInvoice(1, 0, "FV/2026/08/001", 123456, "2026-08-20"),
+  sampleInvoice(7, 0, "FV/2026/08/002", 650000, "2026-08-25"),
   sampleInvoice(2, 1, "FV/2026/09/004", 50000, "2026-09-15"),
   sampleInvoice(3, 0, "FV/2026/09/007", 99900, "2026-09-26"),
   sampleInvoice(4, 1, "FV/2026/09/010", 250050, "2026-10-01"),

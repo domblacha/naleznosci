@@ -4,7 +4,7 @@ import type { Invoice, InvoiceInput } from "@/types";
 export type InvoiceErrorCode = "duplicate_number" | "client_not_found" | "unknown";
 export type InvoiceResult = { ok: true; invoice: Invoice } | { ok: false; code: InvoiceErrorCode };
 
-const COLUMNS = "id, client_id, number, amount_grosze, due_date, created_at, clients(name)";
+const COLUMNS = "id, client_id, number, amount_grosze, due_date, created_at, clients(name, charge_compensation)";
 const UNIQUE_VIOLATION = "23505";
 const FOREIGN_KEY_VIOLATION = "23503";
 // Constraint names must match supabase/migrations/*_create_invoices.sql.
@@ -18,7 +18,7 @@ interface InvoiceRow {
   amount_grosze: number;
   due_date: string;
   created_at: string;
-  clients: { name: string } | null;
+  clients: { name: string; charge_compensation: boolean } | null;
 }
 
 function toInvoice(row: InvoiceRow): Invoice {
@@ -26,6 +26,7 @@ function toInvoice(row: InvoiceRow): Invoice {
     id: row.id,
     clientId: row.client_id,
     clientName: row.clients?.name ?? "",
+    clientChargesCompensation: row.clients?.charge_compensation ?? false,
     number: row.number,
     amountGrosze: row.amount_grosze,
     dueDate: row.due_date,
