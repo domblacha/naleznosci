@@ -283,19 +283,19 @@ Brak migracji. Rollback to wycofanie Workera (README §Rollback) i revert w PR; 
 
 #### Automated
 
-- [x] 2.1 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
-- [x] 2.2 Typy przechodzą: `npx astro check`
-- [x] 2.3 Testy przechodzą: `npm test`
-- [x] 2.4 Build przechodzi: `npm run build`
-- [x] 2.5 Smoke przechodzi lokalnie (z `npm run dev` i lokalnym Supabase): `npm run smoke`
+- [x] 2.1 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint` — 148d08f
+- [x] 2.2 Typy przechodzą: `npx astro check` — 148d08f
+- [x] 2.3 Testy przechodzą: `npm test` — 148d08f
+- [x] 2.4 Build przechodzi: `npm run build` — 148d08f
+- [x] 2.5 Smoke przechodzi lokalnie (z `npm run dev` i lokalnym Supabase): `npm run smoke` — 148d08f
 
 #### Manual
 
-- [x] 2.6 Faktura 1 234,56 zł z terminem 40 dni temu pokazuje odsetki 18,60 zł i rekompensatę 170,00 zł
-- [x] 2.7 Faktura bieżąca (termin dziś lub później) ma „—” w kolumnach odsetek i rekompensaty, a faktura z grupy „Po terminie, przed etapem 1” ma kwoty
-- [x] 2.8 Klient z wyłączonym przełącznikiem ma rekompensatę „0,00 zł”, a odsetki są naliczone
-- [x] 2.9 Faktura dodana w dialogu od razu pokazuje kwoty, a po odświeżeniu są takie same
-- [x] 2.10 Tabela mieści się w `max-w-5xl` bez przewijania na desktopie; `/dev/ui` pokazuje kolumny w trybie jasnym i ciemnym
+- [x] 2.6 Faktura 1 234,56 zł z terminem 40 dni temu pokazuje odsetki 18,60 zł i rekompensatę 170,00 zł — 148d08f
+- [x] 2.7 Faktura bieżąca (termin dziś lub później) ma „—” w kolumnach odsetek i rekompensaty, a faktura z grupy „Po terminie, przed etapem 1” ma kwoty — 148d08f
+- [x] 2.8 Klient z wyłączonym przełącznikiem ma rekompensatę „0,00 zł”, a odsetki są naliczone — 148d08f
+- [x] 2.9 Faktura dodana w dialogu od razu pokazuje kwoty, a po odświeżeniu są takie same — 148d08f
+- [x] 2.10 Tabela mieści się w `max-w-5xl` bez przewijania na desktopie; `/dev/ui` pokazuje kolumny w trybie jasnym i ciemnym — 148d08f
 
 ### Phase 3: Wdrożenie
 

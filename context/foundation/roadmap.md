@@ -148,7 +148,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Parallel with:** S-09, S-11
 - **Blockers:** —
 - **Unknowns:**
-  - Jakie są domyślne wartości rocznej stopy odsetek i 3 progów kwotowych rekompensaty w PLN (przed zbudowaniem ustawień w S-10)? — Owner: user. Block: no.
+  - Jakie są domyślne wartości rocznej stopy odsetek i 3 progów kwotowych rekompensaty w PLN (przed zbudowaniem ustawień w S-10)? — Owner: user. Block: no. **Rozstrzygnięte (2026-10-06):** 13,75% (odsetki handlowe II półrocze 2026), progi 170,00 / 297,50 / 425,00 zł z granicami ≤ 5 000 zł / > 5 000 i < 50 000 zł / ≥ 50 000 zł.
 - **Risk:** Wymóg poprawności wyliczeń z Kryteriów sukcesu — zaokrąglenia i precyzja kwot to najłatwiejsze miejsce na cichy błąd, dlatego wycinek stoi przed ponagleniem, które te kwoty konsumuje.
 - **Status:** in-progress
 
