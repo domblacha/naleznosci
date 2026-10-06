@@ -400,9 +400,9 @@ Brak migracji. Rollback to wycofanie Workera (README §Rollback) i revert w PR; 
 
 #### Automated
 
-- [ ] 3.1 Job `checks` na PR jest zielony: `gh pr checks`
-- [ ] 3.2 Job `deploy` po merge jest zielony: `gh run list --branch main --limit 1`
+- [x] 3.1 Job `checks` na PR jest zielony: `gh pr checks` — f1dcae9
+- [x] 3.2 Job `deploy` po merge jest zielony: `gh run list --branch main --limit 1` — f1dcae9
 
 #### Manual
 
-- [ ] 3.3 Na produkcji klient z fakturą na etapie 1–4 ma ponaglenie, które kopiuje się do schowka (https)
+- [x] 3.3 Na produkcji klient z fakturą na etapie 1–4 ma ponaglenie, które kopiuje się do schowka (https) — f1dcae9
