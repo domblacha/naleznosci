@@ -39,22 +39,22 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 
 ## At a glance
 
-| ID   | Change ID                       | Outcome (user can …)                                                                                       | Prerequisites | PRD refs                          | Status   |
-| ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------- | -------- |
-| F-01 | deploy-pipeline-with-migrations | (foundation) merge na `main` przechodzi kontrole, stosuje migracje na produkcji i dopiero wtedy wdraża kod | —             | NFR (izolacja danych właściciela) | done     |
-| S-01 | polish-auth-shell               | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny              | —             | FR-001                            | done     |
-| S-02 | add-and-edit-clients            | dodać i edytować klienta, a duplikat zostaje odrzucony                                                     | S-01, F-01    | FR-002                            | done     |
-| S-03 | invoice-escalation-list         | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur                           | S-02          | US-01, FR-003, FR-005, FR-010     | done     |
-| S-04 | interest-and-compensation       | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza                                 | S-03          | US-01, FR-007                     | done     |
+| ID   | Change ID                       | Outcome (user can …)                                                                                       | Prerequisites | PRD refs                          | Status      |
+| ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------- | ----------- |
+| F-01 | deploy-pipeline-with-migrations | (foundation) merge na `main` przechodzi kontrole, stosuje migracje na produkcji i dopiero wtedy wdraża kod | —             | NFR (izolacja danych właściciela) | done        |
+| S-01 | polish-auth-shell               | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny              | —             | FR-001                            | done        |
+| S-02 | add-and-edit-clients            | dodać i edytować klienta, a duplikat zostaje odrzucony                                                     | S-01, F-01    | FR-002                            | done        |
+| S-03 | invoice-escalation-list         | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur                           | S-02          | US-01, FR-003, FR-005, FR-010     | done        |
+| S-04 | interest-and-compensation       | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza                                 | S-03          | US-01, FR-007                     | done        |
 | S-05 | collective-reminder             | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka                                | S-04          | US-01, FR-008, FR-011             | in-progress |
-| S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | proposed |
-| S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | proposed |
-| S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | proposed |
-| S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | proposed |
-| S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | proposed |
-| S-11 | invoice-list-filter-sort        | filtrować listę po kliencie i sortować po dniach po terminie lub kwocie                                    | S-03          | FR-010                            | proposed |
-| S-12 | editable-reminder-templates     | edytować 4 szablony treści ponagleń                                                                        | S-05          | FR-014                            | proposed |
-| S-13 | sender-profile                  | podać dane nadawcy (firma, NIP, adres, numer konta), które ponaglenie wstawia samo                         | S-05          | — (poza PRD v1); FR-011           | proposed |
+| S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | proposed    |
+| S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | proposed    |
+| S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | proposed    |
+| S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | proposed    |
+| S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | proposed    |
+| S-11 | invoice-list-filter-sort        | filtrować listę po kliencie i sortować po dniach po terminie lub kwocie                                    | S-03          | FR-010                            | proposed    |
+| S-12 | editable-reminder-templates     | edytować 4 szablony treści ponagleń                                                                        | S-05          | FR-014                            | proposed    |
+| S-13 | sender-profile                  | podać dane nadawcy (firma, NIP, adres, numer konta), które ponaglenie wstawia samo                         | S-05          | — (poza PRD v1); FR-011           | proposed    |
 
 ## Streams
 
@@ -162,7 +162,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Parallel with:** S-06, S-07, S-08, S-09, S-10, S-11
 - **Blockers:** —
 - **Unknowns:**
-  - Jakie domyślne treści mają 4 szablony tonów (etap 1–4)? — Owner: user. Block: no.
+  - Jakie domyślne treści mają 4 szablony tonów (etap 1–4)? — Owner: user. Block: no. **Rozstrzygnięte (2026-10-06):** stałe szablony w `src/lib/reminder-templates.ts` (przypomnienie, ponowne przypomnienie, wezwanie do zapłaty, ostateczne przedsądowe wezwanie), termin zapłaty dziś + 7 dni, bez danych nadawcy.
 - **Risk:** Zamyka główne kryterium sukcesu; szablony są na razie stałe, żeby edytowalność (S-12) dało się uciąć bez ruszania ponaglenia.
 - **Status:** in-progress
 
