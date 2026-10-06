@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { InvoiceFormDialog } from "@/components/invoices/InvoiceFormDialog";
+import { RemindersSection } from "@/components/invoices/RemindersSection";
 import { compensationGrosze, interestGrosze } from "@/lib/charges";
 import { DEFAULT_THRESHOLDS, groupInvoices, type EscalationGroup } from "@/lib/escalation";
 import { formatAmount, formatDate } from "@/lib/format";
@@ -75,6 +76,7 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
       ) : (
         <>
           <div className="flex justify-end">{addButton}</div>
+          <RemindersSection invoices={invoices} today={today} />
           {groups.map(({ group, items }) => (
             <section key={group} className="space-y-2">
               <h2 className="text-foreground text-sm font-semibold">

@@ -369,32 +369,32 @@ Brak migracji. Rollback to wycofanie Workera (README §Rollback) i revert w PR; 
 
 #### Automated
 
-- [x] 1.1 Testy ponaglenia, wyliczeń i reguły przechodzą: `npm test`
-- [x] 1.2 Lint przechodzi: `npm run lint`
-- [x] 1.3 Typy przechodzą: `npx astro check`
+- [x] 1.1 Testy ponaglenia, wyliczeń i reguły przechodzą: `npm test` — bc51682
+- [x] 1.2 Lint przechodzi: `npm run lint` — bc51682
+- [x] 1.3 Typy przechodzą: `npx astro check` — bc51682
 
 #### Manual
 
-- [x] 1.4 Przegląd treści 4 szablonów i formatu pozycji oraz podsumowania w wyrenderowanym przykładzie z testu (Acme etap 4, Żabka etap 3 bez rekompensaty)
+- [x] 1.4 Przegląd treści 4 szablonów i formatu pozycji oraz podsumowania w wyrenderowanym przykładzie z testu (Acme etap 4, Żabka etap 3 bez rekompensaty) — bc51682
 
 ### Phase 2: Sekcja „Ponaglenia” i dialog
 
 #### Automated
 
-- [ ] 2.1 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
-- [ ] 2.2 Typy przechodzą: `npx astro check`
-- [ ] 2.3 Testy przechodzą: `npm test`
-- [ ] 2.4 Build przechodzi: `npm run build`
-- [ ] 2.5 Smoke przechodzi lokalnie (z `npm run dev` i lokalnym Supabase): `npm run smoke`
+- [x] 2.1 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
+- [x] 2.2 Typy przechodzą: `npx astro check`
+- [x] 2.3 Testy przechodzą: `npm test`
+- [x] 2.4 Build przechodzi: `npm run build`
+- [x] 2.5 Smoke przechodzi lokalnie (z `npm run dev` i lokalnym Supabase): `npm run smoke`
 
 #### Manual
 
-- [ ] 2.6 Sekcja „Ponaglenia” na `/` pokazuje tylko klientów z fakturami na etapach 1–4, z najwyższym etapem i kwotą „Razem do zapłaty”; faktura przed pierwszym progiem i bieżąca nie wchodzą do ponaglenia
-- [ ] 2.7 Dialog klienta z kilkoma fakturami pokazuje jedno ponaglenie w tonie najwyższego etapu, z pozycjami (numer, kwota, termin, dni po terminie, odsetki, rekompensata) i podsumowaniem zgodnym z kwotami na liście
-- [ ] 2.8 Klient z wyłączoną rekompensatą ma ponaglenie bez linii o rekompensacie w pozycjach i podsumowaniu
-- [ ] 2.9 „Kopiuj do schowka” kopiuje treść z ręcznymi poprawkami, przycisk pokazuje „Skopiowano”, a wklejony tekst w programie pocztowym ma zachowane linie
-- [ ] 2.10 Faktura dodana w dialogu od razu zmienia sekcję „Ponaglenia”; po zamknięciu dialogu fokus wraca na przycisk klienta
-- [ ] 2.11 `/dev/ui` pokazuje stany dialogu (default, copied, copy error) i pusty stan sekcji w trybie jasnym i ciemnym
+- [x] 2.6 Sekcja „Ponaglenia” na `/` pokazuje tylko klientów z fakturami na etapach 1–4, z najwyższym etapem i kwotą „Razem do zapłaty”; faktura przed pierwszym progiem i bieżąca nie wchodzą do ponaglenia
+- [x] 2.7 Dialog klienta z kilkoma fakturami pokazuje jedno ponaglenie w tonie najwyższego etapu, z pozycjami (numer, kwota, termin, dni po terminie, odsetki, rekompensata) i podsumowaniem zgodnym z kwotami na liście
+- [x] 2.8 Klient z wyłączoną rekompensatą ma ponaglenie bez linii o rekompensacie w pozycjach i podsumowaniu
+- [x] 2.9 „Kopiuj do schowka” kopiuje treść z ręcznymi poprawkami, przycisk pokazuje „Skopiowano”, a wklejony tekst w programie pocztowym ma zachowane linie
+- [x] 2.10 Faktura dodana w dialogu od razu zmienia sekcję „Ponaglenia”; po zamknięciu dialogu fokus wraca na przycisk klienta
+- [x] 2.11 `/dev/ui` pokazuje stany dialogu (default, copied, copy error) i pusty stan sekcji w trybie jasnym i ciemnym
 
 ### Phase 3: Wdrożenie
 
