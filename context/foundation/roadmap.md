@@ -3,7 +3,7 @@ project: Należności
 version: 1
 status: draft
 created: 2026-09-25
-updated: 2026-10-05
+updated: 2026-10-06
 prd_version: 1
 main_goal: speed
 top_blocker: none
@@ -44,8 +44,8 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | F-01 | deploy-pipeline-with-migrations | (foundation) merge na `main` przechodzi kontrole, stosuje migracje na produkcji i dopiero wtedy wdraża kod | —             | NFR (izolacja danych właściciela) | done        |
 | S-01 | polish-auth-shell               | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny              | —             | FR-001                            | done        |
 | S-02 | add-and-edit-clients            | dodać i edytować klienta, a duplikat zostaje odrzucony                                                     | S-01, F-01    | FR-002                            | done        |
-| S-03 | invoice-escalation-list         | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur                           | S-02          | US-01, FR-003, FR-005, FR-010     | done |
-| S-04 | interest-and-compensation       | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza                                 | S-03          | US-01, FR-007                     | proposed    |
+| S-03 | invoice-escalation-list         | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur                           | S-02          | US-01, FR-003, FR-005, FR-010     | done        |
+| S-04 | interest-and-compensation       | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza                                 | S-03          | US-01, FR-007                     | in-progress |
 | S-05 | collective-reminder             | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka                                | S-04          | US-01, FR-008, FR-011             | proposed    |
 | S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | proposed    |
 | S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | proposed    |
@@ -69,12 +69,12 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 
 ## Baseline
 
-What's already in place in the codebase as of `2026-09-25` (auto-researched + user-confirmed; odświeżone 2026-10-05 po S-01, S-02 i F-01).
+What's already in place in the codebase as of `2026-09-25` (auto-researched + user-confirmed; odświeżone 2026-10-06 po S-01, S-02, S-03 i F-01).
 Foundations below assume these are present and do NOT re-scaffold them.
 
-- **Frontend:** partial — polska powłoka i ekrany konta (S-01), tokeny kolorów i komponenty shadcn, widok klientów `src/pages/clients.astro` (S-02); brak widoków faktur.
-- **Backend / API:** partial — endpointy auth i klientów (`src/pages/api/auth/*`, `src/pages/api/clients/*`); brak API faktur.
-- **Data:** partial — tabela `clients` z RLS (`supabase/migrations/20261003120000_create_clients.sql`) ustala wzorzec izolacji danych właściciela; brak tabel faktur i ustawień.
+- **Frontend:** partial — polska powłoka i ekrany konta (S-01), tokeny kolorów i komponenty shadcn, widok klientów `src/pages/clients.astro` (S-02) oraz lista otwartych faktur z dialogiem dodawania na `/` (`src/components/invoices/`, S-03); brak widoków historii i ponagleń.
+- **Backend / API:** partial — endpointy auth, klientów i `POST /api/invoices` (`src/pages/api/auth/*`, `src/pages/api/clients/*`, `src/pages/api/invoices/index.ts`); brak edycji i anulowania faktur.
+- **Data:** partial — tabele `clients` i `invoices` z RLS (`supabase/migrations/20261003120000_create_clients.sql`, migracja `create_invoices`; złożony FK `(client_id, user_id)` wymusza przynależność klienta do właściciela); reguła etapu w `src/lib/escalation.ts` z testami; brak tabeli ustawień.
 - **Auth:** present — rejestracja, logowanie, wylogowanie i middleware chroniący trasy (`src/middleware.ts`); formularze po angielsku.
 - **Deploy / infra:** present (od 2026-10-05, F-01) — GitHub Actions (`.github/workflows/ci.yml`): kontrole na PR, a po merge na `main` migracje na produkcji przed `wrangler deploy`; Workers Builds odłączony (README §Deployment).
 - **Observability:** partial — włączone observability Workers (`wrangler.jsonc`); brak śledzenia błędów.
@@ -150,7 +150,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Unknowns:**
   - Jakie są domyślne wartości rocznej stopy odsetek i 3 progów kwotowych rekompensaty w PLN (przed zbudowaniem ustawień w S-10)? — Owner: user. Block: no.
 - **Risk:** Wymóg poprawności wyliczeń z Kryteriów sukcesu — zaokrąglenia i precyzja kwot to najłatwiejsze miejsce na cichy błąd, dlatego wycinek stoi przed ponagleniem, które te kwoty konsumuje.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-05: Zbiorcze ponaglenie do schowka
 
@@ -251,21 +251,21 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID                       | Suggested issue title                                       | Ready for `/10x-plan` | Notes                                                       |
-| ---------- | ------------------------------- | ----------------------------------------------------------- | --------------------- | ----------------------------------------------------------- |
-| F-01       | deploy-pipeline-with-migrations | Potok CI/CD: kontrole na PR, migracje przed wdrożeniem kodu | no                    | Done 2026-10-05                                             |
-| S-01       | polish-auth-shell               | Polski interfejs konta i pusty ekran główny                 | no                    | Done 2026-09-29                                             |
-| S-02       | add-and-edit-clients            | Dodawanie i edycja klientów z wykrywaniem duplikatów        | no                    | Done 2026-10-05                                             |
-| S-03       | invoice-escalation-list         | Lista otwartych faktur pogrupowana po etapach eskalacji     | yes                   | Run `/10x-plan invoice-escalation-list`; gwiazda przewodnia |
-| S-04       | interest-and-compensation       | Odsetki i rekompensata przy przeterminowanych fakturach     | no                    | Czeka na S-03                                               |
-| S-05       | collective-reminder             | Zbiorcze ponaglenie per klient do schowka                   | no                    | Czeka na S-04                                               |
-| S-06       | mark-invoice-paid               | Oznaczanie faktury jako zapłaconej + widok historii         | no                    | Czeka na S-04                                               |
-| S-07       | invoice-edit-and-cancel         | Edycja (z blokadą po terminie) i anulowanie faktury         | no                    | Czeka na S-03, S-06                                         |
-| S-08       | pause-and-resume-escalation     | Wstrzymanie i wznowienie eskalacji faktury                  | no                    | Czeka na S-04, S-07                                         |
-| S-09       | client-deactivate-restore       | Dezaktywacja i przywracanie klienta                         | no                    | Czeka na S-03                                               |
-| S-10       | escalation-settings             | Ustawienia progów, stopy odsetek i rekompensaty             | no                    | Czeka na S-04                                               |
-| S-11       | invoice-list-filter-sort        | Filtrowanie i sortowanie listy faktur                       | no                    | Czeka na S-03; kandydat do cięcia                           |
-| S-12       | editable-reminder-templates     | Edytowalne szablony ponagleń                                | no                    | Czeka na S-05; pierwszy do cięcia                           |
+| Roadmap ID | Change ID                       | Suggested issue title                                       | Ready for `/10x-plan` | Notes                                                                            |
+| ---------- | ------------------------------- | ----------------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------- |
+| F-01       | deploy-pipeline-with-migrations | Potok CI/CD: kontrole na PR, migracje przed wdrożeniem kodu | no                    | Done 2026-10-05                                                                  |
+| S-01       | polish-auth-shell               | Polski interfejs konta i pusty ekran główny                 | no                    | Done 2026-09-29                                                                  |
+| S-02       | add-and-edit-clients            | Dodawanie i edycja klientów z wykrywaniem duplikatów        | no                    | Done 2026-10-05                                                                  |
+| S-03       | invoice-escalation-list         | Lista otwartych faktur pogrupowana po etapach eskalacji     | no                    | Done 2026-10-05; gwiazda przewodnia                                              |
+| S-04       | interest-and-compensation       | Odsetki i rekompensata przy przeterminowanych fakturach     | yes                   | Odblokowany przez S-03; `/10x-plan interest-and-compensation`                    |
+| S-05       | collective-reminder             | Zbiorcze ponaglenie per klient do schowka                   | no                    | Czeka na S-04                                                                    |
+| S-06       | mark-invoice-paid               | Oznaczanie faktury jako zapłaconej + widok historii         | no                    | Czeka na S-04                                                                    |
+| S-07       | invoice-edit-and-cancel         | Edycja (z blokadą po terminie) i anulowanie faktury         | no                    | Czeka na S-03, S-06                                                              |
+| S-08       | pause-and-resume-escalation     | Wstrzymanie i wznowienie eskalacji faktury                  | no                    | Czeka na S-04, S-07                                                              |
+| S-09       | client-deactivate-restore       | Dezaktywacja i przywracanie klienta                         | yes                   | Odblokowany przez S-03; `/10x-plan client-deactivate-restore`                    |
+| S-10       | escalation-settings             | Ustawienia progów, stopy odsetek i rekompensaty             | no                    | Czeka na S-04                                                                    |
+| S-11       | invoice-list-filter-sort        | Filtrowanie i sortowanie listy faktur                       | yes                   | Odblokowany przez S-03; kandydat do cięcia; `/10x-plan invoice-list-filter-sort` |
+| S-12       | editable-reminder-templates     | Edytowalne szablony ponagleń                                | no                    | Czeka na S-05; pierwszy do cięcia                                                |
 
 ## Open Roadmap Questions
 
