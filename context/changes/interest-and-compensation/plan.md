@@ -271,31 +271,31 @@ Brak migracji. Rollback to wycofanie Workera (README §Rollback) i revert w PR; 
 
 #### Automated
 
-- [x] 1.1 Testy wyliczeń i reguły przechodzą: `npm test`
-- [x] 1.2 Lint przechodzi: `npm run lint`
-- [x] 1.3 Typy przechodzą: `npx astro check`
+- [x] 1.1 Testy wyliczeń i reguły przechodzą: `npm test` — 4e92019
+- [x] 1.2 Lint przechodzi: `npm run lint` — 4e92019
+- [x] 1.3 Typy przechodzą: `npx astro check` — 4e92019
 
 #### Manual
 
-- [x] 1.4 Przegląd tabeli przypadków w teście: stopa 13,75%, progi 170,00 / 297,50 / 425,00 zł, 5 000 zł w progu 1, 50 000 zł w progu 3, połowa grosza w górę
+- [x] 1.4 Przegląd tabeli przypadków w teście: stopa 13,75%, progi 170,00 / 297,50 / 425,00 zł, 5 000 zł w progu 1, 50 000 zł w progu 3, połowa grosza w górę — 4e92019
 
 ### Phase 2: Kwoty na liście
 
 #### Automated
 
-- [ ] 2.1 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
-- [ ] 2.2 Typy przechodzą: `npx astro check`
-- [ ] 2.3 Testy przechodzą: `npm test`
-- [ ] 2.4 Build przechodzi: `npm run build`
-- [ ] 2.5 Smoke przechodzi lokalnie (z `npm run dev` i lokalnym Supabase): `npm run smoke`
+- [x] 2.1 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
+- [x] 2.2 Typy przechodzą: `npx astro check`
+- [x] 2.3 Testy przechodzą: `npm test`
+- [x] 2.4 Build przechodzi: `npm run build`
+- [x] 2.5 Smoke przechodzi lokalnie (z `npm run dev` i lokalnym Supabase): `npm run smoke`
 
 #### Manual
 
-- [ ] 2.6 Faktura 1 234,56 zł z terminem 40 dni temu pokazuje odsetki 18,60 zł i rekompensatę 170,00 zł
-- [ ] 2.7 Faktura bieżąca (termin dziś lub później) ma „—” w kolumnach odsetek i rekompensaty, a faktura z grupy „Po terminie, przed etapem 1” ma kwoty
-- [ ] 2.8 Klient z wyłączonym przełącznikiem ma rekompensatę „0,00 zł”, a odsetki są naliczone
-- [ ] 2.9 Faktura dodana w dialogu od razu pokazuje kwoty, a po odświeżeniu są takie same
-- [ ] 2.10 Tabela mieści się w `max-w-5xl` bez przewijania na desktopie; `/dev/ui` pokazuje kolumny w trybie jasnym i ciemnym
+- [x] 2.6 Faktura 1 234,56 zł z terminem 40 dni temu pokazuje odsetki 18,60 zł i rekompensatę 170,00 zł
+- [x] 2.7 Faktura bieżąca (termin dziś lub później) ma „—” w kolumnach odsetek i rekompensaty, a faktura z grupy „Po terminie, przed etapem 1” ma kwoty
+- [x] 2.8 Klient z wyłączonym przełącznikiem ma rekompensatę „0,00 zł”, a odsetki są naliczone
+- [x] 2.9 Faktura dodana w dialogu od razu pokazuje kwoty, a po odświeżeniu są takie same
+- [x] 2.10 Tabela mieści się w `max-w-5xl` bez przewijania na desktopie; `/dev/ui` pokazuje kolumny w trybie jasnym i ciemnym
 
 ### Phase 3: Wdrożenie
 

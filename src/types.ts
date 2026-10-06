@@ -16,6 +16,7 @@ export interface Invoice {
   id: string;
   clientId: string;
   clientName: string;
+  clientChargesCompensation: boolean;
   number: string;
   amountGrosze: number;
   /** YYYY-MM-DD */

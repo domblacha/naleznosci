@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { InvoiceFormDialog } from "@/components/invoices/InvoiceFormDialog";
+import { compensationGrosze, interestGrosze } from "@/lib/charges";
 import { DEFAULT_THRESHOLDS, groupInvoices, type EscalationGroup } from "@/lib/escalation";
 import type { Client, Invoice } from "@/types";
 
@@ -97,6 +98,8 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
                     <TableHead className="text-right">Kwota</TableHead>
                     <TableHead>Termin</TableHead>
                     <TableHead className="text-right">Dni po terminie</TableHead>
+                    <TableHead className="text-right">Odsetki</TableHead>
+                    <TableHead className="text-right">Rekompensata</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -107,6 +110,22 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
                       <TableCell className="text-right">{formatAmount(invoice.amountGrosze)}</TableCell>
                       <TableCell>{formatDate(invoice.dueDate)}</TableCell>
                       <TableCell className="text-right">{group === "current" ? "—" : invoice.daysOverdue}</TableCell>
+                      <TableCell className="text-right">
+                        {group === "current"
+                          ? "—"
+                          : formatAmount(interestGrosze(invoice.amountGrosze, invoice.daysOverdue))}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {group === "current"
+                          ? "—"
+                          : formatAmount(
+                              compensationGrosze(
+                                invoice.amountGrosze,
+                                invoice.daysOverdue,
+                                invoice.clientChargesCompensation,
+                              ),
+                            )}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
