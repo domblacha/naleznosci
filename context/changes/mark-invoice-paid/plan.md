@@ -314,8 +314,8 @@ Kolumna nullowalna bez wartości domyślnej — istniejące faktury pozostają o
 
 #### Manual
 
-- [ ] 1.7 W Supabase Studio faktura oznaczona przez smoke ma `paid_on`, a po `DELETE` znów `null`
-- [ ] 1.8 Lista na `/` nie pokazuje faktury z ustawionym `paid_on` (ustawionym ręcznie lub przez API)
+- [x] 1.7 W Supabase Studio faktura oznaczona przez smoke ma `paid_on`, a po `DELETE` znów `null`
+- [x] 1.8 Lista na `/` nie pokazuje faktury z ustawionym `paid_on` (ustawionym ręcznie lub przez API)
 
 ### Phase 2: Oznaczanie na liście
 
@@ -328,12 +328,12 @@ Kolumna nullowalna bez wartości domyślnej — istniejące faktury pozostają o
 
 #### Manual
 
-- [ ] 2.5 Oznaczenie przeterminowanej faktury z datą dziś usuwa ją z grupy bez przeładowania; podgląd w dialogu pokazywał te same odsetki co wiersz listy
-- [ ] 2.6 Oznaczenie ostatniej faktury klienta na etapach 1–4 usuwa jego wiersz z „Ponagleń”
-- [ ] 2.7 Wybór daty jutrzejszej pokazuje błąd pola i nic nie zapisuje; data sprzed terminu pokazuje 0 dni i 0 zł
-- [ ] 2.8 Po przeładowaniu strony oznaczona faktura nadal nie wraca na listę
-- [ ] 2.9 Fokus wraca sensownie po zamknięciu dialogu (anulowanie → przycisk wiersza; zapis → „Dodaj fakturę”)
-- [ ] 2.10 `/dev/ui` pokazuje nowe stany w jasnym i ciemnym motywie
+- [x] 2.5 Oznaczenie przeterminowanej faktury z datą dziś usuwa ją z grupy bez przeładowania; podgląd w dialogu pokazywał te same odsetki co wiersz listy
+- [x] 2.6 Oznaczenie ostatniej faktury klienta na etapach 1–4 usuwa jego wiersz z „Ponagleń”
+- [x] 2.7 Wybór daty jutrzejszej pokazuje błąd pola i nic nie zapisuje; data sprzed terminu pokazuje 0 dni i 0 zł
+- [x] 2.8 Po przeładowaniu strony oznaczona faktura nadal nie wraca na listę
+- [x] 2.9 Fokus wraca sensownie po zamknięciu dialogu (anulowanie → przycisk wiersza; zapis → „Dodaj fakturę”)
+- [x] 2.10 `/dev/ui` pokazuje nowe stany w jasnym i ciemnym motywie
 
 ### Phase 3: Widok historii
 
@@ -347,7 +347,7 @@ Kolumna nullowalna bez wartości domyślnej — istniejące faktury pozostają o
 
 #### Manual
 
-- [ ] 3.6 Faktura zapłacona 10 dni po terminie pokazuje w historii 10 dni i odsetki z tych 10 dni; następnego dnia wartości są te same
-- [ ] 3.7 „Zmień datę” na wcześniejszą zmniejsza odsetki w wierszu i przestawia kolejność, jeśli trzeba
-- [ ] 3.8 „Przywróć do otwartych” usuwa wiersz z historii, a na `/` faktura wraca na właściwy etap i (gdy etap 1–4) do „Ponagleń”
-- [ ] 3.9 Link „Historia” w Topbarze jest aktywny na `/history`; widok czytelny w jasnym i ciemnym motywie oraz na wąskim ekranie
+- [x] 3.6 Faktura zapłacona 10 dni po terminie pokazuje w historii 10 dni i odsetki z tych 10 dni; następnego dnia wartości są te same
+- [x] 3.7 „Zmień datę” na wcześniejszą zmniejsza odsetki w wierszu i przestawia kolejność, jeśli trzeba
+- [x] 3.8 „Przywróć do otwartych” usuwa wiersz z historii, a na `/` faktura wraca na właściwy etap i (gdy etap 1–4) do „Ponagleń”
+- [x] 3.9 Link „Historia” w Topbarze jest aktywny na `/history`; widok czytelny w jasnym i ciemnym motywie oraz na wąskim ekranie
