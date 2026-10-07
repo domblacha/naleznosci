@@ -1,5 +1,6 @@
 import type React from "react";
 import { CalendarDays, CircleAlert, FileText, Save, Wallet } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,6 +8,7 @@ import { FormField } from "@/components/auth/FormField";
 import { ServerError } from "@/components/auth/ServerError";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { useInvoiceForm, type InvoiceFormErrors } from "@/components/hooks/use-invoice-form";
+import { isInvoiceLocked } from "@/lib/invoice-lock";
 import type { Client, Invoice } from "@/types";
 
 interface InvoiceFormViewProps {
@@ -19,6 +21,8 @@ interface InvoiceFormViewProps {
   errors: InvoiceFormErrors;
   serverError?: string | null;
   pending: boolean;
+  /** Past the due date: client, amount and due date can no longer be changed. */
+  locked?: boolean;
   onClientIdChange: (value: string) => void;
   onNumberChange: (value: string) => void;
   onAmountChange: (value: string) => void;
@@ -36,6 +40,7 @@ export function InvoiceFormView({
   errors,
   serverError,
   pending,
+  locked,
   onClientIdChange,
   onNumberChange,
   onAmountChange,
@@ -51,7 +56,7 @@ export function InvoiceFormView({
         <Label htmlFor={clientFieldId} className="mb-1">
           Klient
         </Label>
-        <Select value={clientId} onValueChange={onClientIdChange}>
+        <Select value={clientId} onValueChange={onClientIdChange} disabled={locked}>
           <SelectTrigger
             id={clientFieldId}
             className="w-full"
@@ -94,6 +99,7 @@ export function InvoiceFormView({
         placeholder="1 234,56"
         hint="W złotych, np. 1 234,56"
         error={errors.amount}
+        disabled={locked}
         icon={<Wallet className="size-4" />}
       />
       <FormField
@@ -104,18 +110,34 @@ export function InvoiceFormView({
         value={dueDate}
         onChange={onDueDateChange}
         error={errors.dueDate}
+        disabled={locked}
         icon={<CalendarDays className="size-4" />}
       />
       <ServerError message={serverError} />
       <SubmitButton pending={pending} pendingText="Zapisywanie..." icon={<Save className="size-4" />}>
         Zapisz
       </SubmitButton>
+      {locked ? (
+        <p className="text-muted-foreground text-xs">
+          Faktura jest po terminie — klienta, kwoty i terminu nie można zmienić.
+        </p>
+      ) : null}
     </form>
   );
 }
 
-function InvoiceForm({ clients, onSaved }: { clients: Client[]; onSaved: (invoice: Invoice) => void }) {
-  const form = useInvoiceForm({ onSaved });
+function InvoiceForm({
+  clients,
+  invoice,
+  locked,
+  onSaved,
+}: {
+  clients: Client[];
+  invoice?: Invoice;
+  locked: boolean;
+  onSaved: (invoice: Invoice) => void;
+}) {
+  const form = useInvoiceForm({ invoice, onSaved });
   return (
     <InvoiceFormView
       idPrefix="invoice"
@@ -127,6 +149,7 @@ function InvoiceForm({ clients, onSaved }: { clients: Client[]; onSaved: (invoic
       errors={form.errors}
       serverError={form.serverError}
       pending={form.pending}
+      locked={locked}
       onClientIdChange={form.setClientId}
       onNumberChange={form.setNumber}
       onAmountChange={form.setAmount}
@@ -140,11 +163,26 @@ interface InvoiceFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   clients: Client[];
+  /** The invoice being edited; empty means the dialog adds a new one. */
+  invoice?: Invoice | null;
+  /** YYYY-MM-DD, "today" in Poland, computed on the server. */
+  today: string;
   onSaved: (invoice: Invoice) => void;
+  onCancelRequest?: () => void;
   onCloseAutoFocus?: () => void;
 }
 
-export function InvoiceFormDialog({ open, onOpenChange, clients, onSaved, onCloseAutoFocus }: InvoiceFormDialogProps) {
+export function InvoiceFormDialog({
+  open,
+  onOpenChange,
+  clients,
+  invoice,
+  today,
+  onSaved,
+  onCancelRequest,
+  onCloseAutoFocus,
+}: InvoiceFormDialogProps) {
+  const editing = invoice ?? undefined;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -154,11 +192,24 @@ export function InvoiceFormDialog({ open, onOpenChange, clients, onSaved, onClos
         }}
       >
         <DialogHeader>
-          <DialogTitle>Dodaj fakturę</DialogTitle>
-          <DialogDescription>Podaj dane nowej faktury.</DialogDescription>
+          <DialogTitle>{editing ? "Edytuj fakturę" : "Dodaj fakturę"}</DialogTitle>
+          <DialogDescription>
+            {editing ? `Faktura ${editing.number} · ${editing.clientName}` : "Podaj dane nowej faktury."}
+          </DialogDescription>
         </DialogHeader>
-        {/* Mounted only while open, so the form state resets on every opening. */}
-        <InvoiceForm clients={clients} onSaved={onSaved} />
+        {/* Mounted only while open and keyed by invoice, so the form state resets on every opening. */}
+        <InvoiceForm
+          key={editing?.id ?? "new"}
+          clients={clients}
+          invoice={editing}
+          locked={editing ? isInvoiceLocked(editing, today) : false}
+          onSaved={onSaved}
+        />
+        {editing && onCancelRequest ? (
+          <Button type="button" variant="destructive" onClick={onCancelRequest}>
+            Anuluj fakturę
+          </Button>
+        ) : null}
       </DialogContent>
     </Dialog>
   );

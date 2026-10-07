@@ -16,6 +16,7 @@ interface FormFieldProps {
   max?: string;
   icon: ReactNode;
   endContent?: ReactNode;
+  disabled?: boolean;
 }
 
 export function FormField({
@@ -31,6 +32,7 @@ export function FormField({
   max,
   icon,
   endContent,
+  disabled,
 }: FormFieldProps) {
   return (
     <div>
@@ -49,6 +51,7 @@ export function FormField({
           }}
           placeholder={placeholder}
           max={max}
+          disabled={disabled}
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
           className="pl-10"

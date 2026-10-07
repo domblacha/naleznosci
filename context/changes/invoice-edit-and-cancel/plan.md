@@ -335,35 +335,35 @@ Migracja jest addytywna: istniejące faktury dostają `cancelled_on = null`. Pon
 
 #### Automated
 
-- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up`
-- [x] 1.2 Testy jednostkowe przechodzą (w tym granica blokady i round-trip kwoty): `npm test`
-- [x] 1.3 Lint przechodzi: `npm run lint`
-- [x] 1.4 Sprawdzenie typów przechodzi: `npx astro check`
-- [x] 1.5 Build przechodzi: `npm run build`
-- [x] 1.6 Smoke przechodzi na lokalnym dev serwerze (port 4321 ubity przed i po): `npm run smoke`
+- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up` — d7c78fe
+- [x] 1.2 Testy jednostkowe przechodzą (w tym granica blokady i round-trip kwoty): `npm test` — d7c78fe
+- [x] 1.3 Lint przechodzi: `npm run lint` — d7c78fe
+- [x] 1.4 Sprawdzenie typów przechodzi: `npx astro check` — d7c78fe
+- [x] 1.5 Build przechodzi: `npm run build` — d7c78fe
+- [x] 1.6 Smoke przechodzi na lokalnym dev serwerze (port 4321 ubity przed i po): `npm run smoke` — d7c78fe
 
 #### Manual
 
-- [x] 1.7 W Supabase Studio próba ustawienia naraz `paid_on` i `cancelled_on` na jednej fakturze jest odrzucona przez constraint
-- [x] 1.8 Lista na `/` nie pokazuje faktury z ustawionym `cancelled_on`, a jej klient nie ma jej w ponagleniu
+- [x] 1.7 W Supabase Studio próba ustawienia naraz `paid_on` i `cancelled_on` na jednej fakturze jest odrzucona przez constraint — d7c78fe
+- [x] 1.8 Lista na `/` nie pokazuje faktury z ustawionym `cancelled_on`, a jej klient nie ma jej w ponagleniu — d7c78fe
 
 ### Phase 2: Edycja i anulowanie na liście
 
 #### Automated
 
-- [ ] 2.1 Testy jednostkowe przechodzą: `npm test`
-- [ ] 2.2 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
-- [ ] 2.3 Sprawdzenie typów przechodzi: `npx astro check`
-- [ ] 2.4 Build przechodzi: `npm run build`
+- [x] 2.1 Testy jednostkowe przechodzą: `npm test`
+- [x] 2.2 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
+- [x] 2.3 Sprawdzenie typów przechodzi: `npx astro check`
+- [x] 2.4 Build przechodzi: `npm run build`
 
 #### Manual
 
-- [ ] 2.5 Faktura z terminem dziś: wszystkie pola edytowalne; zmiana kwoty zapisuje się i odświeża odsetki w wierszu
-- [ ] 2.6 Faktura po terminie: klient, kwota i termin wyłączone z wyjaśnieniem; zmiana numeru zapisuje się
-- [ ] 2.7 Zmiana terminu bieżącej faktury na datę z przeszłości przenosi ją od razu do właściwej grupy etapu
-- [ ] 2.8 Anulowanie: „Wróć” nic nie zmienia; „Anuluj fakturę” usuwa wiersz z listy i z ponaglenia klienta bez przeładowania, a po odświeżeniu faktura nie wraca
-- [ ] 2.9 Fokus wraca na „Edytuj” po zapisie i na „Dodaj fakturę” po anulowaniu; dialogi obsługują klawiaturę (Esc, Tab)
-- [ ] 2.10 `/dev/ui` pokazuje nowe stany w jasnym i ciemnym motywie
+- [x] 2.5 Faktura z terminem dziś: wszystkie pola edytowalne; zmiana kwoty zapisuje się i odświeża odsetki w wierszu
+- [x] 2.6 Faktura po terminie: klient, kwota i termin wyłączone z wyjaśnieniem; zmiana numeru zapisuje się
+- [x] 2.7 Zmiana terminu bieżącej faktury na datę z przeszłości przenosi ją od razu do właściwej grupy etapu
+- [x] 2.8 Anulowanie: „Wróć” nic nie zmienia; „Anuluj fakturę” usuwa wiersz z listy i z ponaglenia klienta bez przeładowania, a po odświeżeniu faktura nie wraca
+- [x] 2.9 Fokus wraca na „Edytuj” po zapisie i na „Dodaj fakturę” po anulowaniu; dialogi obsługują klawiaturę (Esc, Tab)
+- [x] 2.10 `/dev/ui` pokazuje nowe stany w jasnym i ciemnym motywie
 
 ### Phase 3: Historia anulowanych
 
