@@ -23,6 +23,8 @@ export interface Invoice {
   dueDate: string;
   /** YYYY-MM-DD; null = faktura otwarta */
   paidOn: string | null;
+  /** YYYY-MM-DD; null = faktura nieanulowana */
+  cancelledOn: string | null;
   createdAt: string;
 }
 

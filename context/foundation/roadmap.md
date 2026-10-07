@@ -48,7 +48,7 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | S-04 | interest-and-compensation       | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza                                 | S-03          | US-01, FR-007                     | done     |
 | S-05 | collective-reminder             | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka                                | S-04          | US-01, FR-008, FR-011             | done     |
 | S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | done     |
-| S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | proposed |
+| S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | in-progress |
 | S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | proposed |
 | S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | proposed |
 | S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | proposed |
@@ -188,7 +188,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Blokada edycji chroni poprawność wyliczeń; musi powstać przed wstrzymaniem (S-08), które wprowadza od niej wyjątek.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-08: Wstrzymanie i wznowienie eskalacji
 
