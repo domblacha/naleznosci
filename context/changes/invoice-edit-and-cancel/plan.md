@@ -369,15 +369,15 @@ Migracja jest addytywna: istniejące faktury dostają `cancelled_on = null`. Pon
 
 #### Automated
 
-- [x] 3.1 Testy jednostkowe przechodzą: `npm test`
-- [x] 3.2 Lint przechodzi: `npm run lint`
-- [x] 3.3 Sprawdzenie typów przechodzi: `npx astro check`
-- [x] 3.4 Build przechodzi: `npm run build`
-- [x] 3.5 Smoke przechodzi na lokalnym dev serwerze (port 4321 ubity przed i po): `npm run smoke`
+- [x] 3.1 Testy jednostkowe przechodzą: `npm test` — 123e65b
+- [x] 3.2 Lint przechodzi: `npm run lint` — 123e65b
+- [x] 3.3 Sprawdzenie typów przechodzi: `npx astro check` — 123e65b
+- [x] 3.4 Build przechodzi: `npm run build` — 123e65b
+- [x] 3.5 Smoke przechodzi na lokalnym dev serwerze (port 4321 ubity przed i po): `npm run smoke` — 123e65b
 
 #### Manual
 
-- [x] 3.6 `/history` pokazuje anulowaną fakturę z datą anulowania i bez odsetek; zapłacone bez zmian
-- [x] 3.7 „Przywróć do otwartych” wraca fakturę na `/` do właściwej grupy i do ponagleń
-- [x] 3.8 Przywrócenie, gdy numer zajęła nowa faktura, pokazuje komunikat i zostawia fakturę w anulowanych
-- [x] 3.9 Puste stany obu sekcji wyglądają poprawnie w jasnym i ciemnym motywie
+- [x] 3.6 `/history` pokazuje anulowaną fakturę z datą anulowania i bez odsetek; zapłacone bez zmian — 123e65b
+- [x] 3.7 „Przywróć do otwartych” wraca fakturę na `/` do właściwej grupy i do ponagleń — 123e65b
+- [x] 3.8 Przywrócenie, gdy numer zajęła nowa faktura, pokazuje komunikat i zostawia fakturę w anulowanych — 123e65b
+- [x] 3.9 Puste stany obu sekcji wyglądają poprawnie w jasnym i ciemnym motywie — 123e65b
