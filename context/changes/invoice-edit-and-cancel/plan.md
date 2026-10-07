@@ -351,33 +351,33 @@ Migracja jest addytywna: istniejące faktury dostają `cancelled_on = null`. Pon
 
 #### Automated
 
-- [x] 2.1 Testy jednostkowe przechodzą: `npm test`
-- [x] 2.2 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
-- [x] 2.3 Sprawdzenie typów przechodzi: `npx astro check`
-- [x] 2.4 Build przechodzi: `npm run build`
+- [x] 2.1 Testy jednostkowe przechodzą: `npm test` — de4fe61
+- [x] 2.2 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint` — de4fe61
+- [x] 2.3 Sprawdzenie typów przechodzi: `npx astro check` — de4fe61
+- [x] 2.4 Build przechodzi: `npm run build` — de4fe61
 
 #### Manual
 
-- [x] 2.5 Faktura z terminem dziś: wszystkie pola edytowalne; zmiana kwoty zapisuje się i odświeża odsetki w wierszu
-- [x] 2.6 Faktura po terminie: klient, kwota i termin wyłączone z wyjaśnieniem; zmiana numeru zapisuje się
-- [x] 2.7 Zmiana terminu bieżącej faktury na datę z przeszłości przenosi ją od razu do właściwej grupy etapu
-- [x] 2.8 Anulowanie: „Wróć” nic nie zmienia; „Anuluj fakturę” usuwa wiersz z listy i z ponaglenia klienta bez przeładowania, a po odświeżeniu faktura nie wraca
-- [x] 2.9 Fokus wraca na „Edytuj” po zapisie i na „Dodaj fakturę” po anulowaniu; dialogi obsługują klawiaturę (Esc, Tab)
-- [x] 2.10 `/dev/ui` pokazuje nowe stany w jasnym i ciemnym motywie
+- [x] 2.5 Faktura z terminem dziś: wszystkie pola edytowalne; zmiana kwoty zapisuje się i odświeża odsetki w wierszu — de4fe61
+- [x] 2.6 Faktura po terminie: klient, kwota i termin wyłączone z wyjaśnieniem; zmiana numeru zapisuje się — de4fe61
+- [x] 2.7 Zmiana terminu bieżącej faktury na datę z przeszłości przenosi ją od razu do właściwej grupy etapu — de4fe61
+- [x] 2.8 Anulowanie: „Wróć” nic nie zmienia; „Anuluj fakturę” usuwa wiersz z listy i z ponaglenia klienta bez przeładowania, a po odświeżeniu faktura nie wraca — de4fe61
+- [x] 2.9 Fokus wraca na „Edytuj” po zapisie i na „Dodaj fakturę” po anulowaniu; dialogi obsługują klawiaturę (Esc, Tab) — de4fe61
+- [x] 2.10 `/dev/ui` pokazuje nowe stany w jasnym i ciemnym motywie — de4fe61
 
 ### Phase 3: Historia anulowanych
 
 #### Automated
 
-- [ ] 3.1 Testy jednostkowe przechodzą: `npm test`
-- [ ] 3.2 Lint przechodzi: `npm run lint`
-- [ ] 3.3 Sprawdzenie typów przechodzi: `npx astro check`
-- [ ] 3.4 Build przechodzi: `npm run build`
-- [ ] 3.5 Smoke przechodzi na lokalnym dev serwerze (port 4321 ubity przed i po): `npm run smoke`
+- [x] 3.1 Testy jednostkowe przechodzą: `npm test`
+- [x] 3.2 Lint przechodzi: `npm run lint`
+- [x] 3.3 Sprawdzenie typów przechodzi: `npx astro check`
+- [x] 3.4 Build przechodzi: `npm run build`
+- [x] 3.5 Smoke przechodzi na lokalnym dev serwerze (port 4321 ubity przed i po): `npm run smoke`
 
 #### Manual
 
-- [ ] 3.6 `/history` pokazuje anulowaną fakturę z datą anulowania i bez odsetek; zapłacone bez zmian
-- [ ] 3.7 „Przywróć do otwartych” wraca fakturę na `/` do właściwej grupy i do ponagleń
-- [ ] 3.8 Przywrócenie, gdy numer zajęła nowa faktura, pokazuje komunikat i zostawia fakturę w anulowanych
-- [ ] 3.9 Puste stany obu sekcji wyglądają poprawnie w jasnym i ciemnym motywie
+- [x] 3.6 `/history` pokazuje anulowaną fakturę z datą anulowania i bez odsetek; zapłacone bez zmian
+- [x] 3.7 „Przywróć do otwartych” wraca fakturę na `/` do właściwej grupy i do ponagleń
+- [x] 3.8 Przywrócenie, gdy numer zajęła nowa faktura, pokazuje komunikat i zostawia fakturę w anulowanych
+- [x] 3.9 Puste stany obu sekcji wyglądają poprawnie w jasnym i ciemnym motywie

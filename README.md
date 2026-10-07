@@ -120,7 +120,7 @@ npx supabase migration up   # apply only new migrations, keeping local data
 ```
 
 The `public.clients` table (with RLS) comes from the `create_clients` migration.
-The `public.invoices` table (with RLS, a composite foreign key to `clients` and a per-account unique invoice number) comes from the `create_invoices` migration. The `add_invoice_paid_on` migration adds the nullable `paid_on` date: an invoice with a payment date is paid and lives in the history.
+The `public.invoices` table (with RLS, a composite foreign key to `clients` and a per-account unique invoice number) comes from the `create_invoices` migration. The `add_invoice_paid_on` migration adds the nullable `paid_on` date: an invoice with a payment date is paid and lives in the history. The `add_invoice_cancelled_on` migration adds the nullable `cancelled_on` date: a cancelled invoice leaves the open list and lives in the cancelled section of the history.
 
 ### Using a cloud Supabase project instead
 
@@ -148,13 +148,13 @@ Users can then sign in immediately after sign-up without clicking a confirmation
 
 ### Auth routes
 
-| Route                 | Description                                                                                                                                                                                                                   |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/auth/signin`        | Email/password sign-in form                                                                                                                                                                                                   |
-| `/auth/signup`        | Email/password sign-up form                                                                                                                                                                                                   |
-| `/auth/confirm-email` | Post-signup "check your inbox" page                                                                                                                                                                                           |
-| `/`                   | Protected list of open invoices with interest and compensation per overdue invoice, plus a reminders section that copies a collective reminder for a client to the clipboard (redirects to `/auth/signin` if unauthenticated) |
-| `/history`            | Protected list of paid invoices with days overdue, interest and compensation as of the payment date; change the payment date or reopen an invoice (redirects to `/auth/signin` if unauthenticated)                            |
+| Route                 | Description                                                                                                                                                                                                                                                                             |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/auth/signin`        | Email/password sign-in form                                                                                                                                                                                                                                                             |
+| `/auth/signup`        | Email/password sign-up form                                                                                                                                                                                                                                                             |
+| `/auth/confirm-email` | Post-signup "check your inbox" page                                                                                                                                                                                                                                                     |
+| `/`                   | Protected list of open invoices with interest and compensation per overdue invoice, plus a reminders section that copies a collective reminder for a client to the clipboard; edit an open invoice (until it is overdue) or cancel it (redirects to `/auth/signin` if unauthenticated)  |
+| `/history`            | Protected list of paid invoices with days overdue, interest and compensation as of the payment date; change the payment date or reopen an invoice, plus a cancelled invoices section where an invoice can be restored to the open list (redirects to `/auth/signin` if unauthenticated) |
 
 Route protection is handled in `src/middleware.ts`. `/` is protected with an exact match; add further paths (prefix-matched) to the `PROTECTED_ROUTES` array there to require authentication. Signed-in users visiting `/auth/signin` or `/auth/signup` are redirected to `/`.
 
@@ -240,7 +240,7 @@ npm run dev            # or: npm run build && npm run preview
 BASE_URL=http://localhost:4321 npm run smoke
 ```
 
-It needs a reachable Supabase instance (local or cloud) with email confirmation disabled. The client steps (create/edit, duplicates, isolation between two users) additionally require the `create_clients` migration to be applied on that instance; the invoice steps (including marking an invoice as paid and reopening it) require `create_invoices` and `add_invoice_paid_on`.
+It needs a reachable Supabase instance (local or cloud) with email confirmation disabled. The client steps (create/edit, duplicates, isolation between two users) additionally require the `create_clients` migration to be applied on that instance; the invoice steps (including marking an invoice as paid and reopening it) require `create_invoices` and `add_invoice_paid_on`; the edit and cancel steps additionally require `add_invoice_cancelled_on`.
 
 > **Note:** this script exists primarily to guard the development of the starter itself — it is a fast sanity check that dependency upgrades did not break the build, the Cloudflare adapter or the Supabase auth flow. It is **not** a substitute for a real test suite. Once you build your own product on top of this starter, add proper tests (unit, integration, end-to-end) suited to your application.
 
