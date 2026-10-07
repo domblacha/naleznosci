@@ -1,7 +1,7 @@
 ---
 change_id: mark-invoice-paid
 title: Oznaczanie faktury jako zapłaconej i widok historii
-status: implementing
+status: implemented
 created: 2026-10-07
 updated: 2026-10-07
 ---

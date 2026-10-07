@@ -339,11 +339,11 @@ Kolumna nullowalna bez wartości domyślnej — istniejące faktury pozostają o
 
 #### Automated
 
-- [x] 3.1 Lint przechodzi: `npm run lint`
-- [x] 3.2 Sprawdzenie typów przechodzi: `npx astro check`
-- [x] 3.3 Testy jednostkowe przechodzą: `npm test`
-- [x] 3.4 Build przechodzi: `npm run build`
-- [x] 3.5 Smoke przechodzi, w tym przekierowanie anonima z `/history` na `/auth/signin`: `npm run smoke`
+- [x] 3.1 Lint przechodzi: `npm run lint` — b8998c0
+- [x] 3.2 Sprawdzenie typów przechodzi: `npx astro check` — b8998c0
+- [x] 3.3 Testy jednostkowe przechodzą: `npm test` — b8998c0
+- [x] 3.4 Build przechodzi: `npm run build` — b8998c0
+- [x] 3.5 Smoke przechodzi, w tym przekierowanie anonima z `/history` na `/auth/signin`: `npm run smoke` — b8998c0
 
 #### Manual
 
