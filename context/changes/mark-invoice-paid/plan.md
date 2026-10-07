@@ -305,12 +305,12 @@ Kolumna nullowalna bez wartości domyślnej — istniejące faktury pozostają o
 
 #### Automated
 
-- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up`
-- [x] 1.2 Testy jednostkowe przechodzą: `npm test`
-- [x] 1.3 Lint przechodzi: `npm run lint`
-- [x] 1.4 Sprawdzenie typów przechodzi: `npx astro check`
-- [x] 1.5 Build przechodzi: `npm run build`
-- [x] 1.6 Smoke przechodzi na lokalnym dev serwerze (port 4321 ubity przed i po): `npm run smoke`
+- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up` — dcbe599
+- [x] 1.2 Testy jednostkowe przechodzą: `npm test` — dcbe599
+- [x] 1.3 Lint przechodzi: `npm run lint` — dcbe599
+- [x] 1.4 Sprawdzenie typów przechodzi: `npx astro check` — dcbe599
+- [x] 1.5 Build przechodzi: `npm run build` — dcbe599
+- [x] 1.6 Smoke przechodzi na lokalnym dev serwerze (port 4321 ubity przed i po): `npm run smoke` — dcbe599
 
 #### Manual
 
@@ -321,10 +321,10 @@ Kolumna nullowalna bez wartości domyślnej — istniejące faktury pozostają o
 
 #### Automated
 
-- [ ] 2.1 Testy jednostkowe przechodzą: `npm test`
-- [ ] 2.2 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
-- [ ] 2.3 Sprawdzenie typów przechodzi: `npx astro check`
-- [ ] 2.4 Build przechodzi: `npm run build`
+- [x] 2.1 Testy jednostkowe przechodzą: `npm test`
+- [x] 2.2 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
+- [x] 2.3 Sprawdzenie typów przechodzi: `npx astro check`
+- [x] 2.4 Build przechodzi: `npm run build`
 
 #### Manual
 

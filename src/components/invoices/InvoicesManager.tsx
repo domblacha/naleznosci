@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { InvoiceFormDialog } from "@/components/invoices/InvoiceFormDialog";
+import { PaymentDialog } from "@/components/invoices/PaymentDialog";
 import { RemindersSection } from "@/components/invoices/RemindersSection";
 import { compensationGrosze, interestGrosze } from "@/lib/charges";
 import { DEFAULT_THRESHOLDS, groupInvoices, type EscalationGroup } from "@/lib/escalation";
@@ -30,7 +31,10 @@ const GROUP_LABELS: Record<EscalationGroup, string> = {
 export function InvoicesManager({ initialInvoices, clients, today }: Props) {
   const [invoices, setInvoices] = useState(initialInvoices);
   const [open, setOpen] = useState(false);
+  const [payingId, setPayingId] = useState<string | null>(null);
+  const [payOpen, setPayOpen] = useState(false);
   const openerRef = useRef<HTMLElement | null>(null);
+  const addButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const groups = useMemo(() => groupInvoices(invoices, today), [invoices, today]);
 
@@ -43,6 +47,19 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
     setInvoices((prev) => [...prev, saved]);
     setOpen(false);
   }
+
+  function openPayDialog(invoiceId: string, opener: HTMLElement) {
+    openerRef.current = opener;
+    setPayingId(invoiceId);
+    setPayOpen(true);
+  }
+
+  function handlePaid(saved: Invoice) {
+    setInvoices((prev) => prev.filter((i) => i.id !== saved.id));
+    setPayOpen(false);
+  }
+
+  const paying = invoices.find((i) => i.id === payingId) ?? null;
 
   if (clients.length === 0) {
     return (
@@ -57,6 +74,7 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
 
   const addButton = (
     <Button
+      ref={addButtonRef}
       onClick={(e) => {
         openDialog(e.currentTarget);
       }}
@@ -70,8 +88,13 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
     <div className="space-y-4">
       {invoices.length === 0 ? (
         <div className="flex flex-col items-center gap-4 py-16 text-center">
-          <p className="text-muted-foreground">Nie masz jeszcze faktur</p>
-          {addButton}
+          <p className="text-muted-foreground">Nie masz otwartych faktur</p>
+          <div className="flex items-center gap-4">
+            {addButton}
+            <Button asChild variant="link">
+              <a href="/history">Zobacz historię</a>
+            </Button>
+          </div>
         </div>
       ) : (
         <>
@@ -92,6 +115,7 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
                     <TableHead className="text-right">Dni po terminie</TableHead>
                     <TableHead className="text-right">Odsetki</TableHead>
                     <TableHead className="text-right">Rekompensata</TableHead>
+                    <TableHead />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -118,6 +142,18 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
                               ),
                             )}
                       </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          aria-label={`Oznacz fakturę ${invoice.number} jako zapłaconą`}
+                          onClick={(e) => {
+                            openPayDialog(invoice.id, e.currentTarget);
+                          }}
+                        >
+                          Zapłacona
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -126,6 +162,19 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
           ))}
         </>
       )}
+      <PaymentDialog
+        invoice={paying}
+        today={today}
+        mode="mark"
+        open={payOpen}
+        onOpenChange={setPayOpen}
+        onSaved={handlePaid}
+        onCloseAutoFocus={() => {
+          // The row disappears after a save, so fall back to the "Dodaj fakturę" button.
+          if (openerRef.current?.isConnected) openerRef.current.focus();
+          else addButtonRef.current?.focus();
+        }}
+      />
       <InvoiceFormDialog
         open={open}
         onOpenChange={setOpen}
