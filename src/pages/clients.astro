@@ -29,8 +29,8 @@ if (!supabase) {
     <main class="mx-auto max-w-3xl space-y-4 py-8">
       <h1 class="text-3xl font-bold text-foreground">Klienci</h1>
       {loadError ? (
-        <Alert variant="destructive" className="text-destructive">
-          <AlertDescription className="text-destructive">{loadError}</AlertDescription>
+        <Alert variant="destructive">
+          <AlertDescription>{loadError}</AlertDescription>
         </Alert>
       ) : (
         <ClientsManager initialClients={clients} client:load />

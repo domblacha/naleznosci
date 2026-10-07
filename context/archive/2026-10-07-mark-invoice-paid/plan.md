@@ -47,6 +47,8 @@ Jedna nullowalna kolumna `paid_on date` jako cały stan „zapłacona”. Jeden 
 
 - **RLS i 404**: aktualizacja cudzej faktury nie rzuca błędu — RLS po prostu nie dopasowuje wiersza. Serwis musi traktować „0 wierszy zwróconych” (`.select().maybeSingle()` → `data === null`) jako `not_found`, a nie sukces.
 - **Kolejność w historii**: `paid_on desc`, potem `number` (jak `groupInvoices`: `localeCompare(..., "pl", { numeric: true })`), żeby kolejność była deterministyczna przy tej samej dacie wpłaty; po „Zmień datę” wyspa sortuje stan ponownie tym samym komparatorem.
+  - _Addendum (impl-review F4)_: `listPaidInvoices` sortuje w bazie tylko po `paid_on desc`; źródłem pełnej kolejności (z numerem przez `localeCompare("pl", { numeric: true })`, którego baza nie odtworzy) jest `sortPaid` w `PaidInvoicesManager`, wywoływane przy montowaniu i po edycji.
+- **Reset formularza wpłaty** _(addendum, impl-review F4)_: `usePaymentForm` nie resetuje stanu sam — zapewnia to remount `PaymentForm` (`key={invoice.id}` + odmontowanie treści zamkniętego dialogu Radix). Dodanie `forceMount` do `DialogContent` zepsułoby reset.
 
 ## Phase 1: Dane i API
 

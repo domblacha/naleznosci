@@ -48,7 +48,7 @@ export function PaymentFormView({
         icon={<CalendarDays className="size-4" />}
       />
       {preview ? (
-        <dl className="bg-muted text-muted-foreground grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 rounded-lg p-3 text-sm">
+        <dl className="bg-muted text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1 rounded-lg p-3 text-sm">
           <dt>Dni opóźnienia</dt>
           <dd className="text-foreground text-right">{preview.days}</dd>
           <dt>Odsetki</dt>
