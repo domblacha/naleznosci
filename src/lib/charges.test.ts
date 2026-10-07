@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compensationGrosze, interestGrosze } from "@/lib/charges";
+import { chargesAsOf, compensationGrosze, interestGrosze } from "@/lib/charges";
 
 describe("interestGrosze", () => {
   it("liczy odsetki według domyślnej stopy", () => {
@@ -49,5 +49,37 @@ describe("compensationGrosze", () => {
 
   it("zwraca 0, gdy termin nie minął", () => {
     expect(compensationGrosze(100000, 0, true)).toBe(0);
+  });
+});
+
+describe("chargesAsOf", () => {
+  const invoice = { dueDate: "2026-09-01", amountGrosze: 123456, clientChargesCompensation: true };
+
+  it("zwraca zera przy wpłacie przed terminem i w dniu terminu", () => {
+    const zero = { days: 0, interestGrosze: 0, compensationGrosze: 0 };
+    expect(chargesAsOf(invoice, "2026-08-20")).toEqual(zero);
+    expect(chargesAsOf(invoice, "2026-09-01")).toEqual(zero);
+  });
+
+  it("liczy 1 dzień przy wpłacie dzień po terminie", () => {
+    expect(chargesAsOf(invoice, "2026-09-02")).toEqual({ days: 1, interestGrosze: 47, compensationGrosze: 17000 });
+  });
+
+  it("zgadza się z funkcjami bazowymi dla 40 dni", () => {
+    expect(chargesAsOf(invoice, "2026-10-11")).toEqual({
+      days: 40,
+      interestGrosze: interestGrosze(123456, 40),
+      compensationGrosze: compensationGrosze(123456, 40, true),
+    });
+    expect(interestGrosze(123456, 40)).toBe(1860);
+  });
+
+  it("pomija rekompensatę dla klienta, który jej nie nalicza", () => {
+    expect(chargesAsOf({ ...invoice, clientChargesCompensation: false }, "2026-10-11").compensationGrosze).toBe(0);
+  });
+
+  it("zależy tylko od dnia wskazanego, nie od dzisiejszej daty", () => {
+    expect(chargesAsOf(invoice, "2026-09-11")).toEqual(chargesAsOf(invoice, "2026-09-11"));
+    expect(chargesAsOf(invoice, "2026-09-11").days).toBe(10);
   });
 });

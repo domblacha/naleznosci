@@ -13,6 +13,7 @@ interface FormFieldProps {
   placeholder?: string;
   error?: string;
   hint?: string;
+  max?: string;
   icon: ReactNode;
   endContent?: ReactNode;
 }
@@ -27,6 +28,7 @@ export function FormField({
   placeholder,
   error,
   hint,
+  max,
   icon,
   endContent,
 }: FormFieldProps) {
@@ -46,6 +48,7 @@ export function FormField({
             onChange(e.target.value);
           }}
           placeholder={placeholder}
+          max={max}
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
           className="pl-10"

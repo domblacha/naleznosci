@@ -6,7 +6,9 @@ import { ClientFormView } from "@/components/clients/ClientFormDialog";
 import { ClientsManager } from "@/components/clients/ClientsManager";
 import { InvoiceFormView } from "@/components/invoices/InvoiceFormDialog";
 import { InvoicesManager } from "@/components/invoices/InvoicesManager";
+import { PaymentFormView } from "@/components/invoices/PaymentDialog";
 import { ReminderDialogView } from "@/components/invoices/ReminderDialog";
+import { chargesAsOf } from "@/lib/charges";
 import { buildClientReminders, renderReminder } from "@/lib/reminder";
 import type { Client, Invoice } from "@/types";
 import { FormField } from "@/components/auth/FormField";
@@ -50,6 +52,7 @@ function sampleInvoice(
     number,
     amountGrosze,
     dueDate,
+    paidOn: null,
     createdAt: "2026-01-01T00:00:00Z",
   };
 }
@@ -237,6 +240,41 @@ export function KitchenSinkForms() {
           onNumberChange={noop}
           onAmountChange={noop}
           onDueDateChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Data wpłaty: default">
+        <PaymentFormView
+          idPrefix="ks-payment-default"
+          paidOn={SAMPLE_TODAY}
+          today={SAMPLE_TODAY}
+          pending={false}
+          preview={chargesAsOf(sampleInvoices[0], SAMPLE_TODAY)}
+          onPaidOnChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Data wpłaty: błąd (przyszła data)">
+        <PaymentFormView
+          idPrefix="ks-payment-error"
+          paidOn="2026-10-20"
+          today={SAMPLE_TODAY}
+          error="Data wpłaty nie może być późniejsza niż dziś"
+          pending={false}
+          preview={null}
+          onPaidOnChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Podgląd kwot wpłaty">
+        <PaymentFormView
+          idPrefix="ks-payment-preview"
+          paidOn="2026-08-10"
+          today={SAMPLE_TODAY}
+          serverError="Nie znaleziono faktury. Odśwież stronę."
+          pending
+          preview={chargesAsOf(sampleInvoices[0], "2026-08-10")}
+          onPaidOnChange={noop}
           onSubmit={noop}
         />
       </Section>

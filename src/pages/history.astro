@@ -1,0 +1,42 @@
+---
+import Topbar from "@/components/Topbar.astro";
+import Layout from "@/layouts/Layout.astro";
+import { PaidInvoicesManager } from "@/components/invoices/PaidInvoicesManager";
+import { createClient } from "@/lib/supabase";
+import { listPaidInvoices } from "@/lib/services/invoices";
+import { todayInPoland } from "@/lib/escalation";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import type { Invoice } from "@/types";
+
+export const prerender = false;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+let invoices: Invoice[] = [];
+let loadError: string | null = null;
+if (!supabase) {
+  loadError = "Historia faktur jest niedostępna: brak konfiguracji serwera.";
+} else {
+  try {
+    invoices = await listPaidInvoices(supabase);
+  } catch {
+    loadError = "Nie udało się wczytać historii faktur. Odśwież stronę.";
+  }
+}
+const today = todayInPoland(new Date());
+---
+
+<Layout title="Historia">
+  <div class="min-h-screen p-4">
+    <Topbar />
+    <main class="mx-auto max-w-5xl space-y-4 py-8">
+      <h1 class="text-3xl font-bold text-foreground">Historia</h1>
+      {loadError ? (
+        <Alert variant="destructive" className="text-destructive">
+          <AlertDescription className="text-destructive">{loadError}</AlertDescription>
+        </Alert>
+      ) : (
+        <PaidInvoicesManager initialInvoices={invoices} today={today} client:load />
+      )}
+    </main>
+  </div>
+</Layout>

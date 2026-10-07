@@ -1,6 +1,8 @@
 // Kwoty należne od klienta: odsetki za opóźnienie i rekompensata za koszty odzyskiwania.
 // Wszystko w groszach, bez liczb zmiennoprzecinkowych.
 
+import { daysOverdue } from "@/lib/escalation";
+
 export interface CompensationTier {
   // Górna granica progu w groszach; null = brak górnej granicy (ostatni próg).
   maxAmountGrosze: number | null;
@@ -60,4 +62,29 @@ export function compensationGrosze(
         (t.inclusive && amountGrosze === t.maxAmountGrosze),
     ) ?? tiers[tiers.length - 1];
   return tier.compensationGrosze;
+}
+
+export interface ChargesAsOf {
+  days: number;
+  interestGrosze: number;
+  compensationGrosze: number;
+}
+
+/** Dni opóźnienia, odsetki i rekompensata faktury na wskazany dzień (np. dzień wpłaty). */
+export function chargesAsOf(
+  invoice: { dueDate: string; amountGrosze: number; clientChargesCompensation: boolean },
+  asOf: string,
+  settings: ChargeSettings = DEFAULT_CHARGE_SETTINGS,
+): ChargesAsOf {
+  const days = Math.max(0, daysOverdue(invoice.dueDate, asOf));
+  return {
+    days,
+    interestGrosze: interestGrosze(invoice.amountGrosze, days, settings.annualRateBp),
+    compensationGrosze: compensationGrosze(
+      invoice.amountGrosze,
+      days,
+      invoice.clientChargesCompensation,
+      settings.compensationTiers,
+    ),
+  };
 }

@@ -3,7 +3,7 @@ project: Należności
 version: 1
 status: draft
 created: 2026-09-25
-updated: 2026-10-06
+updated: 2026-10-07
 prd_version: 1
 main_goal: speed
 top_blocker: none
@@ -47,7 +47,7 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | S-03 | invoice-escalation-list         | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur                           | S-02          | US-01, FR-003, FR-005, FR-010     | done     |
 | S-04 | interest-and-compensation       | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza                                 | S-03          | US-01, FR-007                     | done     |
 | S-05 | collective-reminder             | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka                                | S-04          | US-01, FR-008, FR-011             | done     |
-| S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | proposed |
+| S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | done     |
 | S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | proposed |
 | S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | proposed |
 | S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | proposed |
@@ -70,10 +70,10 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 
 ## Baseline
 
-What's already in place in the codebase as of `2026-09-25` (auto-researched + user-confirmed; odświeżone 2026-10-06 po S-01, S-02, S-03, S-04, S-05 i F-01).
+What's already in place in the codebase as of `2026-09-25` (auto-researched + user-confirmed; odświeżone 2026-10-07 po S-01, S-02, S-03, S-04, S-05, S-06 i F-01).
 Foundations below assume these are present and do NOT re-scaffold them.
 
-- **Frontend:** partial — polska powłoka i ekrany konta (S-01), tokeny kolorów i komponenty shadcn, widok klientów `src/pages/clients.astro` (S-02) oraz lista otwartych faktur z dialogiem dodawania na `/` (`src/components/invoices/`, S-03) z kolumnami odsetek i rekompensaty (S-04) i sekcją „Ponaglenia” z dialogiem kopiowania zbiorczego ponaglenia do schowka (S-05); brak widoku historii.
+- **Frontend:** partial — polska powłoka i ekrany konta (S-01), tokeny kolorów i komponenty shadcn, widok klientów `src/pages/clients.astro` (S-02) oraz lista otwartych faktur z dialogiem dodawania na `/` (`src/components/invoices/`, S-03) z kolumnami odsetek i rekompensaty (S-04) i sekcją „Ponaglenia” z dialogiem kopiowania zbiorczego ponaglenia do schowka (S-05), przyciskiem „Zapłacona” w wierszach (S-06) oraz widokiem historii zapłaconych faktur `/history` ze zmianą daty wpłaty i przywracaniem do otwartych (S-06).
 - **Backend / API:** partial — endpointy auth, klientów i `POST /api/invoices` (`src/pages/api/auth/*`, `src/pages/api/clients/*`, `src/pages/api/invoices/index.ts`); brak edycji i anulowania faktur.
 - **Data:** partial — tabele `clients` i `invoices` z RLS (`supabase/migrations/20261003120000_create_clients.sql`, migracja `create_invoices`; złożony FK `(client_id, user_id)` wymusza przynależność klienta do właściciela); reguła etapu w `src/lib/escalation.ts` i wyliczenia odsetek i rekompensaty w `src/lib/charges.ts` (BigInt, grosze, stała `DEFAULT_CHARGE_SETTINGS`), obie z testami; składanie i render ponagleń w `src/lib/reminder.ts` ze stałymi szablonami w `src/lib/reminder-templates.ts` (z testami, wyłącznie w przeglądarce, bez API); brak tabeli ustawień.
 - **Auth:** present — rejestracja, logowanie, wylogowanie i middleware chroniący trasy (`src/middleware.ts`); formularze po angielsku.
@@ -176,7 +176,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Wprowadza widok historii, z którego korzysta S-07; odsetki muszą się zamrozić na dacie wpłaty, nie na „dziś”.
-- **Status:** proposed
+- **Status:** done
 
 ### S-07: Edycja i anulowanie faktury
 

@@ -1,8 +1,10 @@
 import { z } from "zod";
-import type { InvoiceInput } from "@/types";
+import type { InvoiceInput, PaymentInput } from "@/types";
 
 const AMOUNT_MESSAGE = "Podaj kwotę większą od zera, np. 1 234,56";
 const DUE_DATE_MESSAGE = "Podaj poprawny termin płatności";
+const PAID_ON_MESSAGE = "Podaj poprawną datę wpłaty";
+const PAID_ON_FUTURE_MESSAGE = "Data wpłaty nie może być późniejsza niż dziś";
 // Must match the amount_grosze check in supabase/migrations/*_create_invoices.sql.
 const MAX_AMOUNT_GROSZE = 99_999_999_999;
 const AMOUNT_PATTERN = /^(\d+)(?:[.,](\d{1,2}))?$/;
@@ -51,3 +53,13 @@ export const invoiceInputSchema: z.ZodType<InvoiceInput> = z
     dueDate: dueDateSchema,
   })
   .transform(({ clientId, number, amount, dueDate }) => ({ clientId, number, amountGrosze: amount, dueDate }));
+
+/** Payment date input; `today` (YYYY-MM-DD, Polish time) is the latest allowed date. */
+export function paymentInputSchema(today: string): z.ZodType<PaymentInput> {
+  return z.object({
+    paidOn: z
+      .string({ error: PAID_ON_MESSAGE })
+      .refine(isValidDueDate, PAID_ON_MESSAGE)
+      .refine((value) => !isValidDueDate(value) || value <= today, PAID_ON_FUTURE_MESSAGE),
+  });
+}
