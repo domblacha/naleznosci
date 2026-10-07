@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { invoiceInputSchema } from "@/lib/invoice-schemas";
+import { invoiceInputSchema, paymentInputSchema } from "@/lib/invoice-schemas";
 
 const CLIENT_ID = "3f1c2b7e-8d4a-4c3b-9e2f-1a2b3c4d5e6f";
 const valid = { clientId: CLIENT_ID, number: "FV/1/2026", amount: "100", dueDate: "2026-10-30" };
@@ -60,5 +60,26 @@ describe("invoiceInputSchema: termin", () => {
 describe("invoiceInputSchema: klient", () => {
   it("wymaga klienta", () => {
     expect(firstMessage({ clientId: undefined })).toBe("Wybierz klienta");
+  });
+});
+
+describe("paymentInputSchema", () => {
+  const schema = paymentInputSchema("2026-10-07");
+  const message = (input: unknown) => schema.safeParse(input).error?.issues[0].message;
+
+  it.each(["2026-10-07", "2026-10-06", "2026-01-01"])("przyjmuje %s", (paidOn) => {
+    expect(schema.parse({ paidOn })).toEqual({ paidOn });
+  });
+
+  it("odrzuca jutro", () => {
+    expect(message({ paidOn: "2026-10-08" })).toBe("Data wpłaty nie może być późniejsza niż dziś");
+  });
+
+  it.each(["2026-02-30", "07.10.2026", ""])("odrzuca niepoprawną datę %j", (paidOn) => {
+    expect(message({ paidOn })).toBe("Podaj poprawną datę wpłaty");
+  });
+
+  it("odrzuca brak pola", () => {
+    expect(message({})).toBe("Podaj poprawną datę wpłaty");
   });
 });

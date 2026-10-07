@@ -123,6 +123,8 @@ function daysAgo(days) {
   return date.toISOString().slice(0, 10);
 }
 
+let invoiceIdA;
+
 function invoiceSteps() {
   const number = `FV/1/${stamp}`;
   const dueDate = daysAgo(40);
@@ -136,7 +138,13 @@ function invoiceSteps() {
     [
       "invoice A: create 40 days overdue",
       () => post(jar, { clientId: clientIds.noNip, number, amount: "1 234,56", dueDate })(),
-      { status: 201, check: (a) => a.body?.invoice?.amountGrosze === 123456 },
+      {
+        status: 201,
+        check: (a) => {
+          invoiceIdA = a.body?.invoice?.id;
+          return a.body?.invoice?.amountGrosze === 123456 && Boolean(invoiceIdA);
+        },
+      },
     ],
     [
       "invoice A: same number, other case -> duplicate_number",
@@ -158,6 +166,40 @@ function invoiceSteps() {
       () => post(jarB, { clientId: clientIds.b, number, amount: "1", dueDate })(),
       { status: 201 },
     ],
+    ...paymentSteps(),
+  ];
+}
+
+function paymentSteps() {
+  const put = (jar, id, paidOn) => () =>
+    request(`/api/invoices/${id}/payment`, { method: "PUT", json: { paidOn }, jar });
+  const remove = (jar, id) => () => request(`/api/invoices/${id}/payment`, { method: "DELETE", jar });
+  const tomorrow = daysAgo(-2);
+  return [
+    ["payment API rejects anonymous user", () => put(new Map(), invoiceIdA, daysAgo(0))(), { status: 401 }],
+    [
+      "payment A: future date -> 400",
+      () => put(jar, invoiceIdA, tomorrow)(),
+      { status: 400, check: (a) => a.body?.error === "invalid_input" && Boolean(a.body?.fieldErrors?.paidOn) },
+    ],
+    [
+      "payment A: mark paid today",
+      () => put(jar, invoiceIdA, daysAgo(0))(),
+      { status: 200, check: (a) => a.body?.invoice?.paidOn === daysAgo(0) },
+    ],
+    ["payment B: cannot mark invoice of A -> 404", () => put(jarB, invoiceIdA, daysAgo(0))(), { status: 404 }],
+    ["payment B: cannot reopen invoice of A -> 404", () => remove(jarB, invoiceIdA)(), { status: 404 }],
+    [
+      "payment A: change date",
+      () => put(jar, invoiceIdA, daysAgo(5))(),
+      { status: 200, check: (a) => a.body?.invoice?.paidOn === daysAgo(5) },
+    ],
+    [
+      "payment A: reopen",
+      () => remove(jar, invoiceIdA)(),
+      { status: 200, check: (a) => a.body?.invoice?.paidOn === null },
+    ],
+    ["payment A: invalid id -> 404", () => put(jar, "nie-uuid", daysAgo(0))(), { status: 404 }],
   ];
 }
 

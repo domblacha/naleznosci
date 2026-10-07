@@ -21,6 +21,8 @@ export interface Invoice {
   amountGrosze: number;
   /** YYYY-MM-DD */
   dueDate: string;
+  /** YYYY-MM-DD; null = faktura otwarta */
+  paidOn: string | null;
   createdAt: string;
 }
 
@@ -30,4 +32,9 @@ export interface InvoiceInput {
   amountGrosze: number;
   /** YYYY-MM-DD */
   dueDate: string;
+}
+
+export interface PaymentInput {
+  /** YYYY-MM-DD */
+  paidOn: string;
 }
