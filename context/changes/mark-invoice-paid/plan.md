@@ -321,10 +321,10 @@ Kolumna nullowalna bez wartości domyślnej — istniejące faktury pozostają o
 
 #### Automated
 
-- [x] 2.1 Testy jednostkowe przechodzą: `npm test`
-- [x] 2.2 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
-- [x] 2.3 Sprawdzenie typów przechodzi: `npx astro check`
-- [x] 2.4 Build przechodzi: `npm run build`
+- [x] 2.1 Testy jednostkowe przechodzą: `npm test` — 820da67
+- [x] 2.2 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint` — 820da67
+- [x] 2.3 Sprawdzenie typów przechodzi: `npx astro check` — 820da67
+- [x] 2.4 Build przechodzi: `npm run build` — 820da67
 
 #### Manual
 
@@ -339,11 +339,11 @@ Kolumna nullowalna bez wartości domyślnej — istniejące faktury pozostają o
 
 #### Automated
 
-- [ ] 3.1 Lint przechodzi: `npm run lint`
-- [ ] 3.2 Sprawdzenie typów przechodzi: `npx astro check`
-- [ ] 3.3 Testy jednostkowe przechodzą: `npm test`
-- [ ] 3.4 Build przechodzi: `npm run build`
-- [ ] 3.5 Smoke przechodzi, w tym przekierowanie anonima z `/history` na `/auth/signin`: `npm run smoke`
+- [x] 3.1 Lint przechodzi: `npm run lint`
+- [x] 3.2 Sprawdzenie typów przechodzi: `npx astro check`
+- [x] 3.3 Testy jednostkowe przechodzą: `npm test`
+- [x] 3.4 Build przechodzi: `npm run build`
+- [x] 3.5 Smoke przechodzi, w tym przekierowanie anonima z `/history` na `/auth/signin`: `npm run smoke`
 
 #### Manual
 
