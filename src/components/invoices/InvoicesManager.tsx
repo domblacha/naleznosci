@@ -79,7 +79,7 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
 
   function handlePauseChanged(changed: Invoice) {
     setInvoices((prev) => prev.map((i) => (i.id === changed.id ? changed : i)));
-    setEditing(changed);
+    setEditing((prev) => (prev?.id === changed.id ? changed : prev));
   }
 
   function handleCancelled(saved: Invoice) {

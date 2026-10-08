@@ -104,13 +104,15 @@ export async function setInvoicePayment(
   id: string,
   paidOn: string | null,
 ): Promise<InvoiceResult> {
-  const { data, error } = await supabase
+  let query = supabase
     .from("invoices")
     .update({ paid_on: paidOn, paused_on: null })
     .eq("id", id)
-    .is("cancelled_on", null)
-    .select(COLUMNS)
-    .maybeSingle();
+    .is("cancelled_on", null);
+  // Reopening applies only to a paid invoice, so it never silently resumes an open, paused one.
+  if (paidOn === null) query = query.not("paid_on", "is", null);
+
+  const { data, error } = await query.select(COLUMNS).maybeSingle();
   if (error) return { ok: false, code: "unknown" };
   if (!data) return { ok: false, code: "not_found" };
   return { ok: true, invoice: toInvoice(data as unknown as InvoiceRow) };

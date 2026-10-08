@@ -179,6 +179,19 @@ export function PauseEscalationControl({ paused, pending, error, onToggle }: Pau
   );
 }
 
+/** Keyed by invoice id, so its pending/error state never carries over to another invoice or a reopened dialog. */
+function PauseEscalationToggle({ invoice, onChanged }: { invoice: Invoice; onChanged: (invoice: Invoice) => void }) {
+  const pause = useInvoicePause({ onChanged });
+  return (
+    <PauseEscalationControl
+      paused={invoice.pausedOn !== null}
+      pending={pause.pending}
+      error={pause.error}
+      onToggle={() => void (invoice.pausedOn ? pause.resume(invoice.id) : pause.pause(invoice.id))}
+    />
+  );
+}
+
 interface InvoiceFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -205,11 +218,6 @@ export function InvoiceFormDialog({
   onCloseAutoFocus,
 }: InvoiceFormDialogProps) {
   const editing = invoice ?? undefined;
-  const pause = useInvoicePause({
-    onChanged: (changed) => {
-      onPauseChanged?.(changed);
-    },
-  });
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -237,12 +245,7 @@ export function InvoiceFormDialog({
           onSaved={onSaved}
         />
         {editing && onPauseChanged ? (
-          <PauseEscalationControl
-            paused={editing.pausedOn !== null}
-            pending={pause.pending}
-            error={pause.error}
-            onToggle={() => void (editing.pausedOn ? pause.resume(editing.id) : pause.pause(editing.id))}
-          />
+          <PauseEscalationToggle key={editing.id} invoice={editing} onChanged={onPauseChanged} />
         ) : null}
         {editing && onCancelRequest ? (
           <Button type="button" variant="destructive" onClick={onCancelRequest}>

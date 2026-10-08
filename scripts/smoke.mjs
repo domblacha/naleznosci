@@ -201,6 +201,7 @@ function paymentSteps() {
       () => remove(jar, invoiceIdA)(),
       { status: 200, check: (a) => a.body?.invoice?.paidOn === null },
     ],
+    ["payment A: reopening an open invoice -> 404", () => remove(jar, invoiceIdA)(), { status: 404 }],
     ["payment A: invalid id -> 404", () => put(jar, "nie-uuid", daysAgo(0))(), { status: 404 }],
   ];
 }
