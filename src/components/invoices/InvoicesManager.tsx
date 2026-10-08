@@ -27,6 +27,7 @@ const GROUP_LABELS: Record<EscalationGroup, string> = {
   stage_1: `Etap 1 · od ${T1} dni po terminie`,
   pre_threshold: "Po terminie, przed etapem 1",
   current: "Bieżące",
+  paused: "Wstrzymane",
 };
 
 export function InvoicesManager({ initialInvoices, clients, today }: Props) {
@@ -74,6 +75,11 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
   function handleEdited(saved: Invoice) {
     setInvoices((prev) => prev.map((i) => (i.id === saved.id ? saved : i)));
     setEditOpen(false);
+  }
+
+  function handlePauseChanged(changed: Invoice) {
+    setInvoices((prev) => prev.map((i) => (i.id === changed.id ? changed : i)));
+    setEditing((prev) => (prev?.id === changed.id ? changed : prev));
   }
 
   function handleCancelled(saved: Invoice) {
@@ -155,14 +161,16 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
                       <TableCell>{invoice.number}</TableCell>
                       <TableCell className="text-right">{formatAmount(invoice.amountGrosze)}</TableCell>
                       <TableCell>{formatDate(invoice.dueDate)}</TableCell>
-                      <TableCell className="text-right">{group === "current" ? "—" : invoice.daysOverdue}</TableCell>
                       <TableCell className="text-right">
-                        {group === "current"
+                        {invoice.daysOverdue <= 0 ? "—" : invoice.daysOverdue}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {invoice.daysOverdue <= 0
                           ? "—"
                           : formatAmount(interestGrosze(invoice.amountGrosze, invoice.daysOverdue))}
                       </TableCell>
                       <TableCell className="text-right">
-                        {group === "current"
+                        {invoice.daysOverdue <= 0
                           ? "—"
                           : formatAmount(
                               compensationGrosze(
@@ -233,6 +241,7 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
         invoice={editing}
         today={today}
         onSaved={handleEdited}
+        onPauseChanged={handlePauseChanged}
         onCancelRequest={() => {
           setCancelOpen(true);
         }}

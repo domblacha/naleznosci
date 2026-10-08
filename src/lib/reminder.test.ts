@@ -26,6 +26,7 @@ function inv(
     dueDate,
     paidOn: null,
     cancelledOn: null,
+    pausedOn: null,
     createdAt: "2026-01-01T00:00:00Z",
   };
 }
@@ -52,6 +53,36 @@ describe("buildClientReminders: wybór faktur", () => {
   it("pomija klienta mającego wyłącznie faktury bieżące lub przed progiem", () => {
     const reminders = buildClientReminders(
       [inv(ACME, "A/1", 10000, "2026-10-04"), inv(ACME, "A/2", 10000, "2026-10-20")],
+      TODAY,
+    );
+    expect(reminders).toEqual([]);
+  });
+});
+
+describe("buildClientReminders: wstrzymane faktury", () => {
+  const paused = (invoice: Invoice): Invoice => ({ ...invoice, pausedOn: "2026-10-01" });
+
+  it("pomija wstrzymaną fakturę 40 dni po terminie; etap i sumy odpowiadają niewstrzymanej pozycji", () => {
+    const active = inv(ACME, "A/1", 123456, "2026-08-20");
+    const reminders = buildClientReminders([active, paused(inv(ACME, "A/2", 650000, "2026-08-26"))], TODAY);
+    const [expected] = buildClientReminders([active], TODAY);
+    expect(reminders).toHaveLength(1);
+    expect(reminders[0].items.map((i) => i.number)).toEqual(["A/1"]);
+    expect(reminders[0].stage).toBe(4);
+    expect(reminders[0]).toEqual(expected);
+  });
+
+  it("wstrzymana faktura na etapie 4 nie podnosi etapu ponaglenia", () => {
+    const reminders = buildClientReminders(
+      [inv(ACME, "A/1", 10000, "2026-09-25"), paused(inv(ACME, "A/2", 10000, "2026-08-26"))],
+      TODAY,
+    );
+    expect(reminders.map((r) => [r.stage, r.items.map((i) => i.number)])).toEqual([[2, ["A/1"]]]);
+  });
+
+  it("pomija klienta, którego jedyna faktura po terminie jest wstrzymana", () => {
+    const reminders = buildClientReminders(
+      [paused(inv(ACME, "A/1", 10000, "2026-08-26")), inv(ACME, "A/2", 10000, "2026-10-20")],
       TODAY,
     );
     expect(reminders).toEqual([]);

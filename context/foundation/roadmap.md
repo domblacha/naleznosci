@@ -3,7 +3,7 @@ project: Należności
 version: 1
 status: draft
 created: 2026-09-25
-updated: 2026-10-07
+updated: 2026-10-08
 prd_version: 1
 main_goal: speed
 top_blocker: none
@@ -39,22 +39,22 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 
 ## At a glance
 
-| ID   | Change ID                       | Outcome (user can …)                                                                                       | Prerequisites | PRD refs                          | Status   |
-| ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------- | -------- |
-| F-01 | deploy-pipeline-with-migrations | (foundation) merge na `main` przechodzi kontrole, stosuje migracje na produkcji i dopiero wtedy wdraża kod | —             | NFR (izolacja danych właściciela) | done     |
-| S-01 | polish-auth-shell               | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny              | —             | FR-001                            | done     |
-| S-02 | add-and-edit-clients            | dodać i edytować klienta, a duplikat zostaje odrzucony                                                     | S-01, F-01    | FR-002                            | done     |
-| S-03 | invoice-escalation-list         | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur                           | S-02          | US-01, FR-003, FR-005, FR-010     | done     |
-| S-04 | interest-and-compensation       | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza                                 | S-03          | US-01, FR-007                     | done     |
-| S-05 | collective-reminder             | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka                                | S-04          | US-01, FR-008, FR-011             | done     |
-| S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | done     |
-| S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | done     |
-| S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | proposed |
-| S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | proposed |
-| S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | proposed |
-| S-11 | invoice-list-filter-sort        | filtrować listę po kliencie i sortować po dniach po terminie lub kwocie                                    | S-03          | FR-010                            | proposed |
-| S-12 | editable-reminder-templates     | edytować 4 szablony treści ponagleń                                                                        | S-05          | FR-014                            | proposed |
-| S-13 | sender-profile                  | podać dane nadawcy (firma, NIP, adres, numer konta), które ponaglenie wstawia samo                         | S-05          | — (poza PRD v1); FR-011           | proposed |
+| ID   | Change ID                       | Outcome (user can …)                                                                                       | Prerequisites | PRD refs                          | Status      |
+| ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------- | ----------- |
+| F-01 | deploy-pipeline-with-migrations | (foundation) merge na `main` przechodzi kontrole, stosuje migracje na produkcji i dopiero wtedy wdraża kod | —             | NFR (izolacja danych właściciela) | done        |
+| S-01 | polish-auth-shell               | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny              | —             | FR-001                            | done        |
+| S-02 | add-and-edit-clients            | dodać i edytować klienta, a duplikat zostaje odrzucony                                                     | S-01, F-01    | FR-002                            | done        |
+| S-03 | invoice-escalation-list         | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur                           | S-02          | US-01, FR-003, FR-005, FR-010     | done        |
+| S-04 | interest-and-compensation       | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza                                 | S-03          | US-01, FR-007                     | done        |
+| S-05 | collective-reminder             | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka                                | S-04          | US-01, FR-008, FR-011             | done        |
+| S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | done        |
+| S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | done        |
+| S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | done        |
+| S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | proposed    |
+| S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | proposed    |
+| S-11 | invoice-list-filter-sort        | filtrować listę po kliencie i sortować po dniach po terminie lub kwocie                                    | S-03          | FR-010                            | proposed    |
+| S-12 | editable-reminder-templates     | edytować 4 szablony treści ponagleń                                                                        | S-05          | FR-014                            | proposed    |
+| S-13 | sender-profile                  | podać dane nadawcy (firma, NIP, adres, numer konta), które ponaglenie wstawia samo                         | S-05          | — (poza PRD v1); FR-011           | proposed    |
 
 ## Streams
 
@@ -70,12 +70,12 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 
 ## Baseline
 
-What's already in place in the codebase as of `2026-09-25` (auto-researched + user-confirmed; odświeżone 2026-10-07 po S-01, S-02, S-03, S-04, S-05, S-06, S-07 i F-01).
+What's already in place in the codebase as of `2026-09-25` (auto-researched + user-confirmed; odświeżone 2026-10-08 po S-01, S-02, S-03, S-04, S-05, S-06, S-07, S-08 i F-01).
 Foundations below assume these are present and do NOT re-scaffold them.
 
-- **Frontend:** partial — polska powłoka i ekrany konta (S-01), tokeny kolorów i komponenty shadcn, widok klientów `src/pages/clients.astro` (S-02) oraz lista otwartych faktur z dialogiem dodawania na `/` (`src/components/invoices/`, S-03) z kolumnami odsetek i rekompensaty (S-04) i sekcją „Ponaglenia” z dialogiem kopiowania zbiorczego ponaglenia do schowka (S-05), przyciskiem „Zapłacona” w wierszach (S-06) oraz widokiem historii zapłaconych faktur `/history` ze zmianą daty wpłaty i przywracaniem do otwartych (S-06), przyciskiem „Edytuj” w wierszu z dialogiem edycji (pola klient, kwota i termin wyłączone od dnia po terminie) i anulowaniem z potwierdzeniem oraz sekcją „Anulowane faktury” w `/history` z przywracaniem do otwartych (S-07).
-- **Backend / API:** partial — endpointy auth, klientów, `POST /api/invoices` oraz `PUT`/`DELETE /api/invoices/[id]/payment` do ustawiania i cofania daty wpłaty oraz `PUT /api/invoices/[id]` (edycja z blokadą po terminie, 409 `locked`) i `PUT`/`DELETE /api/invoices/[id]/cancellation` (anulowanie i przywracanie) (`src/pages/api/auth/*`, `src/pages/api/clients/*`, `src/pages/api/invoices/index.ts`, `src/pages/api/invoices/[id].ts`, `src/pages/api/invoices/[id]/payment.ts`, `src/pages/api/invoices/[id]/cancellation.ts`, S-06, S-07).
-- **Data:** partial — tabele `clients` i `invoices` z RLS (`supabase/migrations/20261003120000_create_clients.sql`, migracja `create_invoices`; złożony FK `(client_id, user_id)` wymusza przynależność klienta do właściciela; nullowalna kolumna `invoices.paid_on` z migracji `add_invoice_paid_on` jako cały stan „zapłacona”, S-06; nullowalna `invoices.cancelled_on` z migracji `add_invoice_cancelled_on` jako stan „anulowana”, constraint wykluczający zapłaconą i anulowaną naraz oraz częściowy unikalny indeks numeru tylko dla nieanulowanych, S-07); blokada edycji w `src/lib/invoice-lock.ts` z testami; reguła etapu w `src/lib/escalation.ts` i wyliczenia odsetek i rekompensaty w `src/lib/charges.ts` (BigInt, grosze, stała `DEFAULT_CHARGE_SETTINGS`), obie z testami; składanie i render ponagleń w `src/lib/reminder.ts` ze stałymi szablonami w `src/lib/reminder-templates.ts` (z testami, wyłącznie w przeglądarce, bez API); brak tabeli ustawień.
+- **Frontend:** partial — polska powłoka i ekrany konta (S-01), tokeny kolorów i komponenty shadcn, widok klientów `src/pages/clients.astro` (S-02) oraz lista otwartych faktur z dialogiem dodawania na `/` (`src/components/invoices/`, S-03) z kolumnami odsetek i rekompensaty (S-04) i sekcją „Ponaglenia” z dialogiem kopiowania zbiorczego ponaglenia do schowka (S-05), przyciskiem „Zapłacona” w wierszach (S-06) oraz widokiem historii zapłaconych faktur `/history` ze zmianą daty wpłaty i przywracaniem do otwartych (S-06), przyciskiem „Edytuj” w wierszu z dialogiem edycji (pola klient, kwota i termin wyłączone od dnia po terminie) i anulowaniem z potwierdzeniem oraz sekcją „Anulowane faktury” w `/history` z przywracaniem do otwartych (S-07), przełącznikiem „Wstrzymaj/Wznów eskalację” w dialogu edycji i grupą „Wstrzymane” na końcu listy (S-08).
+- **Backend / API:** partial — endpointy auth, klientów, `POST /api/invoices` oraz `PUT`/`DELETE /api/invoices/[id]/payment` do ustawiania i cofania daty wpłaty oraz `PUT /api/invoices/[id]` (edycja z blokadą po terminie, 409 `locked`) i `PUT`/`DELETE /api/invoices/[id]/cancellation` (anulowanie i przywracanie) oraz `PUT`/`DELETE /api/invoices/[id]/pause` (wstrzymanie i wznowienie eskalacji) (`src/pages/api/auth/*`, `src/pages/api/clients/*`, `src/pages/api/invoices/index.ts`, `src/pages/api/invoices/[id].ts`, `src/pages/api/invoices/[id]/payment.ts`, `src/pages/api/invoices/[id]/cancellation.ts`, `src/pages/api/invoices/[id]/pause.ts`, S-06, S-07, S-08).
+- **Data:** partial — tabele `clients` i `invoices` z RLS (`supabase/migrations/20261003120000_create_clients.sql`, migracja `create_invoices`; złożony FK `(client_id, user_id)` wymusza przynależność klienta do właściciela; nullowalna kolumna `invoices.paid_on` z migracji `add_invoice_paid_on` jako cały stan „zapłacona”, S-06; nullowalna `invoices.cancelled_on` z migracji `add_invoice_cancelled_on` jako stan „anulowana”, constraint wykluczający zapłaconą i anulowaną naraz oraz częściowy unikalny indeks numeru tylko dla nieanulowanych, S-07; nullowalna `invoices.paused_on` z migracji `add_invoice_paused_on` jako stan „eskalacja wstrzymana”, z constraintem dopuszczającym ją tylko na fakturze otwartej, S-08); blokada edycji w `src/lib/invoice-lock.ts` z testami (wstrzymanie zdejmuje blokadę); grupa `paused` w `groupInvoices` (`src/lib/escalation.ts`) wyklucza wstrzymane z ponagleń; reguła etapu w `src/lib/escalation.ts` i wyliczenia odsetek i rekompensaty w `src/lib/charges.ts` (BigInt, grosze, stała `DEFAULT_CHARGE_SETTINGS`), obie z testami; składanie i render ponagleń w `src/lib/reminder.ts` ze stałymi szablonami w `src/lib/reminder-templates.ts` (z testami, wyłącznie w przeglądarce, bez API); brak tabeli ustawień.
 - **Auth:** present — rejestracja, logowanie, wylogowanie i middleware chroniący trasy (`src/middleware.ts`); formularze po angielsku.
 - **Deploy / infra:** present (od 2026-10-05, F-01) — GitHub Actions (`.github/workflows/ci.yml`): kontrole na PR, a po merge na `main` migracje na produkcji przed `wrangler deploy`; Workers Builds odłączony (README §Deployment).
 - **Observability:** partial — włączone observability Workers (`wrangler.jsonc`); brak śledzenia błędów.
@@ -199,8 +199,8 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Parallel with:** S-05, S-09, S-10, S-11, S-12
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Dotyka trzech reguł naraz (etap, odsetki, blokada edycji), więc stoi po nich wszystkich — wznowienie może „przeskoczyć” kilka etapów i to trzeba zweryfikować. Wykluczenie wstrzymanych z ponagleń dochodzi w `buildClientReminders` (`src/lib/reminder.ts`), obok filtra etapów.
-- **Status:** proposed
+- **Risk:** Dotyka trzech reguł naraz (etap, odsetki, blokada edycji), więc stoi po nich wszystkich — wznowienie może „przeskoczyć” kilka etapów i to trzeba zweryfikować. Wykluczenie wstrzymanych z ponagleń wynika z grupy `paused` w `groupInvoices` (filtr etapów w `buildClientReminders` jej nie przepuszcza); pilnują tego testy w `src/lib/reminder.test.ts`.
+- **Status:** done
 
 ### S-09: Dezaktywacja i przywracanie klienta
 
@@ -276,7 +276,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 | S-05       | collective-reminder             | Zbiorcze ponaglenie per klient do schowka                   | no                    | Done 2026-10-06                                                                              |
 | S-06       | mark-invoice-paid               | Oznaczanie faktury jako zapłaconej + widok historii         | no                    | Done 2026-10-07                                                                              |
 | S-07       | invoice-edit-and-cancel         | Edycja (z blokadą po terminie) i anulowanie faktury         | no                    | Done 2026-10-07                                                                              |
-| S-08       | pause-and-resume-escalation     | Wstrzymanie i wznowienie eskalacji faktury                  | yes                   | Odblokowany przez S-07; `/10x-plan pause-and-resume-escalation`                              |
+| S-08       | pause-and-resume-escalation     | Wstrzymanie i wznowienie eskalacji faktury                  | no                    | Zaimplementowany i po impl-review 2026-10-08; PR #14 czeka na merge                          |
 | S-09       | client-deactivate-restore       | Dezaktywacja i przywracanie klienta                         | yes                   | Odblokowany przez S-03; `/10x-plan client-deactivate-restore`                                |
 | S-10       | escalation-settings             | Ustawienia progów, stopy odsetek i rekompensaty             | yes                   | Odblokowany przez S-04; `/10x-plan escalation-settings`                                      |
 | S-11       | invoice-list-filter-sort        | Filtrowanie i sortowanie listy faktur                       | yes                   | Odblokowany przez S-03; kandydat do cięcia; `/10x-plan invoice-list-filter-sort`             |
@@ -312,3 +312,4 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **S-05: Użytkownik może wygenerować dla klienta jedno zbiorcze ponaglenie obejmujące jego faktury na etapach 1–4 (bez wstrzymanych i sprzed pierwszego progu), w tonie najwyższego etapu, z pozycjami (numer, kwota, termin, dni po terminie, odsetki, rekompensata) i sumą, oraz skopiować je do schowka.** — Archived 2026-10-06 → `context/archive/2026-10-06-collective-reminder/`. Lesson: —.
 - **S-06: Użytkownik może oznaczyć fakturę jako zapłaconą w całości z datą wpłaty; faktura natychmiast znika z listy otwartych faktur i z ponagleń, a w widoku historii widać ją z odsetkami naliczonymi do dnia wpłaty.** — Archived 2026-10-07 → `context/archive/2026-10-07-mark-invoice-paid/`. Lesson: —.
 - **S-07: Użytkownik może edytować fakturę (termin i kwota zablokowane od dnia po terminie) i anulować ją — anulowana faktura znika z eskalacji, ponagleń i trafia do historii.** — Archived 2026-10-07 → `context/archive/2026-10-07-invoice-edit-and-cancel/`. Lesson: —.
+- **S-08: Użytkownik może wstrzymać eskalację faktury (trafia do grupy „wstrzymane”, poza ponaglenia, odsetki rosną dalej, termin i kwotę można edytować) i ją wznowić — faktura wraca na etap wynikający z aktualnej liczby dni po terminie.** — Archived 2026-10-08 → `context/archive/2026-10-08-pause-and-resume-escalation/`. Lesson: —.

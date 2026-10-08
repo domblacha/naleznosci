@@ -6,7 +6,7 @@ export type InvoiceErrorCode = "duplicate_number" | "client_not_found" | "not_fo
 export type InvoiceResult = { ok: true; invoice: Invoice } | { ok: false; code: InvoiceErrorCode };
 
 const COLUMNS =
-  "id, client_id, number, amount_grosze, due_date, paid_on, cancelled_on, created_at, clients(name, charge_compensation)";
+  "id, client_id, number, amount_grosze, due_date, paid_on, cancelled_on, paused_on, created_at, clients(name, charge_compensation)";
 const UNIQUE_VIOLATION = "23505";
 const FOREIGN_KEY_VIOLATION = "23503";
 // Constraint names must match supabase/migrations/*_create_invoices.sql.
@@ -21,6 +21,7 @@ interface InvoiceRow {
   due_date: string;
   paid_on: string | null;
   cancelled_on: string | null;
+  paused_on: string | null;
   created_at: string;
   clients: { name: string; charge_compensation: boolean } | null;
 }
@@ -36,6 +37,7 @@ function toInvoice(row: InvoiceRow): Invoice {
     dueDate: row.due_date,
     paidOn: row.paid_on,
     cancelledOn: row.cancelled_on,
+    pausedOn: row.paused_on,
     createdAt: row.created_at,
   };
 }
@@ -93,19 +95,24 @@ export async function createInvoice(supabase: SupabaseClient, input: InvoiceInpu
   return { ok: true, invoice: toInvoice(data as unknown as InvoiceRow) };
 }
 
-/** Sets or clears (null) the payment date. RLS hides foreign rows, so "no row returned" means not_found. */
+/**
+ * Sets or clears (null) the payment date; a paid invoice is never paused, so the pause is cleared too.
+ * RLS hides foreign rows, so "no row returned" means not_found.
+ */
 export async function setInvoicePayment(
   supabase: SupabaseClient,
   id: string,
   paidOn: string | null,
 ): Promise<InvoiceResult> {
-  const { data, error } = await supabase
+  let query = supabase
     .from("invoices")
-    .update({ paid_on: paidOn })
+    .update({ paid_on: paidOn, paused_on: null })
     .eq("id", id)
-    .is("cancelled_on", null)
-    .select(COLUMNS)
-    .maybeSingle();
+    .is("cancelled_on", null);
+  // Reopening applies only to a paid invoice, so it never silently resumes an open, paused one.
+  if (paidOn === null) query = query.not("paid_on", "is", null);
+
+  const { data, error } = await query.select(COLUMNS).maybeSingle();
   if (error) return { ok: false, code: "unknown" };
   if (!data) return { ok: false, code: "not_found" };
   return { ok: true, invoice: toInvoice(data as unknown as InvoiceRow) };
@@ -113,7 +120,8 @@ export async function setInvoicePayment(
 
 /**
  * Edits an open invoice. The lock is checked on the row read from the database, and the update repeats the
- * conditions (still open, due date not passed when locked fields change), so a concurrent change ends with 0 rows.
+ * conditions (still open; due date not passed or escalation paused when locked fields change), so a concurrent
+ * change (e.g. a resume) ends with 0 rows.
  */
 export async function updateInvoice(
   supabase: SupabaseClient,
@@ -136,7 +144,7 @@ export async function updateInvoice(
   if (lockedChange && isInvoiceLocked(row, today)) return { ok: false, code: "locked" };
 
   let query = supabase.from("invoices").update(toRow(input)).eq("id", id).is("paid_on", null).is("cancelled_on", null);
-  if (lockedChange) query = query.gte("due_date", today);
+  if (lockedChange) query = query.or(`due_date.gte.${today},paused_on.not.is.null`);
 
   const { data, error } = await query.select(COLUMNS);
   if (error) return { ok: false, code: toErrorCode(error) };
@@ -144,11 +152,14 @@ export async function updateInvoice(
   return { ok: true, invoice: toInvoice(data[0] as unknown as InvoiceRow) };
 }
 
-/** Cancels an open invoice (sets `cancelled_on`). RLS hides foreign rows, so "no row returned" means not_found. */
+/**
+ * Cancels an open invoice (sets `cancelled_on` and clears the pause). RLS hides foreign rows,
+ * so "no row returned" means not_found.
+ */
 export async function cancelInvoice(supabase: SupabaseClient, id: string, today: string): Promise<InvoiceResult> {
   const { data, error } = await supabase
     .from("invoices")
-    .update({ cancelled_on: today })
+    .update({ cancelled_on: today, paused_on: null })
     .eq("id", id)
     .is("paid_on", null)
     .is("cancelled_on", null)
@@ -167,6 +178,36 @@ export async function restoreInvoice(supabase: SupabaseClient, id: string): Prom
     .not("cancelled_on", "is", null)
     .select(COLUMNS);
   if (error) return { ok: false, code: toErrorCode(error) };
+  if (data.length === 0) return { ok: false, code: "not_found" };
+  return { ok: true, invoice: toInvoice(data[0] as unknown as InvoiceRow) };
+}
+
+/** Pauses the escalation of an open, not yet paused invoice. RLS hides foreign rows, so "no row" means not_found. */
+export async function pauseInvoice(supabase: SupabaseClient, id: string, today: string): Promise<InvoiceResult> {
+  const { data, error } = await supabase
+    .from("invoices")
+    .update({ paused_on: today })
+    .eq("id", id)
+    .is("paid_on", null)
+    .is("cancelled_on", null)
+    .is("paused_on", null)
+    .select(COLUMNS);
+  if (error) return { ok: false, code: "unknown" };
+  if (data.length === 0) return { ok: false, code: "not_found" };
+  return { ok: true, invoice: toInvoice(data[0] as unknown as InvoiceRow) };
+}
+
+/** Resumes the escalation of an open, paused invoice. RLS hides foreign rows, so "no row" means not_found. */
+export async function resumeInvoice(supabase: SupabaseClient, id: string): Promise<InvoiceResult> {
+  const { data, error } = await supabase
+    .from("invoices")
+    .update({ paused_on: null })
+    .eq("id", id)
+    .is("paid_on", null)
+    .is("cancelled_on", null)
+    .not("paused_on", "is", null)
+    .select(COLUMNS);
+  if (error) return { ok: false, code: "unknown" };
   if (data.length === 0) return { ok: false, code: "not_found" };
   return { ok: true, invoice: toInvoice(data[0] as unknown as InvoiceRow) };
 }

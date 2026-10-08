@@ -25,6 +25,8 @@ export interface Invoice {
   paidOn: string | null;
   /** YYYY-MM-DD; null = faktura nieanulowana */
   cancelledOn: string | null;
+  /** YYYY-MM-DD; null = eskalacja niewstrzymana */
+  pausedOn: string | null;
   createdAt: string;
 }
 
