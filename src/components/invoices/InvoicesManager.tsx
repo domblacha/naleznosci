@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { CancelInvoiceDialog } from "@/components/invoices/CancelInvoiceDialog";
 import { InvoiceFormDialog } from "@/components/invoices/InvoiceFormDialog";
 import { PaymentDialog } from "@/components/invoices/PaymentDialog";
 import { RemindersSection } from "@/components/invoices/RemindersSection";
@@ -33,6 +34,11 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
   const [open, setOpen] = useState(false);
   const [payingId, setPayingId] = useState<string | null>(null);
   const [payOpen, setPayOpen] = useState(false);
+  // Kept after the dialog closes so its content does not flip to the add form during the close animation.
+  const [editing, setEditing] = useState<Invoice | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const cancelledRef = useRef(false);
   const openerRef = useRef<HTMLElement | null>(null);
   const addButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -57,6 +63,30 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
   function handlePaid(saved: Invoice) {
     setInvoices((prev) => prev.filter((i) => i.id !== saved.id));
     setPayOpen(false);
+  }
+
+  function openEditDialog(invoice: Invoice, opener: HTMLElement) {
+    openerRef.current = opener;
+    setEditing(invoice);
+    setEditOpen(true);
+  }
+
+  function handleEdited(saved: Invoice) {
+    setInvoices((prev) => prev.map((i) => (i.id === saved.id ? saved : i)));
+    setEditOpen(false);
+  }
+
+  function handleCancelled(saved: Invoice) {
+    cancelledRef.current = true;
+    setInvoices((prev) => prev.filter((i) => i.id !== saved.id));
+    setCancelOpen(false);
+    setEditOpen(false);
+  }
+
+  function focusOpenerOrAdd() {
+    // The row can be gone or moved to another group after a save, so fall back to the "Dodaj fakturę" button.
+    if (openerRef.current?.isConnected) openerRef.current.focus();
+    else addButtonRef.current?.focus();
   }
 
   const paying = invoices.find((i) => i.id === payingId) ?? null;
@@ -142,7 +172,17 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
                               ),
                             )}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="space-x-2 text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          aria-label={`Edytuj fakturę ${invoice.number}`}
+                          onClick={(e) => {
+                            openEditDialog(invoice, e.currentTarget);
+                          }}
+                        >
+                          Edytuj
+                        </Button>
                         <Button
                           variant="outline"
                           size="sm"
@@ -179,10 +219,36 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
         open={open}
         onOpenChange={setOpen}
         clients={clients}
+        today={today}
         onSaved={handleSaved}
         onCloseAutoFocus={() => {
           // The dialog has no DialogTrigger, so Radix cannot restore focus on its own.
           if (openerRef.current?.isConnected) openerRef.current.focus();
+        }}
+      />
+      <InvoiceFormDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        clients={clients}
+        invoice={editing}
+        today={today}
+        onSaved={handleEdited}
+        onCancelRequest={() => {
+          setCancelOpen(true);
+        }}
+        onCloseAutoFocus={focusOpenerOrAdd}
+      />
+      <CancelInvoiceDialog
+        invoice={editing}
+        open={cancelOpen}
+        onOpenChange={setCancelOpen}
+        onCancelled={handleCancelled}
+        onCloseAutoFocus={(e) => {
+          // After a successful cancel both dialogs close; "Wróć" keeps the edit dialog open and Radix restores focus into it.
+          if (!cancelledRef.current) return;
+          cancelledRef.current = false;
+          e.preventDefault();
+          addButtonRef.current?.focus();
         }}
       />
     </div>

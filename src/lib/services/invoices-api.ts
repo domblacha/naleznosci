@@ -8,7 +8,13 @@ import type { InvoiceResult } from "@/lib/services/invoices";
 import type { InvoiceInput, PaymentInput } from "@/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-const STATUS_BY_CODE = { duplicate_number: 409, client_not_found: 404, not_found: 404, unknown: 500 } as const;
+const STATUS_BY_CODE = {
+  duplicate_number: 409,
+  locked: 409,
+  client_not_found: 404,
+  not_found: 404,
+  unknown: 500,
+} as const;
 
 export function invoiceResultResponse(result: InvoiceResult, successStatus: number) {
   if (result.ok) return json({ invoice: result.invoice }, successStatus);

@@ -4,10 +4,12 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ClientFormView } from "@/components/clients/ClientFormDialog";
 import { ClientsManager } from "@/components/clients/ClientsManager";
+import { CancelInvoiceView, CANCEL_DESCRIPTION, cancelTitle } from "@/components/invoices/CancelInvoiceDialog";
 import { InvoiceFormView } from "@/components/invoices/InvoiceFormDialog";
 import { InvoicesManager } from "@/components/invoices/InvoicesManager";
 import { PaymentFormView } from "@/components/invoices/PaymentDialog";
 import { ReminderDialogView } from "@/components/invoices/ReminderDialog";
+import { amountInputText } from "@/lib/format";
 import { chargesAsOf } from "@/lib/charges";
 import { buildClientReminders, renderReminder } from "@/lib/reminder";
 import type { Client, Invoice } from "@/types";
@@ -53,6 +55,7 @@ function sampleInvoice(
     amountGrosze,
     dueDate,
     paidOn: null,
+    cancelledOn: null,
     createdAt: "2026-01-01T00:00:00Z",
   };
 }
@@ -242,6 +245,93 @@ export function KitchenSinkForms() {
           onDueDateChange={noop}
           onSubmit={noop}
         />
+      </Section>
+      <Section title="InvoiceFormView: edycja (niezablokowana)">
+        <InvoiceFormView
+          idPrefix="ks-invoice-edit"
+          clients={sampleClients}
+          clientId={sampleInvoices[5].clientId}
+          number={sampleInvoices[5].number}
+          amount={amountInputText(sampleInvoices[5].amountGrosze)}
+          dueDate={sampleInvoices[5].dueDate}
+          errors={{}}
+          pending={false}
+          onClientIdChange={noop}
+          onNumberChange={noop}
+          onAmountChange={noop}
+          onDueDateChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="InvoiceFormView: edycja (zablokowana po terminie)">
+        <InvoiceFormView
+          idPrefix="ks-invoice-locked"
+          clients={sampleClients}
+          clientId={sampleInvoices[0].clientId}
+          number={sampleInvoices[0].number}
+          amount={amountInputText(sampleInvoices[0].amountGrosze)}
+          dueDate={sampleInvoices[0].dueDate}
+          errors={{}}
+          pending={false}
+          locked
+          onClientIdChange={noop}
+          onNumberChange={noop}
+          onAmountChange={noop}
+          onDueDateChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="InvoiceFormView: błąd locked z serwera">
+        <InvoiceFormView
+          idPrefix="ks-invoice-locked-error"
+          clients={sampleClients}
+          clientId={sampleInvoices[5].clientId}
+          number={sampleInvoices[5].number}
+          amount={amountInputText(sampleInvoices[5].amountGrosze)}
+          dueDate={sampleInvoices[5].dueDate}
+          errors={{}}
+          serverError="Faktura jest po terminie: klienta, kwoty ani terminu nie można już zmienić. Odśwież stronę."
+          pending={false}
+          onClientIdChange={noop}
+          onNumberChange={noop}
+          onAmountChange={noop}
+          onDueDateChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Anulowanie faktury: zwykłe">
+        <div className="bg-popover text-popover-foreground ring-foreground/10 grid max-w-sm gap-4 p-4 ring-1">
+          <CancelInvoiceView
+            standalone
+            title={<p className="text-sm font-medium">{cancelTitle(sampleInvoices[0].number)}</p>}
+            description={<p className="text-muted-foreground text-xs/relaxed">{CANCEL_DESCRIPTION}</p>}
+            pending={false}
+            onConfirm={noop}
+          />
+        </div>
+      </Section>
+      <Section title="Anulowanie faktury: w trakcie">
+        <div className="bg-popover text-popover-foreground ring-foreground/10 grid max-w-sm gap-4 p-4 ring-1">
+          <CancelInvoiceView
+            standalone
+            title={<p className="text-sm font-medium">{cancelTitle(sampleInvoices[0].number)}</p>}
+            description={<p className="text-muted-foreground text-xs/relaxed">{CANCEL_DESCRIPTION}</p>}
+            pending={true}
+            onConfirm={noop}
+          />
+        </div>
+      </Section>
+      <Section title="Anulowanie faktury: z błędem">
+        <div className="bg-popover text-popover-foreground ring-foreground/10 grid max-w-sm gap-4 p-4 ring-1">
+          <CancelInvoiceView
+            standalone
+            title={<p className="text-sm font-medium">{cancelTitle(sampleInvoices[0].number)}</p>}
+            description={<p className="text-muted-foreground text-xs/relaxed">{CANCEL_DESCRIPTION}</p>}
+            pending={false}
+            error="Nie znaleziono faktury. Odśwież stronę."
+            onConfirm={noop}
+          />
+        </div>
       </Section>
       <Section title="Data wpłaty: default">
         <PaymentFormView

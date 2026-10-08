@@ -3,6 +3,7 @@ import type React from "react";
 import { z } from "zod";
 import { invoiceInputSchema } from "@/lib/invoice-schemas";
 import { invoiceErrorMessage } from "@/lib/invoice-errors";
+import { amountInputText } from "@/lib/format";
 import type { Invoice } from "@/types";
 
 export interface InvoiceFormErrors {
@@ -13,6 +14,8 @@ export interface InvoiceFormErrors {
 }
 
 interface Options {
+  /** When set, the form edits this invoice (PUT) instead of adding a new one (POST). */
+  invoice?: Invoice;
   onSaved: (invoice: Invoice) => void;
 }
 
@@ -30,11 +33,11 @@ function firstErrors(fieldErrors: ErrorBody["fieldErrors"]): InvoiceFormErrors {
   };
 }
 
-export function useInvoiceForm({ onSaved }: Options) {
-  const [clientId, setClientIdState] = useState("");
-  const [number, setNumberState] = useState("");
-  const [amount, setAmountState] = useState("");
-  const [dueDate, setDueDateState] = useState("");
+export function useInvoiceForm({ invoice, onSaved }: Options) {
+  const [clientId, setClientIdState] = useState(invoice?.clientId ?? "");
+  const [number, setNumberState] = useState(invoice?.number ?? "");
+  const [amount, setAmountState] = useState(invoice ? amountInputText(invoice.amountGrosze) : "");
+  const [dueDate, setDueDateState] = useState(invoice?.dueDate ?? "");
   const [errors, setErrors] = useState<InvoiceFormErrors>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -74,8 +77,8 @@ export function useInvoiceForm({ onSaved }: Options) {
     setPending(true);
 
     try {
-      const response = await fetch("/api/invoices", {
-        method: "POST",
+      const response = await fetch(invoice ? `/api/invoices/${invoice.id}` : "/api/invoices", {
+        method: invoice ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(raw),
       });

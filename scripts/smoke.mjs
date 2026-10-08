@@ -167,6 +167,7 @@ function invoiceSteps() {
       { status: 201 },
     ],
     ...paymentSteps(),
+    ...editAndCancelSteps(),
   ];
 }
 
@@ -200,6 +201,103 @@ function paymentSteps() {
       { status: 200, check: (a) => a.body?.invoice?.paidOn === null },
     ],
     ["payment A: invalid id -> 404", () => put(jar, "nie-uuid", daysAgo(0))(), { status: 404 }],
+  ];
+}
+
+function editAndCancelSteps() {
+  const dueA = daysAgo(40);
+  const dueFuture = daysAgo(-10);
+  const dueFuture2 = daysAgo(-12);
+  const numberNew = `FV/10/${stamp}`;
+  const renamedA = `FV/1-ed/${stamp}`;
+  // Number of invoice A changes in the "change only the number" step; later steps use the current one.
+  let numberA = `FV/1/${stamp}`;
+  let invoiceIdNew;
+  const edit = (jar, id, json) => () => request(`/api/invoices/${id}`, { method: "PUT", json, jar });
+  const cancel = (jar, id) => () => request(`/api/invoices/${id}/cancellation`, { method: "PUT", jar });
+  const restore = (jar, id) => () => request(`/api/invoices/${id}/cancellation`, { method: "DELETE", jar });
+  const payload = (number, amount, dueDate) => ({ clientId: clientIds.noNip, number, amount, dueDate });
+  return [
+    [
+      "edit: create invoice due in 10 days",
+      () => request("/api/invoices", { method: "POST", json: payload(numberNew, "10", dueFuture), jar }),
+      {
+        status: 201,
+        check: (a) => {
+          invoiceIdNew = a.body?.invoice?.id;
+          return Boolean(invoiceIdNew);
+        },
+      },
+    ],
+    [
+      "edit: change amount and due date of not-yet-due invoice",
+      () => edit(jar, invoiceIdNew, payload(numberNew, "20,50", dueFuture2))(),
+      {
+        status: 200,
+        check: (a) => a.body?.invoice?.amountGrosze === 2050 && a.body?.invoice?.dueDate === dueFuture2,
+      },
+    ],
+    [
+      "edit A (overdue): change amount -> locked",
+      () => edit(jar, invoiceIdA, payload(numberA, "999", dueA))(),
+      { status: 409, check: (a) => a.body?.error === "locked" },
+    ],
+    [
+      "edit A (overdue): change only number",
+      () => edit(jar, invoiceIdA, payload(renamedA, "1 234,56", dueA))(),
+      {
+        status: 200,
+        check: (a) => {
+          if (a.body?.invoice?.number === renamedA) numberA = renamedA;
+          return a.body?.invoice?.number === renamedA && a.body?.invoice?.amountGrosze === 123456;
+        },
+      },
+    ],
+    [
+      "edit B: cannot edit invoice of A -> 404",
+      () => edit(jarB, invoiceIdA, payload(numberA, "1 234,56", dueA))(),
+      { status: 404 },
+    ],
+    [
+      "cancel A",
+      () => cancel(jar, invoiceIdA)(),
+      { status: 200, check: (a) => a.body?.invoice?.cancelledOn === daysAgo(0) },
+    ],
+    ["cancel B: cannot cancel invoice of A -> 404", () => cancel(jarB, invoiceIdA)(), { status: 404 }],
+    ["restore B: cannot restore invoice of A -> 404", () => restore(jarB, invoiceIdA)(), { status: 404 }],
+    [
+      "payment A: cancelled invoice cannot be marked paid -> 404",
+      () => request(`/api/invoices/${invoiceIdA}/payment`, { method: "PUT", json: { paidOn: daysAgo(0) }, jar }),
+      { status: 404 },
+    ],
+    [
+      "edit A: cancelled invoice cannot be edited -> 404",
+      () => edit(jar, invoiceIdA, payload(numberA, "1 234,56", dueA))(),
+      { status: 404 },
+    ],
+    [
+      "invoice: number of cancelled A is free for a new invoice",
+      () => request("/api/invoices", { method: "POST", json: payload(numberA, "5", dueFuture), jar }),
+      {
+        status: 201,
+        check: (a) => {
+          invoiceIdNew = a.body?.invoice?.id;
+          return Boolean(invoiceIdNew);
+        },
+      },
+    ],
+    [
+      "restore A while number is taken -> duplicate_number",
+      () => restore(jar, invoiceIdA)(),
+      { status: 409, check: (a) => a.body?.error === "duplicate_number" },
+    ],
+    ["cancel the new invoice", () => cancel(jar, invoiceIdNew)(), { status: 200 }],
+    [
+      "restore A",
+      () => restore(jar, invoiceIdA)(),
+      { status: 200, check: (a) => a.body?.invoice?.cancelledOn === null },
+    ],
+    ["cancel: invalid id -> 404", () => cancel(jar, "nie-uuid")(), { status: 404 }],
   ];
 }
 
