@@ -22,3 +22,10 @@
 - **Problem**: `supabase db reset` odtwarza bazę od zera i kasuje dane wpisane ręcznie przez użytkownika, który nie chce za każdym razem wprowadzać ich od nowa.
 - **Rule**: Lokalnie stosuj nowe migracje przez `npx supabase migration up`, które zachowuje dane. `db reset` uruchamiaj tylko po wyraźnej zgodzie użytkownika; weryfikację "migracja stosuje się od zera" rób na osobnej bazie, nie na bazie dev z danymi.
 - **Applies to**: plan, implement, impl-review
+
+## Nowa zmiana: świeży branch z aktualnego main
+
+- **Context**: pierwsza faza /10x-implement
+- **Problem**: commit fazy wylądowałby na main albo na nieaktualnej bazie
+- **Rule**: Przed pierwszą fazą nowej zmiany przełącz się na main, zrób `git pull`, a potem utwórz branch `feat/<change-id>` (`git switch -c`). Nigdy nie commituj fazy bezpośrednio na main ani na branchu utworzonym z nieaktualnego main.
+- **Applies to**: implement

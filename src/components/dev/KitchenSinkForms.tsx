@@ -5,12 +5,13 @@ import { Switch } from "@/components/ui/switch";
 import { ClientFormView } from "@/components/clients/ClientFormDialog";
 import { ClientsManager } from "@/components/clients/ClientsManager";
 import { CancelInvoiceView, CANCEL_DESCRIPTION, cancelTitle } from "@/components/invoices/CancelInvoiceDialog";
-import { InvoiceFormView } from "@/components/invoices/InvoiceFormDialog";
+import { InvoiceFormView, PauseEscalationControl } from "@/components/invoices/InvoiceFormDialog";
 import { InvoicesManager } from "@/components/invoices/InvoicesManager";
 import { PaymentFormView } from "@/components/invoices/PaymentDialog";
 import { ReminderDialogView } from "@/components/invoices/ReminderDialog";
 import { amountInputText } from "@/lib/format";
 import { chargesAsOf } from "@/lib/charges";
+import { isInvoiceLocked } from "@/lib/invoice-lock";
 import { buildClientReminders, renderReminder } from "@/lib/reminder";
 import type { Client, Invoice } from "@/types";
 import { FormField } from "@/components/auth/FormField";
@@ -298,6 +299,41 @@ export function KitchenSinkForms() {
           onAmountChange={noop}
           onDueDateChange={noop}
           onSubmit={noop}
+        />
+      </Section>
+      <Section title="InvoiceFormView: wstrzymana po terminie (pola aktywne)">
+        <InvoiceFormView
+          idPrefix="ks-invoice-paused"
+          clients={sampleClients}
+          clientId={sampleInvoices[0].clientId}
+          number={sampleInvoices[0].number}
+          amount={amountInputText(sampleInvoices[0].amountGrosze)}
+          dueDate={sampleInvoices[0].dueDate}
+          errors={{}}
+          pending={false}
+          locked={isInvoiceLocked({ dueDate: sampleInvoices[0].dueDate, pausedOn: "2026-10-01" }, SAMPLE_TODAY)}
+          onClientIdChange={noop}
+          onNumberChange={noop}
+          onAmountChange={noop}
+          onDueDateChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="PauseEscalationControl: niewstrzymana">
+        <PauseEscalationControl paused={false} pending={false} onToggle={noop} />
+      </Section>
+      <Section title="PauseEscalationControl: wstrzymana">
+        <PauseEscalationControl paused pending={false} onToggle={noop} />
+      </Section>
+      <Section title="PauseEscalationControl: w trakcie">
+        <PauseEscalationControl paused={false} pending onToggle={noop} />
+      </Section>
+      <Section title="PauseEscalationControl: z błędem">
+        <PauseEscalationControl
+          paused={false}
+          pending={false}
+          error="Nie znaleziono faktury. Odśwież stronę."
+          onToggle={noop}
         />
       </Section>
       <Section title="Anulowanie faktury: zwykłe">

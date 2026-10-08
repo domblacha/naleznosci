@@ -8,6 +8,8 @@ import { FormField } from "@/components/auth/FormField";
 import { ServerError } from "@/components/auth/ServerError";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { useInvoiceForm, type InvoiceFormErrors } from "@/components/hooks/use-invoice-form";
+import { useInvoicePause } from "@/components/hooks/use-invoice-pause";
+import { formatDate } from "@/lib/format";
 import { isInvoiceLocked } from "@/lib/invoice-lock";
 import type { Client, Invoice } from "@/types";
 
@@ -159,6 +161,24 @@ function InvoiceForm({
   );
 }
 
+interface PauseEscalationControlProps {
+  paused: boolean;
+  pending: boolean;
+  error?: string | null;
+  onToggle: () => void;
+}
+
+export function PauseEscalationControl({ paused, pending, error, onToggle }: PauseEscalationControlProps) {
+  return (
+    <div className="space-y-2">
+      <Button type="button" variant="outline" className="w-full" disabled={pending} onClick={onToggle}>
+        {pending ? "Zapisywanie..." : paused ? "Wznów eskalację" : "Wstrzymaj eskalację"}
+      </Button>
+      <ServerError message={error} />
+    </div>
+  );
+}
+
 interface InvoiceFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -168,6 +188,7 @@ interface InvoiceFormDialogProps {
   /** YYYY-MM-DD, "today" in Poland, computed on the server. */
   today: string;
   onSaved: (invoice: Invoice) => void;
+  onPauseChanged?: (invoice: Invoice) => void;
   onCancelRequest?: () => void;
   onCloseAutoFocus?: () => void;
 }
@@ -179,10 +200,16 @@ export function InvoiceFormDialog({
   invoice,
   today,
   onSaved,
+  onPauseChanged,
   onCancelRequest,
   onCloseAutoFocus,
 }: InvoiceFormDialogProps) {
   const editing = invoice ?? undefined;
+  const pause = useInvoicePause({
+    onChanged: (changed) => {
+      onPauseChanged?.(changed);
+    },
+  });
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -194,17 +221,29 @@ export function InvoiceFormDialog({
         <DialogHeader>
           <DialogTitle>{editing ? "Edytuj fakturę" : "Dodaj fakturę"}</DialogTitle>
           <DialogDescription>
-            {editing ? `Faktura ${editing.number} · ${editing.clientName}` : "Podaj dane nowej faktury."}
+            {editing
+              ? `Faktura ${editing.number} · ${editing.clientName}${
+                  editing.pausedOn ? ` · eskalacja wstrzymana od ${formatDate(editing.pausedOn)}` : ""
+                }`
+              : "Podaj dane nowej faktury."}
           </DialogDescription>
         </DialogHeader>
-        {/* Mounted only while open and keyed by invoice, so the form state resets on every opening. */}
+        {/* Mounted only while open and keyed by invoice and pause state, so the form resets on every opening and toggle. */}
         <InvoiceForm
-          key={editing?.id ?? "new"}
+          key={`${editing?.id ?? "new"}-${editing?.pausedOn ?? ""}`}
           clients={clients}
           invoice={editing}
           locked={editing ? isInvoiceLocked(editing, today) : false}
           onSaved={onSaved}
         />
+        {editing && onPauseChanged ? (
+          <PauseEscalationControl
+            paused={editing.pausedOn !== null}
+            pending={pause.pending}
+            error={pause.error}
+            onToggle={() => void (editing.pausedOn ? pause.resume(editing.id) : pause.pause(editing.id))}
+          />
+        ) : null}
         {editing && onCancelRequest ? (
           <Button type="button" variant="destructive" onClick={onCancelRequest}>
             Anuluj fakturę

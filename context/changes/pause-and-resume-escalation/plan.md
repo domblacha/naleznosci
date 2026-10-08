@@ -275,34 +275,34 @@ Migracja jest addytywna: istniejące faktury dostają `paused_on = null`, więc 
 
 #### Automated
 
-- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up`
-- [x] 1.2 Testy jednostkowe przechodzą (grupa `paused`, wyjątek blokady, wykluczenie z ponagleń): `npm test`
-- [x] 1.3 Lint przechodzi: `npm run lint`
-- [x] 1.4 Sprawdzenie typów przechodzi: `npx astro check`
-- [x] 1.5 Build przechodzi: `npm run build`
-- [x] 1.6 Smoke przechodzi na lokalnym dev serwerze (port 4321 ubity przed i po): `npm run smoke`
+- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up` — 4f50ae0
+- [x] 1.2 Testy jednostkowe przechodzą (grupa `paused`, wyjątek blokady, wykluczenie z ponagleń): `npm test` — 4f50ae0
+- [x] 1.3 Lint przechodzi: `npm run lint` — 4f50ae0
+- [x] 1.4 Sprawdzenie typów przechodzi: `npx astro check` — 4f50ae0
+- [x] 1.5 Build przechodzi: `npm run build` — 4f50ae0
+- [x] 1.6 Smoke przechodzi na lokalnym dev serwerze (port 4321 ubity przed i po): `npm run smoke` — 4f50ae0
 
 #### Manual
 
-- [x] 1.7 W Supabase Studio próba ustawienia `paused_on` na fakturze zapłaconej lub anulowanej jest odrzucona przez constraint
-- [x] 1.8 Faktura z ustawionym w Studio `paused_on` nie pojawia się w ponagleniu swojego klienta na `/`
+- [x] 1.7 W Supabase Studio próba ustawienia `paused_on` na fakturze zapłaconej lub anulowanej jest odrzucona przez constraint — 4f50ae0
+- [x] 1.8 Faktura z ustawionym w Studio `paused_on` nie pojawia się w ponagleniu swojego klienta na `/` — 4f50ae0
 
 ### Phase 2: Wstrzymanie na liście
 
 #### Automated
 
-- [ ] 2.1 Testy jednostkowe przechodzą: `npm test`
-- [ ] 2.2 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
-- [ ] 2.3 Sprawdzenie typów przechodzi: `npx astro check`
-- [ ] 2.4 Build przechodzi: `npm run build`
-- [ ] 2.5 Smoke przechodzi na lokalnym dev serwerze (port 4321 ubity przed i po): `npm run smoke`
+- [x] 2.1 Testy jednostkowe przechodzą: `npm test`
+- [x] 2.2 Lint przechodzi (w tym zakaz literałów kolorów): `npm run lint`
+- [x] 2.3 Sprawdzenie typów przechodzi: `npx astro check`
+- [x] 2.4 Build przechodzi: `npm run build`
+- [x] 2.5 Smoke przechodzi na lokalnym dev serwerze (port 4321 ubity przed i po): `npm run smoke`
 
 #### Manual
 
-- [ ] 2.6 Wstrzymanie faktury z etapu 2 przenosi ją do „Wstrzymane” na końcu listy i usuwa z ponaglenia klienta bez przeładowania; odsetki w wierszu nadal rosną z dniami
-- [ ] 2.7 W dialogu wstrzymanej faktury po terminie klient, kwota i termin są aktywne; zmiana kwoty zapisuje się
-- [ ] 2.8 Wznowienie faktury 40 dni po terminie przenosi ją od razu na etap 4 (przeskok etapów), pola znów są wyłączone, a faktura wraca do ponaglenia
-- [ ] 2.9 Wstrzymanie bieżącej faktury działa; po wznowieniu wraca do „Bieżące”
-- [ ] 2.10 Zapłata wstrzymanej faktury i jej przywrócenie z `/history` zwraca ją na właściwy etap, a nie do „Wstrzymane”
-- [ ] 2.11 Fokus zostaje na przełączniku po wstrzymaniu i wznowieniu; dialog obsługuje klawiaturę (Esc, Tab)
-- [ ] 2.12 `/dev/ui` pokazuje nowe stany w jasnym i ciemnym motywie
+- [x] 2.6 Wstrzymanie faktury z etapu 2 przenosi ją do „Wstrzymane” na końcu listy i usuwa z ponaglenia klienta bez przeładowania; odsetki w wierszu nadal rosną z dniami
+- [x] 2.7 W dialogu wstrzymanej faktury po terminie klient, kwota i termin są aktywne; zmiana kwoty zapisuje się
+- [x] 2.8 Wznowienie faktury 40 dni po terminie przenosi ją od razu na etap 4 (przeskok etapów), pola znów są wyłączone, a faktura wraca do ponaglenia
+- [x] 2.9 Wstrzymanie bieżącej faktury działa; po wznowieniu wraca do „Bieżące”
+- [x] 2.10 Zapłata wstrzymanej faktury i jej przywrócenie z `/history` zwraca ją na właściwy etap, a nie do „Wstrzymane”
+- [x] 2.11 Fokus zostaje na przełączniku po wstrzymaniu i wznowieniu; dialog obsługuje klawiaturę (Esc, Tab)
+- [x] 2.12 `/dev/ui` pokazuje nowe stany w jasnym i ciemnym motywie

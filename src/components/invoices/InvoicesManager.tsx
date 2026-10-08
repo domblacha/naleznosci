@@ -77,6 +77,11 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
     setEditOpen(false);
   }
 
+  function handlePauseChanged(changed: Invoice) {
+    setInvoices((prev) => prev.map((i) => (i.id === changed.id ? changed : i)));
+    setEditing(changed);
+  }
+
   function handleCancelled(saved: Invoice) {
     cancelledRef.current = true;
     setInvoices((prev) => prev.filter((i) => i.id !== saved.id));
@@ -156,14 +161,16 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
                       <TableCell>{invoice.number}</TableCell>
                       <TableCell className="text-right">{formatAmount(invoice.amountGrosze)}</TableCell>
                       <TableCell>{formatDate(invoice.dueDate)}</TableCell>
-                      <TableCell className="text-right">{group === "current" ? "—" : invoice.daysOverdue}</TableCell>
                       <TableCell className="text-right">
-                        {group === "current"
+                        {invoice.daysOverdue <= 0 ? "—" : invoice.daysOverdue}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {invoice.daysOverdue <= 0
                           ? "—"
                           : formatAmount(interestGrosze(invoice.amountGrosze, invoice.daysOverdue))}
                       </TableCell>
                       <TableCell className="text-right">
-                        {group === "current"
+                        {invoice.daysOverdue <= 0
                           ? "—"
                           : formatAmount(
                               compensationGrosze(
@@ -234,6 +241,7 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
         invoice={editing}
         today={today}
         onSaved={handleEdited}
+        onPauseChanged={handlePauseChanged}
         onCancelRequest={() => {
           setCancelOpen(true);
         }}
