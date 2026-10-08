@@ -2,7 +2,7 @@ export type EscalationThresholds = readonly [number, number, number, number];
 
 export const DEFAULT_THRESHOLDS: EscalationThresholds = [3, 7, 14, 30];
 
-export type EscalationGroup = "stage_4" | "stage_3" | "stage_2" | "stage_1" | "pre_threshold" | "current";
+export type EscalationGroup = "stage_4" | "stage_3" | "stage_2" | "stage_1" | "pre_threshold" | "current" | "paused";
 
 export const GROUP_ORDER: readonly EscalationGroup[] = [
   "stage_4",
@@ -11,6 +11,7 @@ export const GROUP_ORDER: readonly EscalationGroup[] = [
   "stage_1",
   "pre_threshold",
   "current",
+  "paused",
 ];
 
 const MS_PER_DAY = 86_400_000;
@@ -48,7 +49,8 @@ export function escalationGroup(days: number, thresholds: EscalationThresholds =
   return "pre_threshold";
 }
 
-export function groupInvoices<T extends { dueDate: string; number: string }>(
+/** An item with a non-empty `pausedOn` has no stage: it goes to the "paused" group, still with `daysOverdue`. */
+export function groupInvoices<T extends { dueDate: string; number: string; pausedOn?: string | null }>(
   items: T[],
   today: string,
   thresholds: EscalationThresholds = DEFAULT_THRESHOLDS,
@@ -60,7 +62,7 @@ export function groupInvoices<T extends { dueDate: string; number: string }>(
   const buckets = new Map<EscalationGroup, (T & { daysOverdue: number })[]>();
   for (const item of sorted) {
     const days = daysOverdue(item.dueDate, today);
-    const group = escalationGroup(days, thresholds);
+    const group = item.pausedOn ? "paused" : escalationGroup(days, thresholds);
     const bucket = buckets.get(group) ?? [];
     bucket.push({ ...item, daysOverdue: days });
     buckets.set(group, bucket);

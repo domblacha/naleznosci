@@ -27,6 +27,7 @@ const GROUP_LABELS: Record<EscalationGroup, string> = {
   stage_1: `Etap 1 · od ${T1} dni po terminie`,
   pre_threshold: "Po terminie, przed etapem 1",
   current: "Bieżące",
+  paused: "Wstrzymane",
 };
 
 export function InvoicesManager({ initialInvoices, clients, today }: Props) {

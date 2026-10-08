@@ -168,6 +168,7 @@ function invoiceSteps() {
     ],
     ...paymentSteps(),
     ...editAndCancelSteps(),
+    ...pauseSteps(),
   ];
 }
 
@@ -298,6 +299,68 @@ function editAndCancelSteps() {
       { status: 200, check: (a) => a.body?.invoice?.cancelledOn === null },
     ],
     ["cancel: invalid id -> 404", () => cancel(jar, "nie-uuid")(), { status: 404 }],
+  ];
+}
+
+// Runs after editAndCancelSteps(): invoice A is open again, 40 days overdue, with the renamed number.
+function pauseSteps() {
+  const dueA = daysAgo(40);
+  const numberA = `FV/1-ed/${stamp}`;
+  const pause = (jar, id) => () => request(`/api/invoices/${id}/pause`, { method: "PUT", jar });
+  const resume = (jar, id) => () => request(`/api/invoices/${id}/pause`, { method: "DELETE", jar });
+  const edit = (amount) => () =>
+    request(`/api/invoices/${invoiceIdA}`, {
+      method: "PUT",
+      json: { clientId: clientIds.noNip, number: numberA, amount, dueDate: dueA },
+      jar,
+    });
+  const pausedToday = { status: 200, check: (a) => a.body?.invoice?.pausedOn === daysAgo(0) };
+  const notPaused = (extra = () => true) => ({
+    status: 200,
+    check: (a) => a.body?.invoice?.pausedOn === null && extra(a.body.invoice),
+  });
+  return [
+    ["pause API rejects anonymous user", () => pause(new Map(), invoiceIdA)(), { status: 401 }],
+    ["pause A", () => pause(jar, invoiceIdA)(), pausedToday],
+    ["pause A again -> 404", () => pause(jar, invoiceIdA)(), { status: 404 }],
+    ["pause B: cannot pause invoice of A -> 404", () => pause(jarB, invoiceIdA)(), { status: 404 }],
+    ["resume B: cannot resume invoice of A -> 404", () => resume(jarB, invoiceIdA)(), { status: 404 }],
+    [
+      "edit A (paused, overdue): change amount",
+      edit("999"),
+      { status: 200, check: (a) => a.body?.invoice?.amountGrosze === 99900 },
+    ],
+    ["resume A", () => resume(jar, invoiceIdA)(), notPaused()],
+    ["resume A again -> 404", () => resume(jar, invoiceIdA)(), { status: 404 }],
+    [
+      "edit A (resumed, overdue): change amount -> locked",
+      edit("1 234,56"),
+      { status: 409, check: (a) => a.body?.error === "locked" },
+    ],
+    ["pause A before payment", () => pause(jar, invoiceIdA)(), pausedToday],
+    [
+      "payment A: marking paid clears the pause",
+      () => request(`/api/invoices/${invoiceIdA}/payment`, { method: "PUT", json: { paidOn: daysAgo(0) }, jar }),
+      notPaused((invoice) => invoice.paidOn === daysAgo(0)),
+    ],
+    [
+      "payment A: reopened invoice is not paused",
+      () => request(`/api/invoices/${invoiceIdA}/payment`, { method: "DELETE", jar }),
+      notPaused((invoice) => invoice.paidOn === null),
+    ],
+    ["pause A before cancel", () => pause(jar, invoiceIdA)(), pausedToday],
+    [
+      "cancel A: cancelling clears the pause",
+      () => request(`/api/invoices/${invoiceIdA}/cancellation`, { method: "PUT", jar }),
+      notPaused((invoice) => invoice.cancelledOn === daysAgo(0)),
+    ],
+    ["pause A: cancelled invoice cannot be paused -> 404", () => pause(jar, invoiceIdA)(), { status: 404 }],
+    [
+      "restore A after pause",
+      () => request(`/api/invoices/${invoiceIdA}/cancellation`, { method: "DELETE", jar }),
+      notPaused((invoice) => invoice.cancelledOn === null),
+    ],
+    ["pause: invalid id -> 404", () => pause(jar, "nie-uuid")(), { status: 404 }],
   ];
 }
 
