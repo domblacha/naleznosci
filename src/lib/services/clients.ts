@@ -63,18 +63,23 @@ async function toDuplicateCode(
   const code = toErrorCode(error);
   if (code !== "duplicate_nip" && code !== "duplicate_name") return code;
 
-  let query = supabase.from("clients").select("deactivated_on");
+  let query = supabase.from("clients").select("name, deactivated_on");
   if (code === "duplicate_nip") {
     query = query.eq("nip", input.nip);
   } else {
-    // Escape LIKE wildcards: the name index compares lower(name) literally.
+    // ilike only narrows the rows (PostgREST also treats `*` as a wildcard);
+    // the exact case-insensitive match below mirrors the lower(name) index.
     query = query.is("nip", null).ilike("name", input.name.replace(/[\\%_]/g, "\\$&"));
   }
   if (excludeId) query = query.neq("id", excludeId);
 
-  const { data, error: readError } = await query.limit(1);
-  if (readError || data.length === 0) return code;
-  return data[0].deactivated_on ? (`${code}_inactive` as ClientErrorCode) : code;
+  const { data, error: readError } = await query;
+  if (readError) return code;
+  const rows = data as { name: string; deactivated_on: string | null }[];
+  const name = input.name.toLowerCase();
+  const row = code === "duplicate_nip" ? rows[0] : rows.find((r) => r.name.toLowerCase() === name);
+  if (!row) return code;
+  return row.deactivated_on ? (`${code}_inactive` as ClientErrorCode) : code;
 }
 
 /** All clients, active and deactivated (`deactivatedOn` tells them apart). */

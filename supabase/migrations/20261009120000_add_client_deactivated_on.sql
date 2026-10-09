@@ -11,10 +11,12 @@ alter table public.clients
 -- UWAGA: treści wyjątków ('client_has_open_invoices', 'client_inactive', SQLSTATE P0001) są kontraktem
 -- z src/lib/services/clients.ts i src/lib/services/invoices.ts, które rozpoznają je po error.message.
 -- Funkcje są security invoker (domyślnie): RLS właściciela obejmuje oba odczyty.
+-- Pusty search_path: wszystkie nazwy w funkcjach są kwalifikowane schematem public.
 
 -- Strona klienta: nie można usunąć klienta z otwartą fakturą.
 create function public.clients_guard_deactivation() returns trigger
 language plpgsql
+set search_path = ''
 as $$
 begin
   if old.deactivated_on is null and new.deactivated_on is not null then
@@ -36,8 +38,11 @@ create trigger clients_guard_deactivation
 -- Strona faktury: nie można otworzyć faktury (insert, zmiana klienta, cofnięcie wpłaty, przywrócenie anulowanej)
 -- u usuniętego klienta. "for share" koliduje z update wiersza klienta, więc równoległa dezaktywacja
 -- czeka na commit faktury (i jej exists widzi tę fakturę) albo faktura widzi już deactivated_on.
+-- Zakłada poziom izolacji READ COMMITTED (domyślny w PostgREST): w REPEATABLE READ exists
+-- po odczekaniu na blokadę nie zobaczyłby zatwierdzonej właśnie faktury.
 create function public.invoices_guard_client_active() returns trigger
 language plpgsql
+set search_path = ''
 as $$
 declare
   client_deactivated_on date;

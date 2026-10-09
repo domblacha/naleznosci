@@ -1,7 +1,7 @@
 ---
 change_id: client-deactivate-restore
 title: Dezaktywacja i przywracanie klienta
-status: implemented
+status: impl_reviewed
 created: 2026-10-09
 updated: 2026-10-09
 ---

@@ -54,6 +54,7 @@ export function ClientsManager({ initialClients }: Props) {
 
   function handleDeactivated(saved: Client) {
     setClients((prev) => prev.map((c) => (c.id === saved.id ? saved : c)));
+    setRestoreError(null);
     deactivatedRef.current = true;
     setDeactivateOpen(false);
   }
@@ -84,7 +85,9 @@ export function ClientsManager({ initialClients }: Props) {
     <div className="space-y-4">
       {sorted.length === 0 ? (
         <div className="flex flex-col items-center gap-4 py-16 text-center">
-          <p className="text-muted-foreground">Nie masz jeszcze klientów</p>
+          <p className="text-muted-foreground">
+            {deactivated.length > 0 ? "Nie masz aktywnych klientów" : "Nie masz jeszcze klientów"}
+          </p>
           <Button
             ref={addButtonRef}
             onClick={(e) => {
@@ -125,7 +128,7 @@ export function ClientsManager({ initialClients }: Props) {
                   <TableCell>{client.name}</TableCell>
                   <TableCell>{client.nip ?? "—"}</TableCell>
                   <TableCell>{client.chargeCompensation ? "Tak" : "Nie"}</TableCell>
-                  <TableCell className="text-right whitespace-nowrap">
+                  <TableCell className="space-x-2 text-right whitespace-nowrap">
                     <Button
                       variant="outline"
                       size="sm"
@@ -135,7 +138,7 @@ export function ClientsManager({ initialClients }: Props) {
                     >
                       <Pencil className="size-3.5" />
                       Edytuj
-                    </Button>{" "}
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
