@@ -312,18 +312,18 @@ Migracja jest addytywna (nullowalna kolumna z wartością null dla wszystkich is
 
 #### Automated
 
-- [x] 2.1 Typy i Astro przechodzą: `npx astro check`
-- [x] 2.2 Lint przechodzi (bez literałów kolorów i klas palety): `npm run lint`
-- [x] 2.3 Testy jednostkowe przechodzą: `npm test`
-- [x] 2.4 Build przechodzi: `npm run build`
-- [x] 2.5 Smoke nadal przechodzi: `npm run smoke`
+- [x] 2.1 Typy i Astro przechodzą: `npx astro check` — deaae4f
+- [x] 2.2 Lint przechodzi (bez literałów kolorów i klas palety): `npm run lint` — deaae4f
+- [x] 2.3 Testy jednostkowe przechodzą: `npm test` — deaae4f
+- [x] 2.4 Build przechodzi: `npm run build` — deaae4f
+- [x] 2.5 Smoke nadal przechodzi: `npm run smoke` — deaae4f
 
 #### Manual
 
-- [x] 2.6 „Usuń” klienta bez otwartych faktur przenosi go do sekcji „Usunięci klienci” bez przeładowania i zostaje tam po odświeżeniu
-- [x] 2.7 „Usuń” klienta z otwartą (także wstrzymaną) fakturą pokazuje komunikat, a klient zostaje aktywny
-- [x] 2.8 „Przywróć” wraca klienta do tabeli aktywnych z fokusem na „Dodaj klienta”
-- [x] 2.9 Dodanie klienta z NIP-em usuniętego klienta pokazuje komunikat wskazujący sekcję „Usunięci klienci”
-- [x] 2.10 Usunięty klient nie występuje w wyborze klienta w dialogu „Dodaj fakturę”
-- [x] 2.11 W `/history` przywrócenie anulowanej faktury usuniętego klienta pokazuje komunikat `client_inactive`
-- [x] 2.12 `/dev/ui` pokazuje nowe stany poprawnie w trybie jasnym i ciemnym
+- [x] 2.6 „Usuń” klienta bez otwartych faktur przenosi go do sekcji „Usunięci klienci” bez przeładowania i zostaje tam po odświeżeniu — deaae4f
+- [x] 2.7 „Usuń” klienta z otwartą (także wstrzymaną) fakturą pokazuje komunikat, a klient zostaje aktywny — deaae4f
+- [x] 2.8 „Przywróć” wraca klienta do tabeli aktywnych z fokusem na „Dodaj klienta” — deaae4f
+- [x] 2.9 Dodanie klienta z NIP-em usuniętego klienta pokazuje komunikat wskazujący sekcję „Usunięci klienci” — deaae4f
+- [x] 2.10 Usunięty klient nie występuje w wyborze klienta w dialogu „Dodaj fakturę” — deaae4f
+- [x] 2.11 W `/history` przywrócenie anulowanej faktury usuniętego klienta pokazuje komunikat `client_inactive` — deaae4f
+- [x] 2.12 `/dev/ui` pokazuje nowe stany poprawnie w trybie jasnym i ciemnym — deaae4f
