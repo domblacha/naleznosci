@@ -50,7 +50,7 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | done        |
 | S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | done        |
 | S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | done        |
-| S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | in-progress |
+| S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | done        |
 | S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | proposed    |
 | S-11 | invoice-list-filter-sort        | filtrować listę po kliencie i sortować po dniach po terminie lub kwocie                                    | S-03          | FR-010                            | proposed    |
 | S-12 | editable-reminder-templates     | edytować 4 szablony treści ponagleń                                                                        | S-05          | FR-014                            | proposed    |
@@ -212,7 +212,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Wymaga istnienia faktur (reguła blokady), dlatego oddzielony od S-02; niski wpływ na resztę.
-- **Status:** in-progress
+- **Status:** done
 
 ### S-10: Ustawienia reguły eskalacji
 
@@ -313,3 +313,4 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **S-06: Użytkownik może oznaczyć fakturę jako zapłaconą w całości z datą wpłaty; faktura natychmiast znika z listy otwartych faktur i z ponagleń, a w widoku historii widać ją z odsetkami naliczonymi do dnia wpłaty.** — Archived 2026-10-07 → `context/archive/2026-10-07-mark-invoice-paid/`. Lesson: —.
 - **S-07: Użytkownik może edytować fakturę (termin i kwota zablokowane od dnia po terminie) i anulować ją — anulowana faktura znika z eskalacji, ponagleń i trafia do historii.** — Archived 2026-10-07 → `context/archive/2026-10-07-invoice-edit-and-cancel/`. Lesson: —.
 - **S-08: Użytkownik może wstrzymać eskalację faktury (trafia do grupy „wstrzymane”, poza ponaglenia, odsetki rosną dalej, termin i kwotę można edytować) i ją wznowić — faktura wraca na etap wynikający z aktualnej liczby dni po terminie.** — Archived 2026-10-08 → `context/archive/2026-10-08-pause-and-resume-escalation/`. Lesson: —.
+- **S-09: Użytkownik może usunąć klienta (oznaczenie jako nieaktywny z zachowaniem historii, zablokowane, dopóki klient ma nieopłacone faktury) i go przywrócić; duplikaty są wykrywane także wśród klientów nieaktywnych.** — Archived 2026-10-09 → `context/archive/2026-10-09-client-deactivate-restore/`. Lesson: —.
