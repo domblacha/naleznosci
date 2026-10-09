@@ -4,6 +4,12 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ClientFormView } from "@/components/clients/ClientFormDialog";
 import { ClientsManager } from "@/components/clients/ClientsManager";
+import {
+  DeactivateClientView,
+  DEACTIVATE_DESCRIPTION,
+  deactivateTitle,
+} from "@/components/clients/DeactivateClientDialog";
+import { clientErrorMessage } from "@/lib/client-errors";
 import { CancelInvoiceView, CANCEL_DESCRIPTION, cancelTitle } from "@/components/invoices/CancelInvoiceDialog";
 import { InvoiceFormView, PauseEscalationControl } from "@/components/invoices/InvoiceFormDialog";
 import { InvoicesManager } from "@/components/invoices/InvoicesManager";
@@ -37,6 +43,18 @@ const sampleClients: Client[] = [
     chargeCompensation: false,
     deactivatedOn: null,
     createdAt: "2026-01-02T00:00:00Z",
+  },
+];
+
+const sampleClientsWithDeactivated: Client[] = [
+  ...sampleClients,
+  {
+    id: "00000000-0000-4000-8000-000000000003",
+    name: "Stara Hurtownia",
+    nip: "5260001246",
+    chargeCompensation: true,
+    deactivatedOn: "2026-09-20",
+    createdAt: "2026-01-03T00:00:00Z",
   },
 ];
 
@@ -190,8 +208,60 @@ export function KitchenSinkForms() {
           onSubmit={noop}
         />
       </Section>
+      <Section title="Formularz klienta: duplikat usuniętego klienta">
+        <ClientFormView
+          idPrefix="ks-client-duplicate-inactive"
+          name="Stara Hurtownia"
+          nip="5260001246"
+          chargeCompensation
+          errors={{}}
+          serverError={clientErrorMessage("duplicate_nip_inactive")}
+          pending={false}
+          onNameChange={noop}
+          onNipChange={noop}
+          onChargeCompensationChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
       <Section title="Lista klientów: pusta">
         <ClientsManager initialClients={[]} />
+      </Section>
+      <Section title="Lista klientów: z usuniętym klientem">
+        <ClientsManager initialClients={sampleClientsWithDeactivated} />
+      </Section>
+      <Section title="Usuwanie klienta: zwykłe">
+        <div className="bg-popover text-popover-foreground ring-foreground/10 grid max-w-sm gap-4 p-4 ring-1">
+          <DeactivateClientView
+            standalone
+            title={<p className="text-sm font-medium">{deactivateTitle(sampleClients[0].name)}</p>}
+            description={<p className="text-muted-foreground text-xs/relaxed">{DEACTIVATE_DESCRIPTION}</p>}
+            pending={false}
+            onConfirm={noop}
+          />
+        </div>
+      </Section>
+      <Section title="Usuwanie klienta: w trakcie">
+        <div className="bg-popover text-popover-foreground ring-foreground/10 grid max-w-sm gap-4 p-4 ring-1">
+          <DeactivateClientView
+            standalone
+            title={<p className="text-sm font-medium">{deactivateTitle(sampleClients[0].name)}</p>}
+            description={<p className="text-muted-foreground text-xs/relaxed">{DEACTIVATE_DESCRIPTION}</p>}
+            pending
+            onConfirm={noop}
+          />
+        </div>
+      </Section>
+      <Section title="Usuwanie klienta: z błędem (otwarte faktury)">
+        <div className="bg-popover text-popover-foreground ring-foreground/10 grid max-w-sm gap-4 p-4 ring-1">
+          <DeactivateClientView
+            standalone
+            title={<p className="text-sm font-medium">{deactivateTitle(sampleClients[0].name)}</p>}
+            description={<p className="text-muted-foreground text-xs/relaxed">{DEACTIVATE_DESCRIPTION}</p>}
+            pending={false}
+            error={clientErrorMessage("has_open_invoices")}
+            onConfirm={noop}
+          />
+        </div>
       </Section>
       <Section title="InvoiceFormView: default">
         <InvoiceFormView

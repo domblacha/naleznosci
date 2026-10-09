@@ -297,33 +297,33 @@ Migracja jest addytywna (nullowalna kolumna z wartością null dla wszystkich is
 
 #### Automated
 
-- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up`
-- [x] 1.2 Typy i Astro przechodzą: `npx astro check`
-- [x] 1.3 Lint przechodzi: `npm run lint`
-- [x] 1.4 Testy jednostkowe przechodzą: `npm test`
-- [x] 1.5 Build przechodzi: `npm run build`
-- [x] 1.6 Smoke przechodzi na dev serverze, łącznie z nową grupą `deactivationSteps`: `npm run smoke`
+- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up` — cd6f961
+- [x] 1.2 Typy i Astro przechodzą: `npx astro check` — cd6f961
+- [x] 1.3 Lint przechodzi: `npm run lint` — cd6f961
+- [x] 1.4 Testy jednostkowe przechodzą: `npm test` — cd6f961
+- [x] 1.5 Build przechodzi: `npm run build` — cd6f961
+- [x] 1.6 Smoke przechodzi na dev serverze, łącznie z nową grupą `deactivationSteps`: `npm run smoke` — cd6f961
 
 #### Manual
 
-- [x] 1.7 W Supabase Studio klient z otwartą fakturą nie daje się zdezaktywować ręcznym `update` (błąd `client_has_open_invoices`)
+- [x] 1.7 W Supabase Studio klient z otwartą fakturą nie daje się zdezaktywować ręcznym `update` (błąd `client_has_open_invoices`) — cd6f961
 
 ### Phase 2: UI
 
 #### Automated
 
-- [ ] 2.1 Typy i Astro przechodzą: `npx astro check`
-- [ ] 2.2 Lint przechodzi (bez literałów kolorów i klas palety): `npm run lint`
-- [ ] 2.3 Testy jednostkowe przechodzą: `npm test`
-- [ ] 2.4 Build przechodzi: `npm run build`
-- [ ] 2.5 Smoke nadal przechodzi: `npm run smoke`
+- [x] 2.1 Typy i Astro przechodzą: `npx astro check`
+- [x] 2.2 Lint przechodzi (bez literałów kolorów i klas palety): `npm run lint`
+- [x] 2.3 Testy jednostkowe przechodzą: `npm test`
+- [x] 2.4 Build przechodzi: `npm run build`
+- [x] 2.5 Smoke nadal przechodzi: `npm run smoke`
 
 #### Manual
 
-- [ ] 2.6 „Usuń” klienta bez otwartych faktur przenosi go do sekcji „Usunięci klienci” bez przeładowania i zostaje tam po odświeżeniu
-- [ ] 2.7 „Usuń” klienta z otwartą (także wstrzymaną) fakturą pokazuje komunikat, a klient zostaje aktywny
-- [ ] 2.8 „Przywróć” wraca klienta do tabeli aktywnych z fokusem na „Dodaj klienta”
-- [ ] 2.9 Dodanie klienta z NIP-em usuniętego klienta pokazuje komunikat wskazujący sekcję „Usunięci klienci”
-- [ ] 2.10 Usunięty klient nie występuje w wyborze klienta w dialogu „Dodaj fakturę”
-- [ ] 2.11 W `/history` przywrócenie anulowanej faktury usuniętego klienta pokazuje komunikat `client_inactive`
-- [ ] 2.12 `/dev/ui` pokazuje nowe stany poprawnie w trybie jasnym i ciemnym
+- [x] 2.6 „Usuń” klienta bez otwartych faktur przenosi go do sekcji „Usunięci klienci” bez przeładowania i zostaje tam po odświeżeniu
+- [x] 2.7 „Usuń” klienta z otwartą (także wstrzymaną) fakturą pokazuje komunikat, a klient zostaje aktywny
+- [x] 2.8 „Przywróć” wraca klienta do tabeli aktywnych z fokusem na „Dodaj klienta”
+- [x] 2.9 Dodanie klienta z NIP-em usuniętego klienta pokazuje komunikat wskazujący sekcję „Usunięci klienci”
+- [x] 2.10 Usunięty klient nie występuje w wyborze klienta w dialogu „Dodaj fakturę”
+- [x] 2.11 W `/history` przywrócenie anulowanej faktury usuniętego klienta pokazuje komunikat `client_inactive`
+- [x] 2.12 `/dev/ui` pokazuje nowe stany poprawnie w trybie jasnym i ciemnym
