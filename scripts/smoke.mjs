@@ -169,6 +169,7 @@ function invoiceSteps() {
     ...paymentSteps(),
     ...editAndCancelSteps(),
     ...pauseSteps(),
+    ...deactivationSteps(),
   ];
 }
 
@@ -362,6 +363,118 @@ function pauseSteps() {
       notPaused((invoice) => invoice.cancelledOn === null),
     ],
     ["pause: invalid id -> 404", () => pause(jar, "nie-uuid")(), { status: 404 }],
+  ];
+}
+
+// Own client with a NIP, so the groups above (clientIds.noNip) are not affected.
+function deactivationSteps() {
+  const nip = "9876543210";
+  const dueDate = daysAgo(40);
+  const clientName = `Usuwany Smoke ${stamp}`;
+  const number = `FV/D1/${stamp}`;
+  let clientId;
+  let invoiceId;
+  const deactivation = (jar, method) => () => request(`/api/clients/${clientId}/deactivation`, { method, jar });
+  const invoiceCall = (method, suffix) => () => request(`/api/invoices/${invoiceId}/${suffix}`, { method, jar });
+  const blocked = { status: 409, check: (a) => a.body?.error === "has_open_invoices" };
+  const inactive = { status: 409, check: (a) => a.body?.error === "client_inactive" };
+  return [
+    [
+      "deactivation: create client with NIP",
+      () => request("/api/clients", { method: "POST", json: { name: clientName, nip, chargeCompensation: true }, jar }),
+      {
+        status: 201,
+        check: (a) => {
+          clientId = a.body?.client?.id;
+          return Boolean(clientId) && a.body?.client?.deactivatedOn === null;
+        },
+      },
+    ],
+    [
+      "deactivation: create open invoice",
+      () => request("/api/invoices", { method: "POST", json: { clientId, number, amount: "10", dueDate }, jar }),
+      {
+        status: 201,
+        check: (a) => {
+          invoiceId = a.body?.invoice?.id;
+          return Boolean(invoiceId);
+        },
+      },
+    ],
+    ["deactivation: open invoice blocks -> has_open_invoices", () => deactivation(jar, "PUT")(), blocked],
+    ["deactivation: pause the invoice", () => invoiceCall("PUT", "pause")(), { status: 200 }],
+    ["deactivation: paused invoice blocks -> has_open_invoices", () => deactivation(jar, "PUT")(), blocked],
+    ["deactivation: cancel the invoice", () => invoiceCall("PUT", "cancellation")(), { status: 200 }],
+    [
+      "deactivation: client without open invoices is deactivated",
+      () => deactivation(jar, "PUT")(),
+      { status: 200, check: (a) => a.body?.client?.deactivatedOn === daysAgo(0) },
+    ],
+    [
+      "deactivation: restoring invoice of deactivated client -> client_inactive",
+      () => invoiceCall("DELETE", "cancellation")(),
+      inactive,
+    ],
+    [
+      "deactivation: new invoice for deactivated client -> client_inactive",
+      () =>
+        request("/api/invoices", {
+          method: "POST",
+          json: { clientId, number: `FV/D2/${stamp}`, amount: "10", dueDate },
+          jar,
+        }),
+      inactive,
+    ],
+    [
+      "deactivation: same NIP as deactivated client -> duplicate_nip_inactive",
+      () =>
+        request("/api/clients", {
+          method: "POST",
+          json: { name: `Inny Usuwany ${stamp}`, nip, chargeCompensation: true },
+          jar,
+        }),
+      { status: 409, check: (a) => a.body?.error === "duplicate_nip_inactive" },
+    ],
+    [
+      "deactivation: deactivated client cannot be edited -> 404",
+      () =>
+        request(`/api/clients/${clientId}`, {
+          method: "PUT",
+          json: { name: clientName, nip, chargeCompensation: false },
+          jar,
+        }),
+      { status: 404 },
+    ],
+    ["deactivation B: cannot deactivate client of A -> 404", () => deactivation(jarB, "PUT")(), { status: 404 }],
+    ["deactivation B: cannot restore client of A -> 404", () => deactivation(jarB, "DELETE")(), { status: 404 }],
+    [
+      "deactivation: restore client",
+      () => deactivation(jar, "DELETE")(),
+      { status: 200, check: (a) => a.body?.client?.deactivatedOn === null },
+    ],
+    ["deactivation: restoring an active client -> 404", () => deactivation(jar, "DELETE")(), { status: 404 }],
+    [
+      "deactivation: restore the cancelled invoice",
+      () => invoiceCall("DELETE", "cancellation")(),
+      { status: 200, check: (a) => a.body?.invoice?.cancelledOn === null },
+    ],
+    [
+      "deactivation: mark the invoice paid",
+      () => request(`/api/invoices/${invoiceId}/payment`, { method: "PUT", json: { paidOn: daysAgo(0) }, jar }),
+      { status: 200 },
+    ],
+    ["deactivation: client with only a paid invoice is deactivated", () => deactivation(jar, "PUT")(), { status: 200 }],
+    [
+      "deactivation: reopening paid invoice of deactivated client -> client_inactive",
+      () => invoiceCall("DELETE", "payment")(),
+      inactive,
+    ],
+    ["deactivation: restore client again", () => deactivation(jar, "DELETE")(), { status: 200 }],
+    [
+      "deactivation: invalid id -> 404",
+      () => request("/api/clients/nie-uuid/deactivation", { method: "PUT", jar }),
+      { status: 404 },
+    ],
   ];
 }
 

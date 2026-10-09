@@ -27,6 +27,7 @@ const sampleClients: Client[] = [
     name: "Acme Sp. z o.o.",
     nip: "1234563218",
     chargeCompensation: true,
+    deactivatedOn: null,
     createdAt: "2026-01-01T00:00:00Z",
   },
   {
@@ -34,6 +35,7 @@ const sampleClients: Client[] = [
     name: "Żabka Handel",
     nip: null,
     chargeCompensation: false,
+    deactivatedOn: null,
     createdAt: "2026-01-02T00:00:00Z",
   },
 ];

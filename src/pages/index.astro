@@ -3,7 +3,7 @@ import Topbar from "@/components/Topbar.astro";
 import Layout from "@/layouts/Layout.astro";
 import { InvoicesManager } from "@/components/invoices/InvoicesManager";
 import { createClient } from "@/lib/supabase";
-import { listClients } from "@/lib/services/clients";
+import { listActiveClients } from "@/lib/services/clients";
 import { listOpenInvoices } from "@/lib/services/invoices";
 import { todayInPoland } from "@/lib/escalation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -19,7 +19,7 @@ if (!supabase) {
   loadError = "Lista faktur jest niedostępna: brak konfiguracji serwera.";
 } else {
   try {
-    [invoices, clients] = await Promise.all([listOpenInvoices(supabase), listClients(supabase)]);
+    [invoices, clients] = await Promise.all([listOpenInvoices(supabase), listActiveClients(supabase)]);
   } catch {
     loadError = "Nie udało się wczytać faktur. Odśwież stronę.";
   }

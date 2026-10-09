@@ -3,6 +3,8 @@ export interface Client {
   name: string;
   nip: string | null;
   chargeCompensation: boolean;
+  /** YYYY-MM-DD; null = klient aktywny */
+  deactivatedOn: string | null;
   createdAt: string;
 }
 

@@ -3,7 +3,7 @@ project: Należności
 version: 1
 status: draft
 created: 2026-09-25
-updated: 2026-10-08
+updated: 2026-10-09
 prd_version: 1
 main_goal: speed
 top_blocker: none
@@ -50,7 +50,7 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | done        |
 | S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | done        |
 | S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | done        |
-| S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | proposed    |
+| S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | in-progress |
 | S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | proposed    |
 | S-11 | invoice-list-filter-sort        | filtrować listę po kliencie i sortować po dniach po terminie lub kwocie                                    | S-03          | FR-010                            | proposed    |
 | S-12 | editable-reminder-templates     | edytować 4 szablony treści ponagleń                                                                        | S-05          | FR-014                            | proposed    |
@@ -212,7 +212,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Wymaga istnienia faktur (reguła blokady), dlatego oddzielony od S-02; niski wpływ na resztę.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-10: Ustawienia reguły eskalacji
 
@@ -276,7 +276,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 | S-05       | collective-reminder             | Zbiorcze ponaglenie per klient do schowka                   | no                    | Done 2026-10-06                                                                              |
 | S-06       | mark-invoice-paid               | Oznaczanie faktury jako zapłaconej + widok historii         | no                    | Done 2026-10-07                                                                              |
 | S-07       | invoice-edit-and-cancel         | Edycja (z blokadą po terminie) i anulowanie faktury         | no                    | Done 2026-10-07                                                                              |
-| S-08       | pause-and-resume-escalation     | Wstrzymanie i wznowienie eskalacji faktury                  | no                    | Zaimplementowany i po impl-review 2026-10-08; PR #14 czeka na merge                          |
+| S-08       | pause-and-resume-escalation     | Wstrzymanie i wznowienie eskalacji faktury                  | no                    | Done 2026-10-08 (PR #14)                                                                     |
 | S-09       | client-deactivate-restore       | Dezaktywacja i przywracanie klienta                         | yes                   | Odblokowany przez S-03; `/10x-plan client-deactivate-restore`                                |
 | S-10       | escalation-settings             | Ustawienia progów, stopy odsetek i rekompensaty             | yes                   | Odblokowany przez S-04; `/10x-plan escalation-settings`                                      |
 | S-11       | invoice-list-filter-sort        | Filtrowanie i sortowanie listy faktur                       | yes                   | Odblokowany przez S-03; kandydat do cięcia; `/10x-plan invoice-list-filter-sort`             |

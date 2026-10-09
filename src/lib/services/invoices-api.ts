@@ -11,6 +11,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 const STATUS_BY_CODE = {
   duplicate_number: 409,
   locked: 409,
+  client_inactive: 409,
   client_not_found: 404,
   not_found: 404,
   unknown: 500,

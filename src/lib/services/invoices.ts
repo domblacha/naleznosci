@@ -2,16 +2,20 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { isInvoiceLocked, lockedFieldsChanged } from "@/lib/invoice-lock";
 import type { Invoice, InvoiceInput } from "@/types";
 
-export type InvoiceErrorCode = "duplicate_number" | "client_not_found" | "not_found" | "locked" | "unknown";
+export type InvoiceErrorCode =
+  "duplicate_number" | "client_not_found" | "client_inactive" | "not_found" | "locked" | "unknown";
 export type InvoiceResult = { ok: true; invoice: Invoice } | { ok: false; code: InvoiceErrorCode };
 
 const COLUMNS =
   "id, client_id, number, amount_grosze, due_date, paid_on, cancelled_on, paused_on, created_at, clients(name, charge_compensation)";
 const UNIQUE_VIOLATION = "23505";
 const FOREIGN_KEY_VIOLATION = "23503";
+const RAISE_EXCEPTION = "P0001";
 // Constraint names must match supabase/migrations/*_create_invoices.sql.
 const NUMBER_INDEX = "invoices_user_number_key";
 const CLIENT_OWNER_FKEY = "invoices_client_owner_fkey";
+// Exception text must match supabase/migrations/*_add_client_deactivated_on.sql (invoices_guard_client_active).
+const CLIENT_INACTIVE_MESSAGE = "client_inactive";
 
 interface InvoiceRow {
   id: string;
@@ -55,6 +59,7 @@ function toErrorCode(error: { code?: string; message?: string; details?: string 
   const text = `${error.message ?? ""} ${error.details ?? ""}`;
   if (error.code === UNIQUE_VIOLATION && text.includes(NUMBER_INDEX)) return "duplicate_number";
   if (error.code === FOREIGN_KEY_VIOLATION && text.includes(CLIENT_OWNER_FKEY)) return "client_not_found";
+  if (error.code === RAISE_EXCEPTION && error.message === CLIENT_INACTIVE_MESSAGE) return "client_inactive";
   return "unknown";
 }
 
@@ -113,7 +118,7 @@ export async function setInvoicePayment(
   if (paidOn === null) query = query.not("paid_on", "is", null);
 
   const { data, error } = await query.select(COLUMNS).maybeSingle();
-  if (error) return { ok: false, code: "unknown" };
+  if (error) return { ok: false, code: toErrorCode(error) };
   if (!data) return { ok: false, code: "not_found" };
   return { ok: true, invoice: toInvoice(data as unknown as InvoiceRow) };
 }
