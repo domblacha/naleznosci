@@ -573,16 +573,16 @@ Brak — bez zmian schematu i API.
 
 #### Automated
 
-- [x] 5.1 Lint przechodzi: `npm run lint`
-- [x] 5.2 Typy przechodzą: `npx astro check`
-- [x] 5.3 Testy jednostkowe przechodzą: `npm test`
-- [x] 5.4 Build przechodzi: `npm run build`
-- [x] 5.5 `package.json` nie zawiera nowej zależności po `shadcn add sheet`
+- [x] 5.1 Lint przechodzi: `npm run lint` — a26f786
+- [x] 5.2 Typy przechodzą: `npx astro check` — a26f786
+- [x] 5.3 Testy jednostkowe przechodzą: `npm test` — a26f786
+- [x] 5.4 Build przechodzi: `npm run build` — a26f786
+- [x] 5.5 `package.json` nie zawiera nowej zależności po `shadcn add sheet` — a26f786
 
 #### Manual
 
-- [x] 5.6 Przy 360 px header ma jeden wiersz (☰ · e-mail · Wyloguj), długi e-mail się skraca, bez poziomego przewijania
-- [x] 5.7 ☰ otwiera szufladę z lewej z pięcioma linkami, aktywny wyróżniony; Escape, klik w overlay i ✕ zamykają ją, fokus wraca na ☰
-- [x] 5.8 Klik w link w szufladzie przechodzi na stronę
-- [x] 5.9 Od 640 px szuflada i ☰ są niewidoczne, header jak po fazie 4
-- [x] 5.10 `/dev/ui` pokazuje sekcję menu mobilnego
+- [x] 5.6 Przy 360 px header ma jeden wiersz (☰ · e-mail · Wyloguj), długi e-mail się skraca, bez poziomego przewijania — a26f786
+- [x] 5.7 ☰ otwiera szufladę z lewej z pięcioma linkami, aktywny wyróżniony; Escape, klik w overlay i ✕ zamykają ją, fokus wraca na ☰ — a26f786
+- [x] 5.8 Klik w link w szufladzie przechodzi na stronę — a26f786
+- [x] 5.9 Od 640 px szuflada i ☰ są niewidoczne, header jak po fazie 4 — a26f786
+- [x] 5.10 `/dev/ui` pokazuje sekcję menu mobilnego — a26f786

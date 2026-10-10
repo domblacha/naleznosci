@@ -1,7 +1,7 @@
 ---
 change_id: ux-improvement
 title: Ux improvement
-status: implementing
+status: implemented
 created: 2026-10-10
 updated: 2026-10-10
 archived_at: null
