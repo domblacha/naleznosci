@@ -9,21 +9,14 @@ import { invoiceErrorMessage } from "@/lib/invoice-errors";
 import type { Invoice } from "@/types";
 
 interface Props {
-  initialInvoices: Invoice[];
+  invoices: Invoice[];
   /** YYYY-MM-DD, "today" in Poland, computed on the server. */
   today: string;
+  onSaved: (saved: Invoice) => void;
+  onRestored: (invoiceId: string) => void;
 }
 
-/** Latest payment first, then by invoice number so equal dates keep a stable order. */
-function sortPaid(invoices: Invoice[]): Invoice[] {
-  return [...invoices].sort(
-    (a, b) =>
-      (b.paidOn ?? "").localeCompare(a.paidOn ?? "") || a.number.localeCompare(b.number, "pl", { numeric: true }),
-  );
-}
-
-export function PaidInvoicesManager({ initialInvoices, today }: Props) {
-  const [invoices, setInvoices] = useState(() => sortPaid(initialInvoices));
+export function PaidInvoicesManager({ invoices, today, onSaved, onRestored }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [restoringId, setRestoringId] = useState<string | null>(null);
@@ -40,7 +33,7 @@ export function PaidInvoicesManager({ initialInvoices, today }: Props) {
   }
 
   function handleSaved(saved: Invoice) {
-    setInvoices((prev) => sortPaid(prev.map((i) => (i.id === saved.id ? saved : i))));
+    onSaved(saved);
     setEditOpen(false);
   }
 
@@ -51,7 +44,7 @@ export function PaidInvoicesManager({ initialInvoices, today }: Props) {
     try {
       const response = await fetch(`/api/invoices/${invoice.id}/payment`, { method: "DELETE" });
       if (response.ok) {
-        setInvoices((prev) => prev.filter((i) => i.id !== invoice.id));
+        onRestored(invoice.id);
         headingRef.current?.focus();
         return;
       }

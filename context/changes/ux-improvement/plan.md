@@ -312,35 +312,35 @@ Brak — bez zmian schematu i API.
 
 #### Automated
 
-- [x] 2.1 Lint przechodzi: `npm run lint`
-- [x] 2.2 Typy przechodzą: `npx astro check`
-- [x] 2.3 Testy jednostkowe przechodzą: `npm test`
-- [x] 2.4 Build przechodzi: `npm run build`
-- [x] 2.5 Smoke przechodzi na dev serwerze: `npm run smoke`
+- [x] 2.1 Lint przechodzi: `npm run lint` — b6fdeff
+- [x] 2.2 Typy przechodzą: `npx astro check` — b6fdeff
+- [x] 2.3 Testy jednostkowe przechodzą: `npm test` — b6fdeff
+- [x] 2.4 Build przechodzi: `npm run build` — b6fdeff
+- [x] 2.5 Smoke przechodzi na dev serwerze: `npm run smoke` — b6fdeff
 
 #### Manual
 
-- [x] 2.6 `/` otwiera się na „Ponaglenia”; liczniki trzech tabów zgadzają się z treścią paneli
-- [x] 2.7 Wstrzymanie faktury w tabie „Eskalacja”: tab się nie zmienia, licznik „Wstrzymane” rośnie, po zamknięciu dialogu fokus na „Dodaj fakturę”
-- [x] 2.8 Oznaczenie faktury jako zapłaconej i anulowanie aktualizują liczniki; fokus nie ginie
-- [x] 2.9 Brak otwartych faktur i brak klientów pokazują dotychczasowe puste stany bez tabów
-- [x] 2.10 `/clients`: usunięcie klienta zostawia tab „Aktywni”, licznik „Nieaktywni” rośnie, fokus na „Dodaj klienta”; przywrócenie z „Nieaktywni” analogicznie
-- [x] 2.11 Puste panele „Eskalacja”, „Wstrzymane”, „Aktywni”, „Nieaktywni” pokazują swoje teksty
-- [x] 2.12 Komunikat 409 przy duplikacie usuniętego klienta odsyła do zakładki „Nieaktywni”
+- [x] 2.6 `/` otwiera się na „Ponaglenia”; liczniki trzech tabów zgadzają się z treścią paneli — b6fdeff
+- [x] 2.7 Wstrzymanie faktury w tabie „Eskalacja”: tab się nie zmienia, licznik „Wstrzymane” rośnie, po zamknięciu dialogu fokus na „Dodaj fakturę” — b6fdeff
+- [x] 2.8 Oznaczenie faktury jako zapłaconej i anulowanie aktualizują liczniki; fokus nie ginie — b6fdeff
+- [x] 2.9 Brak otwartych faktur i brak klientów pokazują dotychczasowe puste stany bez tabów — b6fdeff
+- [x] 2.10 `/clients`: usunięcie klienta zostawia tab „Aktywni”, licznik „Nieaktywni” rośnie, fokus na „Dodaj klienta”; przywrócenie z „Nieaktywni” analogicznie — b6fdeff
+- [x] 2.11 Puste panele „Eskalacja”, „Wstrzymane”, „Aktywni”, „Nieaktywni” pokazują swoje teksty — b6fdeff
+- [x] 2.12 Komunikat 409 przy duplikacie usuniętego klienta odsyła do zakładki „Nieaktywni” — b6fdeff
 
 ### Phase 3: Historia i Ustawienia
 
 #### Automated
 
-- [ ] 3.1 Lint przechodzi: `npm run lint`
-- [ ] 3.2 Typy przechodzą: `npx astro check`
-- [ ] 3.3 Testy jednostkowe przechodzą: `npm test`
-- [ ] 3.4 Build przechodzi: `npm run build`
-- [ ] 3.5 Smoke przechodzi na dev serwerze: `npm run smoke`
+- [x] 3.1 Lint przechodzi: `npm run lint`
+- [x] 3.2 Typy przechodzą: `npx astro check`
+- [x] 3.3 Testy jednostkowe przechodzą: `npm test`
+- [x] 3.4 Build przechodzi: `npm run build`
+- [x] 3.5 Smoke przechodzi na dev serwerze: `npm run smoke`
 
 #### Manual
 
-- [ ] 3.6 `/history`: przywrócenie faktury zmniejsza licznik swojego taba, fokus na nagłówku panelu; zmiana daty wpłaty przesortowuje listę
-- [ ] 3.7 `/settings`: zmiana pola w „Dane nadawcy”, przełączenie na „Reguła eskalacji” i powrót — wpisana wartość zostaje; po zapisie i przełączeniu tabów formularz pokazuje zapisane wartości
-- [ ] 3.8 Wszystkie cztery strony przy 360 px: taby czytelne, bez poziomego przewijania strony
-- [ ] 3.9 README opisuje taby zamiast sekcji
+- [x] 3.6 `/history`: przywrócenie faktury zmniejsza licznik swojego taba, fokus na nagłówku panelu; zmiana daty wpłaty przesortowuje listę
+- [x] 3.7 `/settings`: zmiana pola w „Dane nadawcy”, przełączenie na „Reguła eskalacji” i powrót — wpisana wartość zostaje; po zapisie i przełączeniu tabów formularz pokazuje zapisane wartości
+- [x] 3.8 Wszystkie cztery strony przy 360 px: taby czytelne, bez poziomego przewijania strony
+- [x] 3.9 README opisuje taby zamiast sekcji

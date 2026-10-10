@@ -7,20 +7,11 @@ import { invoiceErrorMessage } from "@/lib/invoice-errors";
 import type { Invoice } from "@/types";
 
 interface Props {
-  initialInvoices: Invoice[];
+  invoices: Invoice[];
+  onRestored: (invoiceId: string) => void;
 }
 
-/** Latest cancellation first, then by invoice number so equal dates keep a stable order. */
-function sortCancelled(invoices: Invoice[]): Invoice[] {
-  return [...invoices].sort(
-    (a, b) =>
-      (b.cancelledOn ?? "").localeCompare(a.cancelledOn ?? "") ||
-      a.number.localeCompare(b.number, "pl", { numeric: true }),
-  );
-}
-
-export function CancelledInvoicesSection({ initialInvoices }: Props) {
-  const [invoices, setInvoices] = useState(() => sortCancelled(initialInvoices));
+export function CancelledInvoicesSection({ invoices, onRestored }: Props) {
   const [restoringId, setRestoringId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const headingRef = useRef<HTMLHeadingElement | null>(null);
@@ -32,7 +23,7 @@ export function CancelledInvoicesSection({ initialInvoices }: Props) {
     try {
       const response = await fetch(`/api/invoices/${invoice.id}/cancellation`, { method: "DELETE" });
       if (response.ok) {
-        setInvoices((prev) => prev.filter((i) => i.id !== invoice.id));
+        onRestored(invoice.id);
         headingRef.current?.focus();
         return;
       }

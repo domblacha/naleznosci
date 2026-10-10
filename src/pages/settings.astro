@@ -1,11 +1,10 @@
 ---
 import Topbar from "@/components/Topbar.astro";
 import Layout from "@/layouts/Layout.astro";
-import { SettingsForm } from "@/components/settings/SettingsForm";
+import { SettingsTabs } from "@/components/settings/SettingsTabs";
 import { createClient } from "@/lib/supabase";
 import { getSettings } from "@/lib/services/settings";
 import { getSenderProfile } from "@/lib/services/sender-profile";
-import { SenderProfileForm } from "@/components/settings/SenderProfileForm";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { EscalationSettings, SenderProfile } from "@/types";
 
@@ -36,11 +35,7 @@ if (!supabase) {
           <AlertDescription>{loadError}</AlertDescription>
         </Alert>
       ) : (
-        <>
-          <SenderProfileForm initialProfile={senderProfile} client:load />
-          <h2 class="text-foreground pt-4 text-lg font-semibold">Reguła eskalacji</h2>
-          <SettingsForm initialSettings={settings} client:load />
-        </>
+        <SettingsTabs initialProfile={senderProfile} initialSettings={settings} client:load />
       )}
     </main>
   </div>
