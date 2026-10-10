@@ -295,38 +295,38 @@ Brak — bez zmian schematu i API.
 
 #### Automated
 
-- [x] 1.1 Lint przechodzi: `npm run lint`
-- [x] 1.2 Typy przechodzą: `npx astro check`
-- [x] 1.3 Testy jednostkowe przechodzą: `npm test`
-- [x] 1.4 Build przechodzi: `npm run build`
-- [x] 1.5 `package.json` nie zawiera nowej zależności po `shadcn add tabs`
+- [x] 1.1 Lint przechodzi: `npm run lint` — 0c563f8
+- [x] 1.2 Typy przechodzą: `npx astro check` — 0c563f8
+- [x] 1.3 Testy jednostkowe przechodzą: `npm test` — 0c563f8
+- [x] 1.4 Build przechodzi: `npm run build` — 0c563f8
+- [x] 1.5 `package.json` nie zawiera nowej zależności po `shadcn add tabs` — 0c563f8
 
 #### Manual
 
-- [x] 1.6 `/dev/ui` pokazuje sekcję tabów; strzałki przełączają taby, fokus widoczny
-- [x] 1.7 Menu w kolejności Faktury, Historia, Klienci, Ustawienia na wszystkich czterech stronach, aktywny link wyróżniony
-- [x] 1.8 Przy 360 px header ma dwa wiersze (e-mail + Wyloguj na górze, menu na dole), bez poziomego przewijania
-- [x] 1.9 Od 640 px header wygląda jak przed zmianą
+- [x] 1.6 `/dev/ui` pokazuje sekcję tabów; strzałki przełączają taby, fokus widoczny — 0c563f8
+- [x] 1.7 Menu w kolejności Faktury, Historia, Klienci, Ustawienia na wszystkich czterech stronach, aktywny link wyróżniony — 0c563f8
+- [x] 1.8 Przy 360 px header ma dwa wiersze (e-mail + Wyloguj na górze, menu na dole), bez poziomego przewijania — 0c563f8
+- [x] 1.9 Od 640 px header wygląda jak przed zmianą — 0c563f8
 
 ### Phase 2: Faktury i Klienci
 
 #### Automated
 
-- [ ] 2.1 Lint przechodzi: `npm run lint`
-- [ ] 2.2 Typy przechodzą: `npx astro check`
-- [ ] 2.3 Testy jednostkowe przechodzą: `npm test`
-- [ ] 2.4 Build przechodzi: `npm run build`
-- [ ] 2.5 Smoke przechodzi na dev serwerze: `npm run smoke`
+- [x] 2.1 Lint przechodzi: `npm run lint`
+- [x] 2.2 Typy przechodzą: `npx astro check`
+- [x] 2.3 Testy jednostkowe przechodzą: `npm test`
+- [x] 2.4 Build przechodzi: `npm run build`
+- [x] 2.5 Smoke przechodzi na dev serwerze: `npm run smoke`
 
 #### Manual
 
-- [ ] 2.6 `/` otwiera się na „Ponaglenia”; liczniki trzech tabów zgadzają się z treścią paneli
-- [ ] 2.7 Wstrzymanie faktury w tabie „Eskalacja”: tab się nie zmienia, licznik „Wstrzymane” rośnie, po zamknięciu dialogu fokus na „Dodaj fakturę”
-- [ ] 2.8 Oznaczenie faktury jako zapłaconej i anulowanie aktualizują liczniki; fokus nie ginie
-- [ ] 2.9 Brak otwartych faktur i brak klientów pokazują dotychczasowe puste stany bez tabów
-- [ ] 2.10 `/clients`: usunięcie klienta zostawia tab „Aktywni”, licznik „Nieaktywni” rośnie, fokus na „Dodaj klienta”; przywrócenie z „Nieaktywni” analogicznie
-- [ ] 2.11 Puste panele „Eskalacja”, „Wstrzymane”, „Aktywni”, „Nieaktywni” pokazują swoje teksty
-- [ ] 2.12 Komunikat 409 przy duplikacie usuniętego klienta odsyła do zakładki „Nieaktywni”
+- [x] 2.6 `/` otwiera się na „Ponaglenia”; liczniki trzech tabów zgadzają się z treścią paneli
+- [x] 2.7 Wstrzymanie faktury w tabie „Eskalacja”: tab się nie zmienia, licznik „Wstrzymane” rośnie, po zamknięciu dialogu fokus na „Dodaj fakturę”
+- [x] 2.8 Oznaczenie faktury jako zapłaconej i anulowanie aktualizują liczniki; fokus nie ginie
+- [x] 2.9 Brak otwartych faktur i brak klientów pokazują dotychczasowe puste stany bez tabów
+- [x] 2.10 `/clients`: usunięcie klienta zostawia tab „Aktywni”, licznik „Nieaktywni” rośnie, fokus na „Dodaj klienta”; przywrócenie z „Nieaktywni” analogicznie
+- [x] 2.11 Puste panele „Eskalacja”, „Wstrzymane”, „Aktywni”, „Nieaktywni” pokazują swoje teksty
+- [x] 2.12 Komunikat 409 przy duplikacie usuniętego klienta odsyła do zakładki „Nieaktywni”
 
 ### Phase 3: Historia i Ustawienia
 

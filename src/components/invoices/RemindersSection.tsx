@@ -1,27 +1,22 @@
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { INACTIVE_PANEL } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ReminderDialog } from "@/components/invoices/ReminderDialog";
 import { formatAmount } from "@/lib/format";
-import { chargeSettingsFrom } from "@/lib/charges";
-import { buildClientReminders } from "@/lib/reminder";
-import type { EscalationSettings, Invoice, SenderProfile } from "@/types";
+import type { ClientReminder } from "@/lib/reminder";
+import type { SenderProfile } from "@/types";
 
 interface Props {
-  invoices: Invoice[];
+  /** Reminders to show, built by the parent so the tab counter and the list share one source. */
+  reminders: ClientReminder[];
   /** YYYY-MM-DD, "today" in Poland, computed on the server. */
   today: string;
-  /** User's escalation settings: stage thresholds, interest rate and compensation amounts. */
-  settings: EscalationSettings;
   /** User's sender profile; rendered into the reminder text. */
   sender: SenderProfile;
 }
 
-export function RemindersSection({ invoices, today, settings, sender }: Props) {
-  const reminders = useMemo(
-    () => buildClientReminders(invoices, today, settings.thresholds, chargeSettingsFrom(settings)),
-    [invoices, today, settings],
-  );
+export function RemindersSection({ reminders, today, sender }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const openerRef = useRef<HTMLElement | null>(null);
@@ -36,7 +31,6 @@ export function RemindersSection({ invoices, today, settings, sender }: Props) {
 
   return (
     <section className="space-y-2">
-      <h2 className="text-foreground text-sm font-semibold">Ponaglenia</h2>
       {reminders.length === 0 ? (
         <p className="text-muted-foreground text-sm">Żaden klient nie ma faktur na etapach 1–4.</p>
       ) : (
@@ -82,7 +76,8 @@ export function RemindersSection({ invoices, today, settings, sender }: Props) {
         onOpenChange={setOpen}
         onCloseAutoFocus={() => {
           // The dialog has no DialogTrigger, so Radix cannot restore focus on its own.
-          if (openerRef.current?.isConnected) openerRef.current.focus();
+          const opener = openerRef.current;
+          if (opener?.isConnected && !opener.closest(INACTIVE_PANEL)) opener.focus();
         }}
       />
     </section>
