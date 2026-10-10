@@ -1,7 +1,7 @@
 ---
 change_id: ux-improvement
 title: Ux improvement
-status: implemented
+status: implementing
 created: 2026-10-10
 updated: 2026-10-10
 archived_at: null
@@ -31,3 +31,5 @@ Faktury, Historia, Klienci, Ustawienia
 Dla mobile widok glownej belki (headera) jako 2 wiersze:
 - na gorze: login i przycisk wyloguj
 - na dole: pozycje menu
+
+Rozszerzenie (2026-10-10): ponaglenia na `/`, faktury na `/invoices` z tabami Eskalacja · Wstrzymane — zob. `frame.md`.

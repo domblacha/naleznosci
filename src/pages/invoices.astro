@@ -1,0 +1,51 @@
+---
+import Topbar from "@/components/Topbar.astro";
+import Layout from "@/layouts/Layout.astro";
+import { InvoicesManager } from "@/components/invoices/InvoicesManager";
+import { createClient } from "@/lib/supabase";
+import { listActiveClients } from "@/lib/services/clients";
+import { listOpenInvoices } from "@/lib/services/invoices";
+import { getSettings } from "@/lib/services/settings";
+import { DEFAULT_ESCALATION_SETTINGS } from "@/lib/charges";
+import { todayInPoland } from "@/lib/escalation";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import type { Client, EscalationSettings, Invoice } from "@/types";
+
+export const prerender = false;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+let invoices: Invoice[] = [];
+let clients: Client[] = [];
+let settings: EscalationSettings = DEFAULT_ESCALATION_SETTINGS;
+let loadError: string | null = null;
+if (!supabase) {
+  loadError = "Lista faktur jest niedostępna: brak konfiguracji serwera.";
+} else {
+  try {
+    [invoices, clients, settings] = await Promise.all([
+      listOpenInvoices(supabase),
+      listActiveClients(supabase),
+      getSettings(supabase),
+    ]);
+  } catch {
+    loadError = "Nie udało się wczytać faktur. Odśwież stronę.";
+  }
+}
+const today = todayInPoland(new Date());
+---
+
+<Layout title="Faktury">
+  <div class="min-h-screen p-4">
+    <Topbar />
+    <main class="mx-auto max-w-5xl space-y-4 py-8">
+      <h1 class="text-3xl font-bold text-foreground">Faktury</h1>
+      {loadError ? (
+        <Alert variant="destructive">
+          <AlertDescription>{loadError}</AlertDescription>
+        </Alert>
+      ) : (
+        <InvoicesManager initialInvoices={invoices} clients={clients} today={today} settings={settings} client:load />
+      )}
+    </main>
+  </div>
+</Layout>

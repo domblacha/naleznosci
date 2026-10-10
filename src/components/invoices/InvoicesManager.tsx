@@ -6,12 +6,11 @@ import { CancelInvoiceDialog } from "@/components/invoices/CancelInvoiceDialog";
 import { InvoiceFormDialog } from "@/components/invoices/InvoiceFormDialog";
 import { PaymentDialog } from "@/components/invoices/PaymentDialog";
 import { INACTIVE_PANEL, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RemindersSection } from "@/components/invoices/RemindersSection";
+import { useReloadOnBfcacheRestore } from "@/components/hooks/use-reload-on-bfcache-restore";
 import { chargeSettingsFrom, compensationGrosze, interestGrosze } from "@/lib/charges";
 import { groupInvoices, type EscalationGroup, type EscalationThresholds } from "@/lib/escalation";
 import { formatAmount, formatDate } from "@/lib/format";
-import { buildClientReminders } from "@/lib/reminder";
-import type { Client, EscalationSettings, Invoice, SenderProfile } from "@/types";
+import type { Client, EscalationSettings, Invoice } from "@/types";
 
 interface Props {
   initialInvoices: Invoice[];
@@ -20,8 +19,6 @@ interface Props {
   today: string;
   /** User's escalation settings, read on the server. */
   settings: EscalationSettings;
-  /** User's sender profile, read on the server; goes into the reminder text. */
-  sender: SenderProfile;
 }
 
 /** An element inside an inactive tab panel cannot take focus, so it counts as unavailable. */
@@ -125,7 +122,8 @@ function InvoiceGroups({ list, labels, chargeSettings, onEdit, onPay }: InvoiceG
   ));
 }
 
-export function InvoicesManager({ initialInvoices, clients, today, settings, sender }: Props) {
+export function InvoicesManager({ initialInvoices, clients, today, settings }: Props) {
+  useReloadOnBfcacheRestore();
   const [invoices, setInvoices] = useState(initialInvoices);
   const [open, setOpen] = useState(false);
   const [payingId, setPayingId] = useState<string | null>(null);
@@ -150,10 +148,6 @@ export function InvoicesManager({ initialInvoices, clients, today, settings, sen
   );
   const labels = useMemo(() => groupLabels(settings.thresholds), [settings.thresholds]);
   const chargeSettings = useMemo(() => chargeSettingsFrom(settings), [settings]);
-  const reminders = useMemo(
-    () => buildClientReminders(invoices, today, settings.thresholds, chargeSettings),
-    [invoices, today, settings.thresholds, chargeSettings],
-  );
 
   function openDialog(opener: HTMLElement) {
     openerRef.current = opener;
@@ -245,15 +239,11 @@ export function InvoicesManager({ initialInvoices, clients, today, settings, sen
       ) : (
         <>
           <div className="flex justify-end">{addButton}</div>
-          <Tabs defaultValue="reminders">
+          <Tabs defaultValue="escalation">
             <TabsList>
-              <TabsTrigger value="reminders">Ponaglenia ({reminders.length})</TabsTrigger>
               <TabsTrigger value="escalation">Eskalacja ({escalationCount})</TabsTrigger>
               <TabsTrigger value="paused">Wstrzymane ({pausedItems.length})</TabsTrigger>
             </TabsList>
-            <TabsContent value="reminders" forceMount className="space-y-4">
-              <RemindersSection reminders={reminders} today={today} sender={sender} />
-            </TabsContent>
             <TabsContent value="escalation" forceMount className="space-y-4">
               {escalationGroups.length === 0 ? (
                 <p className="text-muted-foreground text-sm">Wszystkie otwarte faktury są wstrzymane</p>

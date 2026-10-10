@@ -4,6 +4,8 @@
 
 Wspólny komponent tabs (shadcn `ui/tabs` na `radix-ui`) dzieli cztery strony na zakładki: Faktury (Ponaglenia · Eskalacja · Wstrzymane), Klienci (Aktywni · Nieaktywni), Historia (Zapłacone · Anulowane), Ustawienia (Dane nadawcy · Reguła eskalacji). Menu główne dostaje kolejność Faktury, Historia, Klienci, Ustawienia, a header na mobile układa się w dwa wiersze (góra: e-mail + Wyloguj, dół: menu).
 
+**Rozszerzenie (fazy 4–5, 2026-10-10, na podstawie `frame.md`)**: `/` staje się stroną „Ponaglenia” (osobna wyspa, bez dodawania faktur), a faktury przechodzą na `/invoices` z tabami Eskalacja (domyślny) · Wstrzymane. Menu ma pięć pozycji: Ponaglenia, Faktury, Historia, Klienci, Ustawienia. Poniżej `sm` menu przechodzi do szuflady (shadcn Sheet), a header ma jeden wiersz: ☰ · e-mail · Wyloguj. To zastępuje dwuwierszowy header mobile z fazy 1.
+
 ## Current State Analysis
 
 - Brak komponentu tabs; `radix-ui` ^1.6.7 eksportuje `Tabs` (`@radix-ui/react-tabs` 1.1.21), więc `npx shadcn@latest add tabs` (styl `radix-lyra`) nie dodaje zależności.
@@ -23,6 +25,12 @@ Wspólny komponent tabs (shadcn `ui/tabs` na `radix-ui`) dzieli cztery strony na
 - Po akcji przenoszącej pozycję między tabami użytkownik zostaje na bieżącym tabie, licznik docelowego taba rośnie, a fokus nigdy nie ginie (trafia na widoczny element).
 - Menu: Faktury, Historia, Klienci, Ustawienia; poniżej `sm` header w dwóch wierszach, od `sm` wygląda jak dziś.
 - Weryfikacja: `npm run lint`, `npx astro check`, `npm test`, `npm run build`, `npm run smoke` + ręczne przejście czterech stron na desktopie i w szerokości 360 px.
+- Po fazach 4–5:
+  - `/` („Ponaglenia”) pokazuje tylko listę ponagleń z dialogiem ponaglenia;
+  - `/invoices` („Faktury”) ma „Dodaj fakturę” i taby Eskalacja · Wstrzymane;
+  - powrót przyciskiem „Wstecz” (bfcache) na którąkolwiek z tych stron przeładowuje ją, więc dane są świeże;
+  - poniżej `sm` header ma jeden wiersz (☰ · e-mail · Wyloguj), a menu otwiera się w szufladzie z lewej;
+  - od `sm` menu jest poziome, z pięcioma linkami.
 
 ### Key Discoveries:
 
@@ -40,6 +48,9 @@ Wspólny komponent tabs (shadcn `ui/tabs` na `radix-ui`) dzieli cztery strony na
 - Śledzenie „dirty” formularzy i ostrzeżenie `beforeunload`.
 - Zmiany API, bazy, migracji, logiki eskalacji i ponagleń.
 - Testy komponentowe/Playwright (projekt ich nie ma).
+- (Fazy 4–5) Przycisk „Dodaj fakturę” na `/` — dodawanie faktur tylko na `/invoices`.
+- (Fazy 4–5) `Cache-Control: no-store` i przeładowanie przy bfcache na stronach innych niż `/` i `/invoices`.
+- (Fazy 4–5) Przekierowanie ze starego zachowania `/` (taby faktur) — aplikacja nie ma zewnętrznych linków do tabów.
 
 ## Implementation Approach
 
@@ -254,6 +265,194 @@ Nowe wyspy-wrappery w miejsce par niezależnych wysp, z tabami i (w historii) ws
 
 ---
 
+## Faza 4: Ponaglenia na `/`, faktury na `/invoices`
+
+### Overview
+
+Dzieli `InvoicesManager` na dwie strony: `/` z samymi ponagleniami i `/invoices` z tabami Eskalacja · Wstrzymane. Każda strona wczytuje otwarte faktury z SSR, a po powrocie z bfcache przeładowuje się, żeby nie pokazać nieaktualnych danych.
+
+**Stan wyjściowy**: `InvoicesManager.tsx:128-338` trzyma jeden stan `invoices` i liczy z niego grupy oraz ponaglenia (`:141-156`). `RemindersSection` dostaje gotowe `reminders` i nie ma akcji na wierszach poza dialogiem ponaglenia. `/` jest chroniony osobnym exact match (`middleware.ts:27`), a pozostałe trasy prefiksem (`:6`).
+
+### Changes Required:
+
+#### 1. Wyspa ponagleń
+
+**File**: `src/components/invoices/RemindersManager.tsx` (nowy)
+
+**Intent**: Wyspa strony `/`. Liczy ponaglenia z otwartych faktur i pokazuje je przez `RemindersSection`, bez dodawania i edycji faktur.
+
+**Contract**: Props `invoices`, `hasClients`, `today`, `settings`, `sender`. Ponaglenia z `buildClientReminders(invoices, today, settings.thresholds, chargeSettingsFrom(settings))` w `useMemo`, bez stanu faktur (strona nic nie mutuje). Stany w tej kolejności:
+- `hasClients === false` → dzisiejsze „Najpierw dodaj klienta” z „Przejdź do klientów”;
+- brak ponagleń (także przy braku otwartych faktur) → tekst „Żaden klient nie ma faktur na etapach 1–4.” z linkiem „Przejdź do faktur” (`/invoices`);
+- w pozostałych przypadkach → `RemindersSection` (tabela z „Generuj ponaglenie”).
+
+Pusty stan przenieść z `RemindersSection` tutaj, żeby link stał obok tekstu. `RemindersSection` renderuje wtedy tylko tabelę i dialog. Wywołuje hook z pkt 4.
+
+#### 2. `InvoicesManager` bez ponagleń
+
+**File**: `src/components/invoices/InvoicesManager.tsx`
+
+**Intent**: Wyspa strony `/invoices`: „Dodaj fakturę” nad tabami Eskalacja (domyślny) · Wstrzymane. Reszta zachowania z fazy 2 bez zmian.
+
+**Contract**:
+- Znikają prop `sender`, `buildClientReminders`, import `RemindersSection` i tab `reminders`.
+- `Tabs defaultValue="escalation"`.
+- Puste stany („Najpierw dodaj klienta”, „Nie masz otwartych faktur” z „Dodaj fakturę” i „Zobacz historię”), fokus, dialogi i `forceMount` bez zmian.
+- Wywołuje hook z pkt 4.
+
+#### 3. Strony
+
+**File**: `src/pages/index.astro`, `src/pages/invoices.astro` (nowy)
+
+**Intent**: `/` montuje `RemindersManager`, a `/invoices` przejmuje dzisiejszą treść `/`.
+
+**Contract**:
+- `index.astro`: `Layout title="Ponaglenia"`, `h1` „Ponaglenia”. Wczytuje `listOpenInvoices`, `listActiveClients` (tylko po `hasClients={clients.length > 0}`), `getSettings` i `getSenderProfile`. Komunikaty błędu mówią o ponagleniach („Nie udało się wczytać ponagleń. Odśwież stronę.”).
+- `invoices.astro`: `export const prerender = false`, `Layout title="Faktury"`, `h1` „Faktury”, ten sam wzorzec ładowania co dziś `index.astro:18-38`, ale bez `getSenderProfile`. Montuje `<InvoicesManager … client:load />`.
+
+#### 4. Przeładowanie po powrocie z bfcache
+
+**File**: `src/components/hooks/use-reload-on-bfcache-restore.ts` (nowy)
+
+**Intent**: Strona przywrócona przyciskiem „Wstecz” z bfcache pokazuje stan sprzed akcji na innej stronie, np. ponaglenie z fakturą zapłaconą już na `/invoices`. Przeładowanie pobiera świeże dane z SSR.
+
+**Contract**: `useReloadOnBfcacheRestore()` — w `useEffect` nasłuchuje `pageshow` i przy `event.persisted` wywołuje `window.location.reload()`. Wzorzec jak `use-submit-pending.ts:7-13`, ze sprzątaniem listenera. Wołany w `RemindersManager` i `InvoicesManager`.
+
+#### 5. Ochrona trasy i menu
+
+**File**: `src/middleware.ts`, `src/components/Topbar.astro`
+
+**Intent**: `/invoices` wymaga zalogowania; menu ma pięć pozycji.
+
+**Contract**:
+- `PROTECTED_ROUTES` dostaje `"/invoices"`.
+- `links`: Ponaglenia (`/`), Faktury (`/invoices`), Historia, Klienci, Ustawienia.
+- Dopasowanie aktywnego linku bez zmian (`/` exact, reszta `startsWith`).
+
+#### 6. Kitchen sink
+
+**File**: `src/components/dev/KitchenSinkForms.tsx`
+
+**Intent**: `/dev/ui` pokazuje obie wyspy w ich stanach.
+
+**Contract**:
+- Sekcje `InvoicesManager` (`:686-721`) bez propu `sender`.
+- Sekcja „Ponaglenia: pusty stan” przechodzi na `RemindersManager`.
+- Nowe sekcje `RemindersManager`: lista ponagleń (dane `sampleInvoices`) i brak klientów.
+
+#### 7. Smoke i README
+
+**File**: `scripts/smoke.mjs`, `README.md`
+
+**Intent**: Regresja nowej trasy i aktualny opis stron.
+
+**Contract**:
+- Smoke: krok „invoices page redirects anonymous user” (`/invoices` bez sesji → 302 `/auth/signin`) obok `:653-657` i „invoices renders for signed-in user” (200) obok `:684`.
+- README:
+  - wiersz `/` w tabeli tras opisuje ponaglenia;
+  - nowy wiersz `/invoices` przejmuje opis listy faktur z tabami Eskalacja · Wstrzymane;
+  - w opisie migracji `add_invoice_paused_on` „"Wstrzymane" tab of `/invoices`”;
+  - w wierszu `/settings` „apply to `/` and `/invoices` immediately”;
+  - akapit o `PROTECTED_ROUTES` (`:162`) bez zmian treści.
+
+### Success Criteria:
+
+#### Automated Verification:
+
+- Lint przechodzi: `npm run lint`
+- Typy przechodzą: `npx astro check`
+- Testy jednostkowe przechodzą: `npm test`
+- Build przechodzi: `npm run build`
+- Smoke przechodzi na dev serwerze, z nowymi krokami `/invoices`: `npm run smoke`
+
+#### Manual Verification:
+
+- `/` pokazuje nagłówek „Ponaglenia” i tabelę ponagleń bez „Dodaj fakturę” i bez tabów; „Generuj ponaglenie” działa, fokus wraca na przycisk
+- `/` bez ponagleń pokazuje „Żaden klient nie ma faktur na etapach 1–4.” z linkiem „Przejdź do faktur”; bez klientów „Najpierw dodaj klienta”
+- `/invoices` otwiera się na „Eskalacja”; taby Eskalacja · Wstrzymane z licznikami, wstrzymanie/zapłata/anulowanie jak w fazie 2
+- Oznaczenie faktury jako zapłaconej na `/invoices`, potem „Wstecz” na `/` — strona przeładowuje się i ponaglenie nie zawiera tej faktury
+- Menu: Ponaglenia, Faktury, Historia, Klienci, Ustawienia; aktywny link poprawny na `/` i `/invoices`
+- `/invoices` bez sesji przekierowuje na `/auth/signin`
+- `/dev/ui` pokazuje sekcje obu wysp
+
+**Implementation Note**: Po automatycznej weryfikacji zatrzymaj się na ręczne potwierdzenie przed kolejną fazą.
+
+---
+
+## Faza 5: Menu mobilne w szufladzie
+
+### Overview
+
+Poniżej `sm` header ma jeden wiersz: przycisk ☰ · e-mail · Wyloguj. ☰ otwiera z lewej szufladę z pięcioma linkami. Od `sm` header wygląda jak po fazie 4.
+
+### Changes Required:
+
+#### 1. Komponent `ui/sheet`
+
+**File**: `src/components/ui/sheet.tsx` (nowy, przez `npx shadcn@latest add sheet`)
+
+**Intent**: Prymityw szuflady na Radix Dialog, w stylu projektu.
+
+**Contract**:
+- Eksporty `Sheet`, `SheetTrigger`, `SheetContent`, `SheetHeader`, `SheetTitle`, `SheetClose`.
+- Import z pakietu zbiorczego `radix-ui` (jak `dialog.tsx`).
+- Po instalacji sprawdzić, że `package.json` nie ma nowej zależności, a overlay i tło używają tych samych klas co `DialogOverlay`/`DialogContent` (`dialog.tsx:29,51`), bez nowych tokenów.
+
+#### 2. Wyspa `MobileNav`
+
+**File**: `src/components/MobileNav.tsx` (nowy)
+
+**Intent**: Przycisk ☰ i szuflada z linkami menu na mobile.
+
+**Contract**:
+- Props `links: { href: string; label: string; active: boolean }[]`; aktywność liczy `Topbar.astro`, żeby reguła dopasowania była w jednym miejscu.
+- `SheetTrigger asChild` z `Button` (wariant `ghost`, rozmiar ikony) z ikoną `Menu` z `lucide-react` i `aria-label="Otwórz menu"`.
+- `SheetContent side="left"` z `SheetTitle` „Menu” (Radix wymaga tytułu) i `nav aria-label="Główna nawigacja"`. Linki w pionie, aktywny z `aria-current="page"` i tymi samymi tokenami co w `Topbar` (`text-foreground` / `text-muted-foreground`).
+- Zamknięcie: Escape, klik w overlay, ✕. Fokus wraca na ☰ (zapewnia `SheetTrigger`).
+
+#### 3. Header
+
+**File**: `src/components/Topbar.astro`
+
+**Intent**: Jeden wiersz na mobile, układ desktopowy bez zmian.
+
+**Contract**:
+- Kontener `flex items-center justify-between gap-2`.
+- Poziomy `nav` z klasą `hidden sm:flex`.
+- `<MobileNav links={…} client:load />` w wrapperze `sm:hidden` (klasa na elemencie HTML, nie `className` na komponencie ui).
+- E-mail (`min-w-0 truncate`) i formularz „Wyloguj” jako zwykli potomkowie kontenera. Znikają wrapper `order-first … sm:contents` i `flex-col` z fazy 1.
+- Tablica `links` mapowana na `{ href, label, active }` raz i używana przez oba menu.
+
+#### 4. Kitchen sink
+
+**File**: `src/components/dev/KitchenSinkForms.tsx`
+
+**Intent**: `/dev/ui` pokazuje szufladę.
+
+**Contract**: Sekcja „Menu mobilne” przez `Section` z `MobileNav` i przykładowymi linkami (jeden aktywny).
+
+### Success Criteria:
+
+#### Automated Verification:
+
+- Lint przechodzi: `npm run lint`
+- Typy przechodzą: `npx astro check`
+- Testy jednostkowe przechodzą: `npm test`
+- Build przechodzi: `npm run build`
+- `package.json` nie zawiera nowej zależności po `shadcn add sheet`
+
+#### Manual Verification:
+
+- Przy 360 px header ma jeden wiersz (☰ · e-mail · Wyloguj), długi e-mail się skraca, bez poziomego przewijania
+- ☰ otwiera szufladę z lewej z pięcioma linkami, aktywny wyróżniony; Escape, klik w overlay i ✕ zamykają ją, fokus wraca na ☰
+- Klik w link w szufladzie przechodzi na stronę
+- Od 640 px szuflada i ☰ są niewidoczne, header jak po fazie 4
+- `/dev/ui` pokazuje sekcję menu mobilnego
+
+**Implementation Note**: Po automatycznej weryfikacji zatrzymaj się na ręczne potwierdzenie.
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests:
@@ -270,7 +469,9 @@ Nowe wyspy-wrappery w miejsce par niezależnych wysp, z tabami i (w historii) ws
 2. Na `/` wstrzymaj i wznów fakturę, oznacz jako zapłaconą, anuluj — sprawdź liczniki i fokus.
 3. Na `/clients` usuń i przywróć klienta; wywołaj 409 duplikatem usuniętego klienta.
 4. Na `/settings` zmień pole, przełącz tab, wróć; zapisz i przełącz.
-5. DevTools 360 px: header w dwóch wierszach, taby bez poziomego przewijania; 1024 px: header jak przed zmianą.
+5. DevTools 360 px: header w dwóch wierszach, taby bez poziomego przewijania; 1024 px: header jak przed zmianą. (Po fazie 5: jeden wiersz z ☰.)
+6. (Faza 4) Na `/invoices` oznacz fakturę z etapu 1–4 jako zapłaconą, wróć „Wstecz” na `/` — ponaglenie bez tej faktury.
+7. (Faza 5) 360 px: otwórz i zamknij szufladę myszą i klawiaturą (Tab do ☰, Enter, Escape).
 
 ## Performance Considerations
 
@@ -286,6 +487,9 @@ Brak — bez zmian schematu i API.
 - Wzorzec komponentu ui na `radix-ui`: `src/components/ui/switch.tsx:3`
 - Fokus po akcjach: `src/components/invoices/InvoicesManager.tsx:101-105`, `src/components/clients/ClientsManager.tsx:72-73,210-215`
 - Wcześniejsza decyzja o ponagleniach widocznych od razu: `context/archive/2026-10-06-collective-reminder/plan-brief.md:22`
+- Frame rozszerzenia (fazy 4–5): `context/changes/ux-improvement/frame.md`
+- Wzorzec `pageshow`/`persisted`: `src/components/hooks/use-submit-pending.ts:7-13`
+- Wzorzec komponentu na Radix Dialog: `src/components/ui/dialog.tsx:24-51`
 
 ## Progress
 
@@ -344,3 +548,41 @@ Brak — bez zmian schematu i API.
 - [x] 3.7 `/settings`: zmiana pola w „Dane nadawcy”, przełączenie na „Reguła eskalacji” i powrót — wpisana wartość zostaje; po zapisie i przełączeniu tabów formularz pokazuje zapisane wartości — dadb192
 - [x] 3.8 Wszystkie cztery strony przy 360 px: taby czytelne, bez poziomego przewijania strony — dadb192
 - [x] 3.9 README opisuje taby zamiast sekcji — dadb192
+
+### Phase 4: Ponaglenia na `/`, faktury na `/invoices`
+
+#### Automated
+
+- [x] 4.1 Lint przechodzi: `npm run lint`
+- [x] 4.2 Typy przechodzą: `npx astro check`
+- [x] 4.3 Testy jednostkowe przechodzą: `npm test`
+- [x] 4.4 Build przechodzi: `npm run build`
+- [x] 4.5 Smoke przechodzi na dev serwerze, z nowymi krokami `/invoices`: `npm run smoke`
+
+#### Manual
+
+- [x] 4.6 `/` pokazuje nagłówek „Ponaglenia” i tabelę ponagleń bez „Dodaj fakturę” i bez tabów; „Generuj ponaglenie” działa, fokus wraca na przycisk
+- [x] 4.7 `/` bez ponagleń pokazuje „Żaden klient nie ma faktur na etapach 1–4.” z linkiem „Przejdź do faktur”; bez klientów „Najpierw dodaj klienta”
+- [x] 4.8 `/invoices` otwiera się na „Eskalacja”; taby Eskalacja · Wstrzymane z licznikami, wstrzymanie/zapłata/anulowanie jak w fazie 2
+- [x] 4.9 Oznaczenie faktury jako zapłaconej na `/invoices`, potem „Wstecz” na `/` — strona przeładowuje się i ponaglenie nie zawiera tej faktury
+- [x] 4.10 Menu: Ponaglenia, Faktury, Historia, Klienci, Ustawienia; aktywny link poprawny na `/` i `/invoices`
+- [x] 4.11 `/invoices` bez sesji przekierowuje na `/auth/signin`
+- [x] 4.12 `/dev/ui` pokazuje sekcje obu wysp
+
+### Phase 5: Menu mobilne w szufladzie
+
+#### Automated
+
+- [ ] 5.1 Lint przechodzi: `npm run lint`
+- [ ] 5.2 Typy przechodzą: `npx astro check`
+- [ ] 5.3 Testy jednostkowe przechodzą: `npm test`
+- [ ] 5.4 Build przechodzi: `npm run build`
+- [ ] 5.5 `package.json` nie zawiera nowej zależności po `shadcn add sheet`
+
+#### Manual
+
+- [ ] 5.6 Przy 360 px header ma jeden wiersz (☰ · e-mail · Wyloguj), długi e-mail się skraca, bez poziomego przewijania
+- [ ] 5.7 ☰ otwiera szufladę z lewej z pięcioma linkami, aktywny wyróżniony; Escape, klik w overlay i ✕ zamykają ją, fokus wraca na ☰
+- [ ] 5.8 Klik w link w szufladzie przechodzi na stronę
+- [ ] 5.9 Od 640 px szuflada i ☰ są niewidoczne, header jak po fazie 4
+- [ ] 5.10 `/dev/ui` pokazuje sekcję menu mobilnego

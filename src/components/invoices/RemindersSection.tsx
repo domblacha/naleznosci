@@ -8,7 +8,7 @@ import type { ClientReminder } from "@/lib/reminder";
 import type { SenderProfile } from "@/types";
 
 interface Props {
-  /** Reminders to show, built by the parent so the tab counter and the list share one source. */
+  /** Non-empty list of reminders to show, built by the parent. */
   reminders: ClientReminder[];
   /** YYYY-MM-DD, "today" in Poland, computed on the server. */
   today: string;
@@ -31,43 +31,39 @@ export function RemindersSection({ reminders, today, sender }: Props) {
 
   return (
     <section className="space-y-2">
-      {reminders.length === 0 ? (
-        <p className="text-muted-foreground text-sm">Żaden klient nie ma faktur na etapach 1–4.</p>
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Klient</TableHead>
-              <TableHead>Etap</TableHead>
-              <TableHead className="text-right">Faktury</TableHead>
-              <TableHead className="text-right">Razem do zapłaty</TableHead>
-              <TableHead />
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Klient</TableHead>
+            <TableHead>Etap</TableHead>
+            <TableHead className="text-right">Faktury</TableHead>
+            <TableHead className="text-right">Razem do zapłaty</TableHead>
+            <TableHead />
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {reminders.map((reminder) => (
+            <TableRow key={reminder.clientId}>
+              <TableCell>{reminder.clientName}</TableCell>
+              <TableCell>Etap {reminder.stage}</TableCell>
+              <TableCell className="text-right">{reminder.items.length}</TableCell>
+              <TableCell className="text-right">{formatAmount(reminder.totalGrosze)}</TableCell>
+              <TableCell className="text-right">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-label={`Generuj ponaglenie dla ${reminder.clientName}`}
+                  onClick={(e) => {
+                    openDialog(reminder.clientId, e.currentTarget);
+                  }}
+                >
+                  Generuj ponaglenie
+                </Button>
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {reminders.map((reminder) => (
-              <TableRow key={reminder.clientId}>
-                <TableCell>{reminder.clientName}</TableCell>
-                <TableCell>Etap {reminder.stage}</TableCell>
-                <TableCell className="text-right">{reminder.items.length}</TableCell>
-                <TableCell className="text-right">{formatAmount(reminder.totalGrosze)}</TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    aria-label={`Generuj ponaglenie dla ${reminder.clientName}`}
-                    onClick={(e) => {
-                      openDialog(reminder.clientId, e.currentTarget);
-                    }}
-                  >
-                    Generuj ponaglenie
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+          ))}
+        </TableBody>
+      </Table>
       <ReminderDialog
         reminder={selected}
         today={today}

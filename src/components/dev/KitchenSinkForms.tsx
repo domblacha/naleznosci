@@ -14,6 +14,7 @@ import { clientErrorMessage } from "@/lib/client-errors";
 import { CancelInvoiceView, CANCEL_DESCRIPTION, cancelTitle } from "@/components/invoices/CancelInvoiceDialog";
 import { InvoiceFormView, PauseEscalationControl } from "@/components/invoices/InvoiceFormDialog";
 import { InvoicesManager } from "@/components/invoices/InvoicesManager";
+import { RemindersManager } from "@/components/invoices/RemindersManager";
 import { PaymentFormView } from "@/components/invoices/PaymentDialog";
 import { ReminderDialogView } from "@/components/invoices/ReminderDialog";
 import { senderProfileInputText } from "@/components/hooks/use-sender-profile-form";
@@ -689,13 +690,30 @@ export function KitchenSinkForms() {
           clients={sampleClients}
           today={SAMPLE_TODAY}
           settings={DEFAULT_ESCALATION_SETTINGS}
+        />
+      </Section>
+      <Section title="Ponaglenia: lista">
+        <RemindersManager
+          invoices={sampleInvoices}
+          hasClients
+          today={SAMPLE_TODAY}
+          settings={DEFAULT_ESCALATION_SETTINGS}
           sender={SAMPLE_SENDER}
         />
       </Section>
       <Section title="Ponaglenia: pusty stan">
-        <InvoicesManager
-          initialInvoices={[sampleInvoice(6, 1, "FV/2026/10/005", 75000, "2026-10-20")]}
-          clients={sampleClients}
+        <RemindersManager
+          invoices={[sampleInvoice(6, 1, "FV/2026/10/005", 75000, "2026-10-20")]}
+          hasClients
+          today={SAMPLE_TODAY}
+          settings={DEFAULT_ESCALATION_SETTINGS}
+          sender={SAMPLE_SENDER}
+        />
+      </Section>
+      <Section title="Ponaglenia: brak klientów">
+        <RemindersManager
+          invoices={[]}
+          hasClients={false}
           today={SAMPLE_TODAY}
           settings={DEFAULT_ESCALATION_SETTINGS}
           sender={SAMPLE_SENDER}
@@ -707,7 +725,6 @@ export function KitchenSinkForms() {
           clients={sampleClients}
           today={SAMPLE_TODAY}
           settings={DEFAULT_ESCALATION_SETTINGS}
-          sender={SAMPLE_SENDER}
         />
       </Section>
       <Section title="Lista faktur: brak klientów">
@@ -716,7 +733,6 @@ export function KitchenSinkForms() {
           clients={[]}
           today={SAMPLE_TODAY}
           settings={DEFAULT_ESCALATION_SETTINGS}
-          sender={SAMPLE_SENDER}
         />
       </Section>
       <Section title="Tabs: liczniki, pusty panel i panel z treścią">

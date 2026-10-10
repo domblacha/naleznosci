@@ -656,6 +656,11 @@ const steps = [
     () => request("/history", { jar: new Map() }),
     { status: 302, location: "/auth/signin" },
   ],
+  [
+    "invoices page redirects anonymous user",
+    () => request("/invoices", { jar: new Map() }),
+    { status: 302, location: "/auth/signin" },
+  ],
   ["home redirects anonymous user", () => request("/"), { status: 302, location: "/auth/signin" }],
   ["signin page renders", () => request("/auth/signin"), { status: 200 }],
   [
@@ -679,6 +684,7 @@ const steps = [
     { status: 302, location: "/" },
   ],
   ["home renders for signed-in user", () => request("/"), { status: 200 }],
+  ["invoices renders for signed-in user", () => request("/invoices"), { status: 200 }],
   ["history renders for signed-in user", () => request("/history"), { status: 200 }],
   ["signin page redirects signed-in user", () => request("/auth/signin"), { status: 302, location: "/" }],
   ...clientSteps(),
