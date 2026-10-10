@@ -442,24 +442,24 @@ Nowa tabela, bez zmian w istniejących danych. Lokalnie stosuj `npx supabase mig
 
 #### Automated
 
-- [x] 2.1 Testy jednostkowe przechodzą, w tym nowe przypadki `renderReminder`: `npm test`
-- [x] 2.2 Typy i Astro przechodzą: `npx astro check`
-- [x] 2.3 Lint przechodzi: `npm run lint`
+- [x] 2.1 Testy jednostkowe przechodzą, w tym nowe przypadki `renderReminder`: `npm test` — 9cd8617
+- [x] 2.2 Typy i Astro przechodzą: `npx astro check` — 9cd8617
+- [x] 2.3 Lint przechodzi: `npm run lint` — 9cd8617
 
 ### Phase 3: Formularz na `/settings` i profil w oknie ponaglenia
 
 #### Automated
 
-- [ ] 3.1 Typy i Astro przechodzą: `npx astro check`
-- [ ] 3.2 Lint przechodzi (w tym zakaz kolorów literalnych): `npm run lint`
-- [ ] 3.3 Testy jednostkowe przechodzą: `npm test`
-- [ ] 3.4 Build przechodzi: `npm run build`
-- [ ] 3.5 Smoke przechodzi w całości: `npm run smoke`
+- [x] 3.1 Typy i Astro przechodzą: `npx astro check`
+- [x] 3.2 Lint przechodzi (w tym zakaz kolorów literalnych): `npm run lint`
+- [x] 3.3 Testy jednostkowe przechodzą: `npm test`
+- [x] 3.4 Build przechodzi: `npm run build`
+- [x] 3.5 Smoke przechodzi w całości: `npm run smoke`
 
 #### Manual
 
-- [ ] 3.6 Na `/settings` zapis pełnego profilu pokazuje „Zapisano dane nadawcy”, pola mają znormalizowane wartości, a formularz reguły eskalacji jest nietknięty
-- [ ] 3.7 Błędny NIP i błędny numer konta pokazują komunikaty pod właściwymi polami, bez zapisu
-- [ ] 3.8 Ponaglenie z pełnym profilem ma blok nadawcy pod „Z poważaniem” i rachunek w zdaniu o terminie; kopia do schowka zawiera dokładnie ten tekst
-- [ ] 3.9 Po wyczyszczeniu wszystkich pól ponaglenie kończy się na „Z poważaniem”, a okno pokazuje podpowiedź z działającym linkiem do `/settings`
-- [ ] 3.10 `/dev/ui` pokazuje nowe stany formularza i okna, a oba motywy (jasny i ciemny) wyglądają poprawnie
+- [x] 3.6 Na `/settings` zapis pełnego profilu pokazuje „Zapisano dane nadawcy”, pola mają znormalizowane wartości, a formularz reguły eskalacji jest nietknięty
+- [x] 3.7 Błędny NIP i błędny numer konta pokazują komunikaty pod właściwymi polami, bez zapisu
+- [x] 3.8 Ponaglenie z pełnym profilem ma blok nadawcy pod „Z poważaniem” i rachunek w zdaniu o terminie; kopia do schowka zawiera dokładnie ten tekst
+- [x] 3.9 Po wyczyszczeniu wszystkich pól ponaglenie kończy się na „Z poważaniem”, a okno pokazuje podpowiedź z działającym linkiem do `/settings`
+- [x] 3.10 `/dev/ui` pokazuje nowe stany formularza i okna, a oba motywy (jasny i ciemny) wyglądają poprawnie

@@ -9,7 +9,7 @@ import { RemindersSection } from "@/components/invoices/RemindersSection";
 import { chargeSettingsFrom, compensationGrosze, interestGrosze } from "@/lib/charges";
 import { groupInvoices, type EscalationGroup, type EscalationThresholds } from "@/lib/escalation";
 import { formatAmount, formatDate } from "@/lib/format";
-import type { Client, EscalationSettings, Invoice } from "@/types";
+import type { Client, EscalationSettings, Invoice, SenderProfile } from "@/types";
 
 interface Props {
   initialInvoices: Invoice[];
@@ -18,6 +18,8 @@ interface Props {
   today: string;
   /** User's escalation settings, read on the server. */
   settings: EscalationSettings;
+  /** User's sender profile, read on the server; goes into the reminder text. */
+  sender: SenderProfile;
 }
 
 function groupLabels([t1, t2, t3, t4]: EscalationThresholds): Record<EscalationGroup, string> {
@@ -32,7 +34,7 @@ function groupLabels([t1, t2, t3, t4]: EscalationThresholds): Record<EscalationG
   };
 }
 
-export function InvoicesManager({ initialInvoices, clients, today, settings }: Props) {
+export function InvoicesManager({ initialInvoices, clients, today, settings, sender }: Props) {
   const [invoices, setInvoices] = useState(initialInvoices);
   const [open, setOpen] = useState(false);
   const [payingId, setPayingId] = useState<string | null>(null);
@@ -142,7 +144,7 @@ export function InvoicesManager({ initialInvoices, clients, today, settings }: P
       ) : (
         <>
           <div className="flex justify-end">{addButton}</div>
-          <RemindersSection invoices={invoices} today={today} settings={settings} />
+          <RemindersSection invoices={invoices} today={today} settings={settings} sender={sender} />
           {groups.map(({ group, items }) => (
             <section key={group} className="space-y-2">
               <h2 className="text-foreground text-sm font-semibold">
