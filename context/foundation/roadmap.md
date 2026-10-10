@@ -22,10 +22,10 @@ milestone_status: open
 
 **M-1: MVP — od przeterminowanej faktury do ponaglenia** — Status: open
 
-- **Intent:** Właściciel JDG może założyć konto, wprowadzić klientów i faktury, widzieć je w deterministycznych etapach eskalacji z poprawnie wyliczonymi odsetkami i rekompensatą, wygenerować jedno zbiorcze ponaglenie per klient oraz zamykać faktury (zapłata, anulowanie, wstrzymanie) — pełny zakres wymagań koniecznych PRD.
+- **Intent:** Właściciel JDG może założyć konto, wprowadzić klientów i faktury, widzieć je w deterministycznych etapach eskalacji z poprawnie wyliczonymi odsetkami i rekompensatą, wygenerować jedno zbiorcze ponaglenie per klient oraz zamykać faktury (zapłata, anulowanie, wstrzymanie) — zakres wymagań koniecznych PRD bez edytowalnych szablonów ponagleń oraz bez filtrowania i sortowania listy.
 - **Source materials:** `context/foundation/prd.md` (v1)
 - **Done when:** every F-NN and S-NN below is `done`.
-- **Scope anchors:** FR-001 – FR-011, FR-013, FR-014 (wszystkie must-have); US-01 – US-03. FR-012 (nice-to-have) jest odłożony — patrz `## Parked`. S-13 (dane nadawcy) dodany 2026-10-06 z planowania S-05, poza PRD v1.
+- **Scope anchors:** FR-001 – FR-011, FR-013 (must-have); US-01 – US-03. FR-012, FR-014 i FR-015 (nice-to-have) są odłożone — patrz `## Parked`. FR-014 (edytowalne szablony, dawny S-12) i FR-015 (filtrowanie i sortowanie, wydzielone z FR-010, dawny S-11) obniżono w PRD decyzją użytkownika 2026-10-10. S-13 (dane nadawcy) dodany 2026-10-06 z planowania S-05, poza PRD v1.
 
 ## Vision recap
 
@@ -52,21 +52,18 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | done     |
 | S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | done     |
 | S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | done     |
-| S-11 | invoice-list-filter-sort        | filtrować listę po kliencie i sortować po dniach po terminie lub kwocie                                    | S-03          | FR-010                            | proposed |
-| S-12 | editable-reminder-templates     | edytować 4 szablony treści ponagleń                                                                        | S-05          | FR-014                            | proposed |
 | S-13 | sender-profile                  | podać dane nadawcy (firma, NIP, adres, numer konta), które ponaglenie wstawia samo                         | S-05          | — (poza PRD v1); FR-011           | proposed |
 
 ## Streams
 
 Navigation aid — groups items that share a Prerequisites chain. Canonical ordering still lives in the dependency graph below; this table is the proposed reading order across parallel tracks.
 
-| Stream | Theme                  | Chain                                                                 | Note                                                                                                                                                                                                                                                    |
-| ------ | ---------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A      | Od konta do ponaglenia | `S-01` + `F-01` → `S-02` → `S-03` → `S-04` → `S-05` → `S-13` → `S-12` | Ścieżka wymagań koniecznych do głównego kryterium sukcesu; `F-01` wpięty przed `S-02`, bo to pierwsza zmiana z migracją; `S-13` przed `S-12`, żeby pole `{nadawca}` było w szablonach, zanim użytkownik zapisze własne; `S-12` jest pierwszy do cięcia. |
-| B      | Cykl życia faktury     | `S-06` → `S-07` → `S-08`                                              | Dołącza do A przy `S-04`; może iść równolegle z `S-05`.                                                                                                                                                                                                 |
-| C      | Porządek w klientach   | `S-09`                                                                | Dołącza do A przy `S-03`; niezależny od reszty.                                                                                                                                                                                                         |
-| D      | Konfiguracja reguły    | `S-10`                                                                | Dołącza do A przy `S-04`; do tego czasu działają wartości domyślne.                                                                                                                                                                                     |
-| E      | Wygoda listy           | `S-11`                                                                | Dołącza do A przy `S-03`; sortowanie PRD wskazuje jako drugie do cięcia.                                                                                                                                                                                |
+| Stream | Theme                  | Chain                                                        | Note                                                                                                                                                                   |
+| ------ | ---------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A      | Od konta do ponaglenia | `S-01` + `F-01` → `S-02` → `S-03` → `S-04` → `S-05` → `S-13` | Ścieżka wymagań koniecznych do głównego kryterium sukcesu; `F-01` wpięty przed `S-02`, bo to pierwsza zmiana z migracją; edytowalne szablony (FR-014) wyłączone z MVP. |
+| B      | Cykl życia faktury     | `S-06` → `S-07` → `S-08`                                     | Dołącza do A przy `S-04`; może iść równolegle z `S-05`.                                                                                                                |
+| C      | Porządek w klientach   | `S-09`                                                       | Dołącza do A przy `S-03`; niezależny od reszty.                                                                                                                        |
+| D      | Konfiguracja reguły    | `S-10`                                                       | Dołącza do A przy `S-04`; do tego czasu działają wartości domyślne.                                                                                                    |
 
 ## Baseline
 
@@ -89,7 +86,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Outcome:** (foundation) praca idzie przez gałąź funkcji i PR, na którym CI uruchamia lint, testy, sprawdzenie typów i build; merge na `main` ponownie przechodzi te kontrole, stosuje oczekujące migracje na produkcyjnej bazie i dopiero po nich wdraża kod — w jednym potoku, ze ścisłą kolejnością baza → kod. Dotychczasowy auto-deploy z `main` przestaje wdrażać równolegle.
 - **Change ID:** deploy-pipeline-with-migrations
 - **PRD refs:** NFR (dane widoczne wyłącznie dla właściciela — polityki izolacji muszą faktycznie istnieć na produkcji); `tech-stack.md` (auto-deploy z `main`); `infrastructure.md` (rejestr ryzyk: rollback kodu nie cofa migracji)
-- **Unlocks:** wdrożenie produkcyjne S-02 (faza 4 `add-and-edit-clients`, w tym smoke na produkcji jako test akceptacyjny); każdy kolejny wycinek z migracją (S-03, S-06 – S-10, S-12); zamyka Open Roadmap Question #2
+- **Unlocks:** wdrożenie produkcyjne S-02 (faza 4 `add-and-edit-clients`, w tym smoke na produkcji jako test akceptacyjny); każdy kolejny wycinek z migracją (S-03, S-06 – S-10, S-13); zamyka Open Roadmap Question #2
 - **Prerequisites:** —
 - **Parallel with:** S-03 (rozwój lokalny trwa; wdrożenie czeka na F-01)
 - **Blockers:** —
@@ -146,7 +143,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Change ID:** interest-and-compensation
 - **PRD refs:** US-01, FR-007, NFR (kwoty do grosza)
 - **Prerequisites:** S-03
-- **Parallel with:** S-09, S-11
+- **Parallel with:** S-09
 - **Blockers:** —
 - **Unknowns:**
   - Jakie są domyślne wartości rocznej stopy odsetek i 3 progów kwotowych rekompensaty w PLN (przed zbudowaniem ustawień w S-10)? — Owner: user. Block: no. **Rozstrzygnięte (2026-10-06):** 13,75% (odsetki handlowe II półrocze 2026), progi 170,00 / 297,50 / 425,00 zł z granicami ≤ 5 000 zł / > 5 000 i < 50 000 zł / ≥ 50 000 zł.
@@ -159,11 +156,11 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Change ID:** collective-reminder
 - **PRD refs:** US-01, FR-008, FR-011, NFR (treści ponagleń po polsku)
 - **Prerequisites:** S-04
-- **Parallel with:** S-06, S-07, S-08, S-09, S-10, S-11
+- **Parallel with:** S-06, S-07, S-08, S-09, S-10
 - **Blockers:** —
 - **Unknowns:**
   - Jakie domyślne treści mają 4 szablony tonów (etap 1–4)? — Owner: user. Block: no. **Rozstrzygnięte (2026-10-06):** stałe szablony w `src/lib/reminder-templates.ts` (przypomnienie, ponowne przypomnienie, wezwanie do zapłaty, ostateczne przedsądowe wezwanie), termin zapłaty dziś + 7 dni, bez danych nadawcy.
-- **Risk:** Zamyka główne kryterium sukcesu; szablony są na razie stałe, żeby edytowalność (S-12) dało się uciąć bez ruszania ponaglenia.
+- **Risk:** Zamyka główne kryterium sukcesu; szablony są stałe, żeby edytowalność (FR-014) dało się uciąć bez ruszania ponaglenia — i została ucięta z MVP 2026-10-10 (patrz `## Parked`).
 - **Status:** done
 
 ### S-06: Oznaczenie faktury jako zapłaconej
@@ -172,7 +169,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Change ID:** mark-invoice-paid
 - **PRD refs:** US-02, FR-004, FR-006, FR-010
 - **Prerequisites:** S-04
-- **Parallel with:** S-05, S-09, S-10, S-11, S-12
+- **Parallel with:** S-05, S-09, S-10
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Wprowadza widok historii, z którego korzysta S-07; odsetki muszą się zamrozić na dacie wpłaty, nie na „dziś”.
@@ -184,7 +181,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Change ID:** invoice-edit-and-cancel
 - **PRD refs:** FR-003
 - **Prerequisites:** S-03, S-06
-- **Parallel with:** S-05, S-09, S-10, S-11, S-12
+- **Parallel with:** S-05, S-09, S-10
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Blokada edycji chroni poprawność wyliczeń; musi powstać przed wstrzymaniem (S-08), które wprowadza od niej wyjątek.
@@ -196,7 +193,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Change ID:** pause-and-resume-escalation
 - **PRD refs:** US-03, FR-013, FR-003
 - **Prerequisites:** S-04, S-07
-- **Parallel with:** S-05, S-09, S-10, S-11, S-12
+- **Parallel with:** S-05, S-09, S-10
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Dotyka trzech reguł naraz (etap, odsetki, blokada edycji), więc stoi po nich wszystkich — wznowienie może „przeskoczyć” kilka etapów i to trzeba zweryfikować. Wykluczenie wstrzymanych z ponagleń wynika z grupy `paused` w `groupInvoices` (filtr etapów w `buildClientReminders` jej nie przepuszcza); pilnują tego testy w `src/lib/reminder.test.ts`.
@@ -208,7 +205,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Change ID:** client-deactivate-restore
 - **PRD refs:** FR-002
 - **Prerequisites:** S-03
-- **Parallel with:** S-04, S-05, S-06, S-07, S-08, S-10, S-11, S-12
+- **Parallel with:** S-04, S-05, S-06, S-07, S-08, S-10
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Wymaga istnienia faktur (reguła blokady), dlatego oddzielony od S-02; niski wpływ na resztę.
@@ -220,35 +217,11 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Change ID:** escalation-settings
 - **PRD refs:** FR-009
 - **Prerequisites:** S-04
-- **Parallel with:** S-05, S-06, S-07, S-08, S-09, S-11, S-12
+- **Parallel with:** S-05, S-06, S-07, S-08, S-09
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Do tego czasu reguła działa na wartościach domyślnych, więc ustawienia nie blokują gwiazdy przewodniej; ryzyko to niespójność, gdy zmiana progów nie odświeża wszystkich wyliczeń. Ustawienia zastępują `DEFAULT_CHARGE_SETTINGS` z `src/lib/charges.ts`; przy planowaniu uwzględnić uwagi F1 i F2 z przeglądu S-04 (`context/archive/2026-10-06-interest-and-compensation/reviews/impl-review.md`): stopa w punktach bazowych i kwoty w groszach jako liczby całkowite, ostatni próg rekompensaty bez górnej granicy.
 - **Status:** done
-
-### S-11: Filtrowanie i sortowanie listy faktur
-
-- **Outcome:** Użytkownik może filtrować listę otwartych faktur po kliencie i sortować po liczbie dni po terminie lub kwocie.
-- **Change ID:** invoice-list-filter-sort
-- **PRD refs:** FR-010
-- **Prerequisites:** S-03
-- **Parallel with:** S-04, S-05, S-06, S-07, S-08, S-09, S-10, S-12
-- **Blockers:** —
-- **Unknowns:** —
-- **Risk:** PRD wskazuje sortowanie jako drugie do cięcia przy opóźnieniu — dlatego stoi na końcu ścieżki.
-- **Status:** proposed
-
-### S-12: Edytowalne szablony ponagleń
-
-- **Outcome:** Użytkownik może edytować 4 szablony treści ponagleń (po jednym na ton etapu), a generowane ponaglenia używają jego wersji.
-- **Change ID:** editable-reminder-templates
-- **PRD refs:** FR-014
-- **Prerequisites:** S-05
-- **Parallel with:** S-06, S-07, S-08, S-09, S-10, S-11
-- **Blockers:** —
-- **Unknowns:** —
-- **Risk:** PRD wskazuje FR-014 jako pierwsze do cięcia przy opóźnieniu — ostatni na ścieżce, a S-05 działa bez niego na szablonach domyślnych. `renderReminder` przyjmuje szablony jako parametr (`REMINDER_TEMPLATES` to wartość domyślna), więc S-12 zmienia tylko ich źródło; nieznane pola zostają w tekście bez zmian.
-- **Status:** proposed
 
 ### S-13: Dane nadawcy w ponagleniu
 
@@ -256,41 +229,41 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Change ID:** sender-profile
 - **PRD refs:** — (poza PRD v1; decyzja z planowania S-05 2026-10-06); dotyczy FR-011, NFR (dane widoczne wyłącznie dla właściciela)
 - **Prerequisites:** S-05
-- **Parallel with:** S-06, S-07, S-08, S-09, S-10, S-11
+- **Parallel with:** S-06, S-07, S-08, S-09, S-10
 - **Blockers:** —
 - **Unknowns:**
   - Które pola są wymagane, a które opcjonalne, i czy walidować numer konta (IBAN PL) oraz NIP nadawcy? — Owner: user. Block: no.
   - Co ponaglenie pokazuje, gdy profil jest pusty: brak bloku nadawcy czy podpowiedź do uzupełnienia profilu? — Owner: user. Block: no.
-- **Risk:** Nowa tabela z RLS (jeden profil na właściciela) i nowy widok. Powinien wejść przed S-12 — jeśli szablony użytkownika zostaną zapisane wcześniej, dodanie pola `{nadawca}` wymaga ich aktualizacji. Technicznie to nowy wpis w mapie pól `renderReminder` (`src/lib/reminder.ts`) i miejsce na niego pod „Z poważaniem” w 4 szablonach.
+- **Risk:** Nowa tabela z RLS (jeden profil na właściciela) i nowy widok. Szablony pozostają stałe (FR-014 poza MVP), więc pole `{nadawca}` trafia tylko do szablonów w kodzie; gdy edytowalne szablony wrócą w kolejnym kamieniu milowym, zastaną to pole gotowe. Technicznie to nowy wpis w mapie pól `renderReminder` (`src/lib/reminder.ts`) i miejsce na niego pod „Z poważaniem” w 4 szablonach.
 - **Status:** proposed
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID                       | Suggested issue title                                       | Ready for `/10x-plan` | Notes                                                                                        |
-| ---------- | ------------------------------- | ----------------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------------- |
-| F-01       | deploy-pipeline-with-migrations | Potok CI/CD: kontrole na PR, migracje przed wdrożeniem kodu | no                    | Done 2026-10-05                                                                              |
-| S-01       | polish-auth-shell               | Polski interfejs konta i pusty ekran główny                 | no                    | Done 2026-09-29                                                                              |
-| S-02       | add-and-edit-clients            | Dodawanie i edycja klientów z wykrywaniem duplikatów        | no                    | Done 2026-10-05                                                                              |
-| S-03       | invoice-escalation-list         | Lista otwartych faktur pogrupowana po etapach eskalacji     | no                    | Done 2026-10-05; gwiazda przewodnia                                                          |
-| S-04       | interest-and-compensation       | Odsetki i rekompensata przy przeterminowanych fakturach     | no                    | Done 2026-10-06                                                                              |
-| S-05       | collective-reminder             | Zbiorcze ponaglenie per klient do schowka                   | no                    | Done 2026-10-06                                                                              |
-| S-06       | mark-invoice-paid               | Oznaczanie faktury jako zapłaconej + widok historii         | no                    | Done 2026-10-07                                                                              |
-| S-07       | invoice-edit-and-cancel         | Edycja (z blokadą po terminie) i anulowanie faktury         | no                    | Done 2026-10-07                                                                              |
-| S-08       | pause-and-resume-escalation     | Wstrzymanie i wznowienie eskalacji faktury                  | no                    | Done 2026-10-08 (PR #14)                                                                     |
-| S-09       | client-deactivate-restore       | Dezaktywacja i przywracanie klienta                         | no                    | Done 2026-10-10 (PR #15)                                                                     |
-| S-10       | escalation-settings             | Ustawienia progów, stopy odsetek i rekompensaty             | no                    | Done 2026-10-10 (PR #16)                                                                     |
-| S-11       | invoice-list-filter-sort        | Filtrowanie i sortowanie listy faktur                       | yes                   | Odblokowany przez S-03; kandydat do cięcia; `/10x-plan invoice-list-filter-sort`             |
-| S-12       | editable-reminder-templates     | Edytowalne szablony ponagleń                                | yes                   | Odblokowany przez S-05; po S-13; pierwszy do cięcia; `/10x-plan editable-reminder-templates` |
-| S-13       | sender-profile                  | Profil nadawcy wstawiany do ponagleń                        | yes                   | Odblokowany przez S-05; przed S-12; `/10x-plan sender-profile`                               |
+| Roadmap ID | Change ID                       | Suggested issue title                                       | Ready for `/10x-plan` | Notes                                              |
+| ---------- | ------------------------------- | ----------------------------------------------------------- | --------------------- | -------------------------------------------------- |
+| F-01       | deploy-pipeline-with-migrations | Potok CI/CD: kontrole na PR, migracje przed wdrożeniem kodu | no                    | Done 2026-10-05                                    |
+| S-01       | polish-auth-shell               | Polski interfejs konta i pusty ekran główny                 | no                    | Done 2026-09-29                                    |
+| S-02       | add-and-edit-clients            | Dodawanie i edycja klientów z wykrywaniem duplikatów        | no                    | Done 2026-10-05                                    |
+| S-03       | invoice-escalation-list         | Lista otwartych faktur pogrupowana po etapach eskalacji     | no                    | Done 2026-10-05; gwiazda przewodnia                |
+| S-04       | interest-and-compensation       | Odsetki i rekompensata przy przeterminowanych fakturach     | no                    | Done 2026-10-06                                    |
+| S-05       | collective-reminder             | Zbiorcze ponaglenie per klient do schowka                   | no                    | Done 2026-10-06                                    |
+| S-06       | mark-invoice-paid               | Oznaczanie faktury jako zapłaconej + widok historii         | no                    | Done 2026-10-07                                    |
+| S-07       | invoice-edit-and-cancel         | Edycja (z blokadą po terminie) i anulowanie faktury         | no                    | Done 2026-10-07                                    |
+| S-08       | pause-and-resume-escalation     | Wstrzymanie i wznowienie eskalacji faktury                  | no                    | Done 2026-10-08 (PR #14)                           |
+| S-09       | client-deactivate-restore       | Dezaktywacja i przywracanie klienta                         | no                    | Done 2026-10-10 (PR #15)                           |
+| S-10       | escalation-settings             | Ustawienia progów, stopy odsetek i rekompensaty             | no                    | Done 2026-10-10 (PR #16)                           |
+| S-13       | sender-profile                  | Profil nadawcy wstawiany do ponagleń                        | yes                   | Odblokowany przez S-05; `/10x-plan sender-profile` |
 
 ## Open Roadmap Questions
 
-1. **Czy zakres MVP zmieści się w budżecie 3 tygodni po godzinach?** — 13 wymagań koniecznych przy budżecie 3 tygodni po godzinach to ciasny zakres; przy opóźnieniu pierwsze do ograniczenia są FR-014 (S-12) i sortowanie z FR-010 (S-11). Owner: user. Block: roadmap-wide (no — nie blokuje planowania).
+1. **Czy zakres MVP zmieści się w budżecie 3 tygodni po godzinach?** — 13 wymagań koniecznych przy budżecie 3 tygodni po godzinach to ciasny zakres; przy opóźnieniu pierwsze do ograniczenia są FR-014 i sortowanie z FR-010 (S-11). **Rozstrzygnięte 2026-10-10:** oba wycięte z MVP — FR-014 (dawny S-12) obniżony do nice-to-have, a filtrowanie i sortowanie wydzielone z FR-010 do FR-015 nice-to-have (dawny S-11); PRD zaktualizowany, patrz `## Parked`. Owner: user. Block: —.
 2. ~~**Wdrożenie na produkcję i migracje w CI/CD**~~ — Rozwiązane 2026-10-04 → **F-01 `deploy-pipeline-with-migrations`** (potok: kontrole na PR, a po merge na `main` migracje przed wdrożeniem kodu). F-01 wdrożony 2026-10-05: zmiany idą przez gałąź i PR, migracje stosuje potok (README §Migracje). Owner: user. Block: —.
 
 ## Parked
 
 - **Dashboard z prognozą wpływów na 30 dni (FR-012)** — Why parked: nice-to-have (Secondary Success Criteria); cel kolejności to szybkie dowiezienie wymagań koniecznych — kandydat na kolejny kamień milowy.
+- **Edytowalne szablony ponagleń (FR-014, dawny S-12 `editable-reminder-templates`)** — Why parked: nice-to-have od rewizji PRD 2026-10-10 (Open Question #1 wskazywał FR-014 jako pierwsze do cięcia); S-05 działa na stałych szablonach z `src/lib/reminder-templates.ts`. Kandydat na kolejny kamień milowy — `renderReminder` przyjmuje szablony jako parametr, więc powrót zmienia tylko ich źródło.
+- **Filtrowanie listy po kliencie i sortowanie po dniach po terminie lub kwocie (FR-015, dawny S-11 `invoice-list-filter-sort`)** — Why parked: wydzielone z FR-010 jako nice-to-have w rewizji PRD 2026-10-10 (Open Question #1 wskazywał sortowanie jako drugie do cięcia); FR-010 — grupy stanów i widok historii — jest dowieziona w S-03, S-06 i S-07. Kandydat na kolejny kamień milowy.
 - **Integracje z systemami księgowymi i import CSV** — Why parked: PRD §Non-Goals.
 - **Faktyczna wysyłka e-mail/SMS** — Why parked: PRD §Non-Goals; aplikacja generuje treść do skopiowania.
 - **PDF, VAT, wiele walut** — Why parked: PRD §Non-Goals.
