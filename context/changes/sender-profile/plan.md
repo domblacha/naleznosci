@@ -427,24 +427,24 @@ Nowa tabela, bez zmian w istniejących danych. Lokalnie stosuj `npx supabase mig
 
 #### Automated
 
-- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up`
-- [x] 1.2 Typy i Astro przechodzą: `npx astro check`
-- [x] 1.3 Lint przechodzi: `npm run lint`
-- [x] 1.4 Testy jednostkowe przechodzą, w tym `iban.test.ts`, `sender-profile.test.ts` i `sender-profile-schemas.test.ts`: `npm test`
-- [x] 1.5 Build przechodzi: `npm run build`
-- [x] 1.6 Smoke przechodzi, łącznie z grupą `senderProfileSteps`: `npm run smoke`
+- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up` — 9964b67
+- [x] 1.2 Typy i Astro przechodzą: `npx astro check` — 9964b67
+- [x] 1.3 Lint przechodzi: `npm run lint` — 9964b67
+- [x] 1.4 Testy jednostkowe przechodzą, w tym `iban.test.ts`, `sender-profile.test.ts` i `sender-profile-schemas.test.ts`: `npm test` — 9964b67
+- [x] 1.5 Build przechodzi: `npm run build` — 9964b67
+- [x] 1.6 Smoke przechodzi, łącznie z grupą `senderProfileSteps`: `npm run smoke` — 9964b67
 
 #### Manual
 
-- [x] 1.7 W Supabase Studio wiersz `sender_profiles` z NIP-em innym niż 10 cyfr albo kontem innym niż 26 cyfr jest odrzucany przez check
+- [x] 1.7 W Supabase Studio wiersz `sender_profiles` z NIP-em innym niż 10 cyfr albo kontem innym niż 26 cyfr jest odrzucany przez check — 9964b67
 
 ### Phase 2: Dane nadawcy w tekście ponaglenia
 
 #### Automated
 
-- [ ] 2.1 Testy jednostkowe przechodzą, w tym nowe przypadki `renderReminder`: `npm test`
-- [ ] 2.2 Typy i Astro przechodzą: `npx astro check`
-- [ ] 2.3 Lint przechodzi: `npm run lint`
+- [x] 2.1 Testy jednostkowe przechodzą, w tym nowe przypadki `renderReminder`: `npm test`
+- [x] 2.2 Typy i Astro przechodzą: `npx astro check`
+- [x] 2.3 Lint przechodzi: `npm run lint`
 
 ### Phase 3: Formularz na `/settings` i profil w oknie ponaglenia
 

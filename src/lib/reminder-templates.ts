@@ -1,5 +1,5 @@
 // Domyślne szablony ponaglenia, po jednym na etap. Pola: {data}, {klient}, {pozycje},
-// {podsumowanie}, {termin_zapłaty}. S-12 przeniesie je do ustawień użytkownika.
+// {podsumowanie}, {termin_zapłaty}{konto}. S-12 przeniesie je do ustawień użytkownika.
 
 export type ReminderStage = 1 | 2 | 3 | 4;
 
@@ -19,9 +19,10 @@ uprzejmie przypominam, że minął termin płatności poniższych faktur:
 
 {podsumowanie}
 
-Być może płatność umknęła w natłoku spraw. Proszę o uregulowanie należności do {termin_zapłaty}. Jeśli przelew został już wysłany, proszę potraktować tę wiadomość jako nieaktualną.
+Być może płatność umknęła w natłoku spraw. Proszę o uregulowanie należności do {termin_zapłaty}{konto}. Jeśli przelew został już wysłany, proszę potraktować tę wiadomość jako nieaktualną.
 
-Z poważaniem`,
+Z poważaniem
+{nadawca}`,
   2: `Ponowne przypomnienie o płatności
 {data}
 
@@ -35,9 +36,10 @@ ponownie zwracam się z prośbą o zapłatę. Do dziś nie odnotowano wpłaty za
 
 {podsumowanie}
 
-Proszę o uregulowanie pełnej kwoty do {termin_zapłaty}. Za każdy dzień opóźnienia naliczane są odsetki za opóźnienie w transakcjach handlowych.
+Proszę o uregulowanie pełnej kwoty do {termin_zapłaty}{konto}. Za każdy dzień opóźnienia naliczane są odsetki za opóźnienie w transakcjach handlowych.
 
-Z poważaniem`,
+Z poważaniem
+{nadawca}`,
   3: `Wezwanie do zapłaty
 {data}
 
@@ -49,9 +51,10 @@ Wzywam do zapłaty zaległych należności z tytułu poniższych faktur:
 
 {podsumowanie}
 
-Kwotę należy wpłacić najpóźniej do {termin_zapłaty}. Brak zapłaty w tym terminie spowoduje podjęcie dalszych kroków w celu odzyskania należności.
+Kwotę należy wpłacić najpóźniej do {termin_zapłaty}{konto}. Brak zapłaty w tym terminie spowoduje podjęcie dalszych kroków w celu odzyskania należności.
 
-Z poważaniem`,
+Z poważaniem
+{nadawca}`,
   4: `Ostateczne przedsądowe wezwanie do zapłaty
 {data}
 
@@ -63,7 +66,8 @@ Wobec braku zapłaty mimo wcześniejszych przypomnień ostatecznie wzywam do zap
 
 {podsumowanie}
 
-Jeżeli należność nie zostanie uregulowana do {termin_zapłaty}, sprawa zostanie skierowana na drogę postępowania sądowego, co narazi Państwa na dodatkowe koszty.
+Jeżeli należność nie zostanie uregulowana do {termin_zapłaty}{konto}, sprawa zostanie skierowana na drogę postępowania sądowego, co narazi Państwa na dodatkowe koszty.
 
-Z poważaniem`,
+Z poważaniem
+{nadawca}`,
 };

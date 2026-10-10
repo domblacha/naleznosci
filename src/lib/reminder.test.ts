@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { buildClientReminders, renderReminder } from "@/lib/reminder";
 import { REMINDER_TEMPLATES } from "@/lib/reminder-templates";
-import type { Invoice } from "@/types";
+import { EMPTY_SENDER_PROFILE } from "@/lib/sender-profile";
+import type { Invoice, SenderProfile } from "@/types";
 
 const TODAY = "2026-10-05";
 const NB = " ";
@@ -197,7 +198,10 @@ Z poważaniem`;
 
   it("nie podstawia pól drugi raz w nazwie klienta i zostawia nieznane pola", () => {
     const tricky = { ...acme, clientName: "Firma {data}" };
-    const text = renderReminder(tricky, TODAY, { ...REMINDER_TEMPLATES, 4: "{klient} / {data} / {nieznane}" });
+    const text = renderReminder(tricky, TODAY, EMPTY_SENDER_PROFILE, {
+      ...REMINDER_TEMPLATES,
+      4: "{klient} / {data} / {nieznane}",
+    });
     expect(text).toBe("Firma {data} / 05.10.2026 / {nieznane}");
   });
 
@@ -209,5 +213,57 @@ Z poważaniem`;
   it("liczy termin zapłaty przez koniec miesiąca (28.10 -> 04.11)", () => {
     const text = renderReminder(acme, "2026-10-28");
     expect(text).toContain("do 04.11.2026");
+  });
+
+  describe("dane nadawcy", () => {
+    const FULL: SenderProfile = {
+      companyName: "Firma Testowa Sp. z o.o.",
+      nip: "5260250995",
+      address: "ul. Prosta 1\n00-001 Warszawa",
+      bankAccount: "61109010140000071219812874",
+    };
+
+    it("pełny profil: blok nadawcy kończy etap 4, a rachunek stoi w zdaniu o terminie", () => {
+      const text = renderReminder(acme, TODAY, FULL);
+      expect(text).toContain("uregulowana do 12.10.2026 na rachunek nr 61 1090 1014 0000 0712 1981 2874, sprawa");
+      expect(
+        text.endsWith("Z poważaniem\nFirma Testowa Sp. z o.o.\nul. Prosta 1\n00-001 Warszawa\nNIP: 5260250995"),
+      ).toBe(true);
+    });
+
+    it("profil z samym kontem kończy się na 'Z poważaniem' i ma zdanie z rachunkiem", () => {
+      const text = renderReminder(acme, TODAY, { ...EMPTY_SENDER_PROFILE, bankAccount: FULL.bankAccount });
+      expect(text.endsWith("Z poważaniem")).toBe(true);
+      expect(text).toContain("do 12.10.2026 na rachunek nr 61 1090 1014 0000 0712 1981 2874, sprawa");
+    });
+
+    it("profil bez konta nie ma 'na rachunek', a blok nadawcy zostaje", () => {
+      const text = renderReminder(acme, TODAY, { ...FULL, bankAccount: null });
+      expect(text).not.toContain("na rachunek");
+      expect(text).toContain("do 12.10.2026, sprawa");
+      expect(text.endsWith("NIP: 5260250995")).toBe(true);
+    });
+
+    it("adres z pustymi liniami i spacjami nie daje pustych linii w bloku", () => {
+      const text = renderReminder(acme, TODAY, {
+        ...EMPTY_SENDER_PROFILE,
+        address: "  ul. Prosta 1  \n\n   \n00-001 Warszawa\n",
+      });
+      expect(text.endsWith("Z poważaniem\nul. Prosta 1\n00-001 Warszawa")).toBe(true);
+    });
+
+    it("nazwa firmy z polem w nawiasach nie jest podstawiana ponownie", () => {
+      const text = renderReminder(acme, TODAY, { ...EMPTY_SENDER_PROFILE, companyName: "Firma {klient}" });
+      expect(text.endsWith("Z poważaniem\nFirma {klient}")).toBe(true);
+    });
+
+    it("przy pełnym profilu żaden z 4 szablonów nie zostawia nawiasów klamrowych", () => {
+      for (const stage of [1, 2, 3, 4] as const) {
+        const text = renderReminder({ ...acme, stage }, TODAY, FULL);
+        expect(text).not.toMatch(/[{}]/);
+        expect(text).toContain("na rachunek nr 61 1090 1014 0000 0712 1981 2874");
+        expect(text.endsWith("NIP: 5260250995")).toBe(true);
+      }
+    });
   });
 });
