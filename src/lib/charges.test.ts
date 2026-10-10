@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { chargesAsOf, compensationGrosze, interestGrosze } from "@/lib/charges";
+import {
+  chargeSettingsFrom,
+  chargesAsOf,
+  compensationGrosze,
+  DEFAULT_CHARGE_SETTINGS,
+  DEFAULT_ESCALATION_SETTINGS,
+  interestGrosze,
+} from "@/lib/charges";
 
 describe("interestGrosze", () => {
   it("liczy odsetki według domyślnej stopy", () => {
@@ -25,6 +32,10 @@ describe("interestGrosze", () => {
 
   it("nie traci precyzji dla największej kwoty", () => {
     expect(interestGrosze(99999999999, 3650)).toBe(137499999999);
+  });
+
+  it("rzuca wyjątek dla argumentu, który nie jest liczbą całkowitą", () => {
+    expect(() => interestGrosze(100.5, 1)).toThrow();
   });
 });
 
@@ -81,5 +92,29 @@ describe("chargesAsOf", () => {
   it("zależy tylko od dnia wskazanego, nie od dzisiejszej daty", () => {
     expect(chargesAsOf(invoice, "2026-09-11")).toEqual(chargesAsOf(invoice, "2026-09-11"));
     expect(chargesAsOf(invoice, "2026-09-11").days).toBe(10);
+  });
+});
+
+describe("chargeSettingsFrom", () => {
+  it("dla ustawień domyślnych daje DEFAULT_CHARGE_SETTINGS", () => {
+    expect(chargeSettingsFrom(DEFAULT_ESCALATION_SETTINGS)).toEqual(DEFAULT_CHARGE_SETTINGS);
+  });
+
+  it("zachowuje ustawowe granice progów i bierze stopę oraz kwoty użytkownika", () => {
+    const settings = chargeSettingsFrom({
+      thresholds: [1, 2, 3, 4],
+      annualRateBp: 1000,
+      compensationGrosze: [10000, 20000, 0],
+    });
+    expect(settings.annualRateBp).toBe(1000);
+    const cases: [number, number][] = [
+      [500000, 10000],
+      [500001, 20000],
+      [4999999, 20000],
+      [5000000, 0],
+    ];
+    for (const [amount, expected] of cases) {
+      expect(compensationGrosze(amount, 1, true, settings.compensationTiers), `${amount} gr`).toBe(expected);
+    }
   });
 });
