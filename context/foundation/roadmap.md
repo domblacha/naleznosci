@@ -51,7 +51,7 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | done     |
 | S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | done     |
 | S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | done     |
-| S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | in-progress |
+| S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | done     |
 | S-11 | invoice-list-filter-sort        | filtrować listę po kliencie i sortować po dniach po terminie lub kwocie                                    | S-03          | FR-010                            | proposed |
 | S-12 | editable-reminder-templates     | edytować 4 szablony treści ponagleń                                                                        | S-05          | FR-014                            | proposed |
 | S-13 | sender-profile                  | podać dane nadawcy (firma, NIP, adres, numer konta), które ponaglenie wstawia samo                         | S-05          | — (poza PRD v1); FR-011           | proposed |
@@ -224,7 +224,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Do tego czasu reguła działa na wartościach domyślnych, więc ustawienia nie blokują gwiazdy przewodniej; ryzyko to niespójność, gdy zmiana progów nie odświeża wszystkich wyliczeń. Ustawienia zastępują `DEFAULT_CHARGE_SETTINGS` z `src/lib/charges.ts`; przy planowaniu uwzględnić uwagi F1 i F2 z przeglądu S-04 (`context/archive/2026-10-06-interest-and-compensation/reviews/impl-review.md`): stopa w punktach bazowych i kwoty w groszach jako liczby całkowite, ostatni próg rekompensaty bez górnej granicy.
-- **Status:** in-progress
+- **Status:** done
 
 ### S-11: Filtrowanie i sortowanie listy faktur
 
@@ -314,3 +314,4 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **S-07: Użytkownik może edytować fakturę (termin i kwota zablokowane od dnia po terminie) i anulować ją — anulowana faktura znika z eskalacji, ponagleń i trafia do historii.** — Archived 2026-10-07 → `context/archive/2026-10-07-invoice-edit-and-cancel/`. Lesson: —.
 - **S-08: Użytkownik może wstrzymać eskalację faktury (trafia do grupy „wstrzymane”, poza ponaglenia, odsetki rosną dalej, termin i kwotę można edytować) i ją wznowić — faktura wraca na etap wynikający z aktualnej liczby dni po terminie.** — Archived 2026-10-08 → `context/archive/2026-10-08-pause-and-resume-escalation/`. Lesson: —.
 - **S-09: Użytkownik może usunąć klienta (oznaczenie jako nieaktywny z zachowaniem historii, zablokowane, dopóki klient ma nieopłacone faktury) i go przywrócić; duplikaty są wykrywane także wśród klientów nieaktywnych.** — Archived 2026-10-09 → `context/archive/2026-10-09-client-deactivate-restore/`. Lesson: —.
+- **S-10: Użytkownik może skonfigurować dni 4 progów eskalacji, roczną stopę odsetek i 3 progi kwotowe rekompensaty w PLN; zmiana natychmiast wpływa na etapy i kwoty wszystkich otwartych faktur.** — Archived 2026-10-10 → `context/archive/2026-10-10-escalation-settings/`. Lesson: —.
