@@ -1,7 +1,7 @@
 ---
 change_id: sender-profile
 title: Profil nadawcy wstawiany do ponagleń
-status: implementing
+status: implemented
 created: 2026-10-10
 updated: 2026-10-10
 ---
