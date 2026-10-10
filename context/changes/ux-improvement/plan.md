@@ -553,36 +553,36 @@ Brak — bez zmian schematu i API.
 
 #### Automated
 
-- [x] 4.1 Lint przechodzi: `npm run lint`
-- [x] 4.2 Typy przechodzą: `npx astro check`
-- [x] 4.3 Testy jednostkowe przechodzą: `npm test`
-- [x] 4.4 Build przechodzi: `npm run build`
-- [x] 4.5 Smoke przechodzi na dev serwerze, z nowymi krokami `/invoices`: `npm run smoke`
+- [x] 4.1 Lint przechodzi: `npm run lint` — 9f22be1
+- [x] 4.2 Typy przechodzą: `npx astro check` — 9f22be1
+- [x] 4.3 Testy jednostkowe przechodzą: `npm test` — 9f22be1
+- [x] 4.4 Build przechodzi: `npm run build` — 9f22be1
+- [x] 4.5 Smoke przechodzi na dev serwerze, z nowymi krokami `/invoices`: `npm run smoke` — 9f22be1
 
 #### Manual
 
-- [x] 4.6 `/` pokazuje nagłówek „Ponaglenia” i tabelę ponagleń bez „Dodaj fakturę” i bez tabów; „Generuj ponaglenie” działa, fokus wraca na przycisk
-- [x] 4.7 `/` bez ponagleń pokazuje „Żaden klient nie ma faktur na etapach 1–4.” z linkiem „Przejdź do faktur”; bez klientów „Najpierw dodaj klienta”
-- [x] 4.8 `/invoices` otwiera się na „Eskalacja”; taby Eskalacja · Wstrzymane z licznikami, wstrzymanie/zapłata/anulowanie jak w fazie 2
-- [x] 4.9 Oznaczenie faktury jako zapłaconej na `/invoices`, potem „Wstecz” na `/` — strona przeładowuje się i ponaglenie nie zawiera tej faktury
-- [x] 4.10 Menu: Ponaglenia, Faktury, Historia, Klienci, Ustawienia; aktywny link poprawny na `/` i `/invoices`
-- [x] 4.11 `/invoices` bez sesji przekierowuje na `/auth/signin`
-- [x] 4.12 `/dev/ui` pokazuje sekcje obu wysp
+- [x] 4.6 `/` pokazuje nagłówek „Ponaglenia” i tabelę ponagleń bez „Dodaj fakturę” i bez tabów; „Generuj ponaglenie” działa, fokus wraca na przycisk — 9f22be1
+- [x] 4.7 `/` bez ponagleń pokazuje „Żaden klient nie ma faktur na etapach 1–4.” z linkiem „Przejdź do faktur”; bez klientów „Najpierw dodaj klienta” — 9f22be1
+- [x] 4.8 `/invoices` otwiera się na „Eskalacja”; taby Eskalacja · Wstrzymane z licznikami, wstrzymanie/zapłata/anulowanie jak w fazie 2 — 9f22be1
+- [x] 4.9 Oznaczenie faktury jako zapłaconej na `/invoices`, potem „Wstecz” na `/` — strona przeładowuje się i ponaglenie nie zawiera tej faktury — 9f22be1
+- [x] 4.10 Menu: Ponaglenia, Faktury, Historia, Klienci, Ustawienia; aktywny link poprawny na `/` i `/invoices` — 9f22be1
+- [x] 4.11 `/invoices` bez sesji przekierowuje na `/auth/signin` — 9f22be1
+- [x] 4.12 `/dev/ui` pokazuje sekcje obu wysp — 9f22be1
 
 ### Phase 5: Menu mobilne w szufladzie
 
 #### Automated
 
-- [ ] 5.1 Lint przechodzi: `npm run lint`
-- [ ] 5.2 Typy przechodzą: `npx astro check`
-- [ ] 5.3 Testy jednostkowe przechodzą: `npm test`
-- [ ] 5.4 Build przechodzi: `npm run build`
-- [ ] 5.5 `package.json` nie zawiera nowej zależności po `shadcn add sheet`
+- [x] 5.1 Lint przechodzi: `npm run lint`
+- [x] 5.2 Typy przechodzą: `npx astro check`
+- [x] 5.3 Testy jednostkowe przechodzą: `npm test`
+- [x] 5.4 Build przechodzi: `npm run build`
+- [x] 5.5 `package.json` nie zawiera nowej zależności po `shadcn add sheet`
 
 #### Manual
 
-- [ ] 5.6 Przy 360 px header ma jeden wiersz (☰ · e-mail · Wyloguj), długi e-mail się skraca, bez poziomego przewijania
-- [ ] 5.7 ☰ otwiera szufladę z lewej z pięcioma linkami, aktywny wyróżniony; Escape, klik w overlay i ✕ zamykają ją, fokus wraca na ☰
-- [ ] 5.8 Klik w link w szufladzie przechodzi na stronę
-- [ ] 5.9 Od 640 px szuflada i ☰ są niewidoczne, header jak po fazie 4
-- [ ] 5.10 `/dev/ui` pokazuje sekcję menu mobilnego
+- [x] 5.6 Przy 360 px header ma jeden wiersz (☰ · e-mail · Wyloguj), długi e-mail się skraca, bez poziomego przewijania
+- [x] 5.7 ☰ otwiera szufladę z lewej z pięcioma linkami, aktywny wyróżniony; Escape, klik w overlay i ✕ zamykają ją, fokus wraca na ☰
+- [x] 5.8 Klik w link w szufladzie przechodzi na stronę
+- [x] 5.9 Od 640 px szuflada i ☰ są niewidoczne, header jak po fazie 4
+- [x] 5.10 `/dev/ui` pokazuje sekcję menu mobilnego

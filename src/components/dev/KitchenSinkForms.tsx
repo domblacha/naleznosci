@@ -1,5 +1,6 @@
 import { Lock, LogIn, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MobileNav } from "@/components/MobileNav";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -756,6 +757,17 @@ export function KitchenSinkForms() {
             Brak pozycji.
           </TabsContent>
         </Tabs>
+      </Section>
+      <Section title="Menu mobilne">
+        <MobileNav
+          links={[
+            { href: "/", label: "Ponaglenia", active: true },
+            { href: "/invoices", label: "Faktury", active: false },
+            { href: "/history", label: "Historia", active: false },
+            { href: "/clients", label: "Klienci", active: false },
+            { href: "/settings", label: "Ustawienia", active: false },
+          ]}
+        />
       </Section>
       <Section title="PasswordToggle">
         <div className="relative h-9 w-40">

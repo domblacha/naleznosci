@@ -1,4 +1,5 @@
 ---
+import { MobileNav } from "@/components/MobileNav";
 import { Button } from "@/components/ui/button";
 
 const { user } = Astro.locals;
@@ -10,31 +11,32 @@ const links = [
   { href: "/history", label: "Historia" },
   { href: "/clients", label: "Klienci" },
   { href: "/settings", label: "Ustawienia" },
-];
+].map((link) => ({
+  ...link,
+  active: link.href === "/" ? pathname === "/" : pathname.startsWith(link.href),
+}));
 ---
 
-<div class="mb-4 flex flex-col gap-1 rounded-xl border bg-card px-4 py-2 text-sm text-card-foreground sm:flex-row sm:items-center sm:justify-between">
-  <nav class="flex flex-wrap items-center gap-x-4 gap-y-1" aria-label="Główna nawigacja">
-    {links.map((link) => {
-      const active = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
-      return (
-        <a
-          href={link.href}
-          aria-current={active ? "page" : undefined}
-          class:list={["font-medium", active ? "text-foreground" : "text-muted-foreground hover:text-foreground"]}
-        >
-          {link.label}
-        </a>
-      );
-    })}
+<div class="mb-4 flex items-center justify-between gap-2 rounded-xl border bg-card px-4 py-2 text-sm text-card-foreground">
+  <nav class="hidden flex-wrap items-center gap-x-4 gap-y-1 sm:flex" aria-label="Główna nawigacja">
+    {links.map((link) => (
+      <a
+        href={link.href}
+        aria-current={link.active ? "page" : undefined}
+        class:list={["font-medium", link.active ? "text-foreground" : "text-muted-foreground hover:text-foreground"]}
+      >
+        {link.label}
+      </a>
+    ))}
   </nav>
-  <div class="order-first flex items-center justify-between gap-2 sm:contents">
-    <span class="min-w-0 truncate text-muted-foreground">{user?.email}</span>
-    <form method="POST" action="/api/auth/signout">
-      <Button type="submit" variant="link">
-        {" "}
-        Wyloguj{" "}
-      </Button>
-    </form>
+  <div class="sm:hidden">
+    <MobileNav links={links} client:load />
   </div>
+  <span class="min-w-0 truncate text-muted-foreground">{user?.email}</span>
+  <form method="POST" action="/api/auth/signout">
+    <Button type="submit" variant="link">
+      {" "}
+      Wyloguj{" "}
+    </Button>
+  </form>
 </div>
