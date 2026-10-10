@@ -4,19 +4,22 @@ import Layout from "@/layouts/Layout.astro";
 import { SettingsForm } from "@/components/settings/SettingsForm";
 import { createClient } from "@/lib/supabase";
 import { getSettings } from "@/lib/services/settings";
+import { getSenderProfile } from "@/lib/services/sender-profile";
+import { SenderProfileForm } from "@/components/settings/SenderProfileForm";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import type { EscalationSettings } from "@/types";
+import type { EscalationSettings, SenderProfile } from "@/types";
 
 export const prerender = false;
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 let settings: EscalationSettings | null = null;
+let senderProfile: SenderProfile | null = null;
 let loadError: string | null = null;
 if (!supabase) {
   loadError = "Ustawienia są niedostępne: brak konfiguracji serwera.";
 } else {
   try {
-    settings = await getSettings(supabase);
+    [settings, senderProfile] = await Promise.all([getSettings(supabase), getSenderProfile(supabase)]);
   } catch {
     loadError = "Nie udało się wczytać ustawień. Odśwież stronę.";
   }
@@ -28,12 +31,16 @@ if (!supabase) {
     <Topbar />
     <main class="mx-auto max-w-3xl space-y-4 py-8">
       <h1 class="text-3xl font-bold text-foreground">Ustawienia</h1>
-      {loadError || !settings ? (
+      {loadError || !settings || !senderProfile ? (
         <Alert variant="destructive">
           <AlertDescription>{loadError}</AlertDescription>
         </Alert>
       ) : (
-        <SettingsForm initialSettings={settings} client:load />
+        <>
+          <SenderProfileForm initialProfile={senderProfile} client:load />
+          <h2 class="text-foreground pt-4 text-lg font-semibold">Reguła eskalacji</h2>
+          <SettingsForm initialSettings={settings} client:load />
+        </>
       )}
     </main>
   </div>

@@ -1,8 +1,9 @@
 import { compensationGrosze, DEFAULT_CHARGE_SETTINGS, interestGrosze, type ChargeSettings } from "@/lib/charges";
 import { DEFAULT_THRESHOLDS, groupInvoices, type EscalationThresholds } from "@/lib/escalation";
 import { formatAmount, formatDate } from "@/lib/format";
+import { bankAccountClause, EMPTY_SENDER_PROFILE, senderBlock } from "@/lib/sender-profile";
 import { PAYMENT_DEADLINE_DAYS, REMINDER_TEMPLATES, type ReminderStage } from "@/lib/reminder-templates";
-import type { Invoice } from "@/types";
+import type { Invoice, SenderProfile } from "@/types";
 
 export type { ReminderStage };
 
@@ -119,6 +120,7 @@ function formatSummary(reminder: ClientReminder): string {
 export function renderReminder(
   reminder: ClientReminder,
   today: string,
+  sender: SenderProfile = EMPTY_SENDER_PROFILE,
   templates: Record<ReminderStage, string> = REMINDER_TEMPLATES,
 ): string {
   const fields: Record<string, string> = {
@@ -127,9 +129,12 @@ export function renderReminder(
     pozycje: reminder.items.map((item, i) => formatItem(reminder, item, i)).join("\n"),
     podsumowanie: formatSummary(reminder),
     termin_zapłaty: formatDate(addDays(today, PAYMENT_DEADLINE_DAYS)),
+    nadawca: senderBlock(sender),
+    konto: bankAccountClause(sender),
   };
   // Jedno przejście: wartość pola (np. nazwa klienta z "{data}") nie jest podstawiana ponownie.
-  return templates[reminder.stage].replace(/\{([^{}]+)\}/gu, (match, name: string) =>
-    Object.hasOwn(fields, name) ? fields[name] : match,
-  );
+  // trimEnd: pusty blok nadawcy nie zostawia pustej linii na końcu.
+  return templates[reminder.stage]
+    .replace(/\{([^{}]+)\}/gu, (match, name: string) => (Object.hasOwn(fields, name) ? fields[name] : match))
+    .trimEnd();
 }

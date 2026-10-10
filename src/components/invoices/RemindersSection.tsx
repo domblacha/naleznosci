@@ -5,7 +5,7 @@ import { ReminderDialog } from "@/components/invoices/ReminderDialog";
 import { formatAmount } from "@/lib/format";
 import { chargeSettingsFrom } from "@/lib/charges";
 import { buildClientReminders } from "@/lib/reminder";
-import type { EscalationSettings, Invoice } from "@/types";
+import type { EscalationSettings, Invoice, SenderProfile } from "@/types";
 
 interface Props {
   invoices: Invoice[];
@@ -13,9 +13,11 @@ interface Props {
   today: string;
   /** User's escalation settings: stage thresholds, interest rate and compensation amounts. */
   settings: EscalationSettings;
+  /** User's sender profile; rendered into the reminder text. */
+  sender: SenderProfile;
 }
 
-export function RemindersSection({ invoices, today, settings }: Props) {
+export function RemindersSection({ invoices, today, settings, sender }: Props) {
   const reminders = useMemo(
     () => buildClientReminders(invoices, today, settings.thresholds, chargeSettingsFrom(settings)),
     [invoices, today, settings],
@@ -75,6 +77,7 @@ export function RemindersSection({ invoices, today, settings }: Props) {
       <ReminderDialog
         reminder={selected}
         today={today}
+        sender={sender}
         open={open}
         onOpenChange={setOpen}
         onCloseAutoFocus={() => {

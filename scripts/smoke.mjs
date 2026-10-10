@@ -588,6 +588,58 @@ function snapshotSteps() {
   ];
 }
 
+// Needs user B (signed in by clientSteps). Clears both profiles at the end so other groups are not affected.
+function senderProfileSteps() {
+  const put = (jar, json) => () => request("/api/sender-profile", { method: "PUT", json, jar });
+  const empty = { companyName: "", nip: "", address: "", bankAccount: "" };
+  const profileA = {
+    companyName: "  Firma A Sp. z o.o.  ",
+    nip: "PL 526-025-09-95",
+    address: "ul. Prosta 1\n00-001 Warszawa",
+    bankAccount: "PL61 1090-1014 0000 0712 1981 2874",
+  };
+  const profileB = { companyName: "Firma B", nip: "", address: "", bankAccount: "" };
+  const savedA = {
+    status: 200,
+    check: (a) =>
+      JSON.stringify(a.body?.profile) ===
+      JSON.stringify({
+        companyName: "Firma A Sp. z o.o.",
+        nip: "5260250995",
+        address: "ul. Prosta 1\n00-001 Warszawa",
+        bankAccount: "61109010140000071219812874",
+      }),
+  };
+  const cleared = {
+    status: 200,
+    check: (a) =>
+      JSON.stringify(a.body?.profile) ===
+      JSON.stringify({ companyName: null, nip: null, address: null, bankAccount: null }),
+  };
+  return [
+    ["sender profile API rejects anonymous user", put(new Map(), profileA), { status: 401 }],
+    [
+      "sender profile A: invalid NIP -> 400",
+      put(jar, { ...profileA, nip: "5260250996" }),
+      { status: 400, check: (a) => a.body?.error === "invalid_input" && Boolean(a.body?.fieldErrors?.nip) },
+    ],
+    [
+      "sender profile A: invalid bank account -> 400",
+      put(jar, { ...profileA, bankAccount: "61109010140000071219812875" }),
+      { status: 400, check: (a) => a.body?.error === "invalid_input" && Boolean(a.body?.fieldErrors?.bankAccount) },
+    ],
+    ["sender profile A: save full profile (normalized)", put(jar, profileA), savedA],
+    [
+      "sender profile B: save own profile",
+      put(jarB, profileB),
+      { status: 200, check: (a) => a.body?.profile?.companyName === "Firma B" && a.body?.profile?.nip === null },
+    ],
+    ["sender profile A: B's save did not change A", put(jar, profileA), savedA],
+    ["sender profile A: clear", put(jar, empty), cleared],
+    ["sender profile B: clear", put(jarB, empty), cleared],
+  ];
+}
+
 const steps = [
   [
     "clients API rejects anonymous user",
@@ -633,6 +685,7 @@ const steps = [
   ...invoiceSteps(),
   ...settingsSteps(),
   ...snapshotSteps(),
+  ...senderProfileSteps(),
   [
     "signout clears session",
     () => request("/api/auth/signout", { method: "POST" }),

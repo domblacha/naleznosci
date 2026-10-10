@@ -15,13 +15,16 @@ import { InvoiceFormView, PauseEscalationControl } from "@/components/invoices/I
 import { InvoicesManager } from "@/components/invoices/InvoicesManager";
 import { PaymentFormView } from "@/components/invoices/PaymentDialog";
 import { ReminderDialogView } from "@/components/invoices/ReminderDialog";
+import { senderProfileInputText } from "@/components/hooks/use-sender-profile-form";
 import { settingsInputText } from "@/components/hooks/use-settings-form";
+import { SenderProfileFormView } from "@/components/settings/SenderProfileForm";
 import { SettingsFormView } from "@/components/settings/SettingsForm";
 import { amountInputText } from "@/lib/format";
 import { chargesAsOf, chargeSettingsFrom, DEFAULT_ESCALATION_SETTINGS } from "@/lib/charges";
 import { isInvoiceLocked } from "@/lib/invoice-lock";
 import { buildClientReminders, renderReminder } from "@/lib/reminder";
-import type { Client, Invoice } from "@/types";
+import { EMPTY_SENDER_PROFILE } from "@/lib/sender-profile";
+import type { Client, Invoice, SenderProfile } from "@/types";
 import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { ServerError } from "@/components/auth/ServerError";
@@ -103,13 +106,22 @@ const customSettingsText = settingsInputText({
   compensationGrosze: [17000, 30000, 43000],
 });
 
+const SAMPLE_SENDER: SenderProfile = {
+  companyName: "Firma Testowa Sp. z o.o.",
+  nip: "5260250995",
+  address: "ul. Prosta 1\n00-001 Warszawa",
+  bankAccount: "61109010140000071219812874",
+};
+const emptySenderText = senderProfileInputText(EMPTY_SENDER_PROFILE);
+const filledSenderText = senderProfileInputText(SAMPLE_SENDER);
+
 const sampleReminder = buildClientReminders(
   sampleInvoices,
   SAMPLE_TODAY,
   DEFAULT_ESCALATION_SETTINGS.thresholds,
   chargeSettingsFrom(DEFAULT_ESCALATION_SETTINGS),
 ).find((r) => r.clientId === sampleClients[0].id);
-const sampleReminderText = sampleReminder ? renderReminder(sampleReminder, SAMPLE_TODAY) : "";
+const sampleReminderText = sampleReminder ? renderReminder(sampleReminder, SAMPLE_TODAY, SAMPLE_SENDER) : "";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -491,6 +503,76 @@ export function KitchenSinkForms() {
           onSubmit={noop}
         />
       </Section>
+      <Section title="Dane nadawcy: pusty">
+        <SenderProfileFormView
+          idPrefix="ks-sender-empty"
+          values={emptySenderText}
+          errors={{}}
+          pending={false}
+          saved={false}
+          onFieldChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Dane nadawcy: wypełniony">
+        <SenderProfileFormView
+          idPrefix="ks-sender-filled"
+          values={filledSenderText}
+          errors={{}}
+          pending={false}
+          saved={false}
+          onFieldChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Dane nadawcy: błędy NIP-u i konta">
+        <SenderProfileFormView
+          idPrefix="ks-sender-errors"
+          values={{ ...filledSenderText, nip: "5260250996", bankAccount: "61 1090 1014 0000 0712 1981 2875" }}
+          errors={{
+            nip: "Podaj poprawny NIP (10 cyfr)",
+            bankAccount: "Podaj poprawny numer konta (26 cyfr, np. 61 1090 1014 0000 0712 1981 2874)",
+          }}
+          pending={false}
+          saved={false}
+          onFieldChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Dane nadawcy: pending">
+        <SenderProfileFormView
+          idPrefix="ks-sender-pending"
+          values={filledSenderText}
+          errors={{}}
+          pending
+          saved={false}
+          onFieldChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Dane nadawcy: po zapisie">
+        <SenderProfileFormView
+          idPrefix="ks-sender-saved"
+          values={filledSenderText}
+          errors={{}}
+          pending={false}
+          saved
+          onFieldChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Dane nadawcy: błąd serwera">
+        <SenderProfileFormView
+          idPrefix="ks-sender-server-error"
+          values={filledSenderText}
+          errors={{}}
+          serverError="Coś poszło nie tak. Spróbuj ponownie."
+          pending={false}
+          saved={false}
+          onFieldChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
       <Section title="Ustawienia: domyślne">
         <SettingsFormView
           idPrefix="ks-settings-default"
@@ -565,6 +647,7 @@ export function KitchenSinkForms() {
               status="idle"
               onTextChange={noop}
               onCopy={noop}
+              senderMissing={false}
             />
           </Section>
           <Section title="ReminderDialogView: copied">
@@ -574,6 +657,17 @@ export function KitchenSinkForms() {
               status="copied"
               onTextChange={noop}
               onCopy={noop}
+              senderMissing={false}
+            />
+          </Section>
+          <Section title="ReminderDialogView: brak danych nadawcy">
+            <ReminderDialogView
+              idPrefix="ks-reminder-sender-missing"
+              text={renderReminder(sampleReminder, SAMPLE_TODAY)}
+              status="idle"
+              onTextChange={noop}
+              onCopy={noop}
+              senderMissing
             />
           </Section>
           <Section title="ReminderDialogView: copy error">
@@ -583,6 +677,7 @@ export function KitchenSinkForms() {
               status="error"
               onTextChange={noop}
               onCopy={noop}
+              senderMissing={false}
             />
           </Section>
         </>
@@ -593,6 +688,7 @@ export function KitchenSinkForms() {
           clients={sampleClients}
           today={SAMPLE_TODAY}
           settings={DEFAULT_ESCALATION_SETTINGS}
+          sender={SAMPLE_SENDER}
         />
       </Section>
       <Section title="Ponaglenia: pusty stan">
@@ -601,6 +697,7 @@ export function KitchenSinkForms() {
           clients={sampleClients}
           today={SAMPLE_TODAY}
           settings={DEFAULT_ESCALATION_SETTINGS}
+          sender={SAMPLE_SENDER}
         />
       </Section>
       <Section title="Lista faktur: brak faktur">
@@ -609,6 +706,7 @@ export function KitchenSinkForms() {
           clients={sampleClients}
           today={SAMPLE_TODAY}
           settings={DEFAULT_ESCALATION_SETTINGS}
+          sender={SAMPLE_SENDER}
         />
       </Section>
       <Section title="Lista faktur: brak klientów">
@@ -617,6 +715,7 @@ export function KitchenSinkForms() {
           clients={[]}
           today={SAMPLE_TODAY}
           settings={DEFAULT_ESCALATION_SETTINGS}
+          sender={SAMPLE_SENDER}
         />
       </Section>
       <Section title="PasswordToggle">

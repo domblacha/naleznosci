@@ -15,6 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCopyToClipboard, type CopyStatus } from "@/components/hooks/use-copy-to-clipboard";
 import { formatAmount } from "@/lib/format";
 import { renderReminder, type ClientReminder } from "@/lib/reminder";
+import { isSenderProfileEmpty } from "@/lib/sender-profile";
+import type { SenderProfile } from "@/types";
 
 interface ReminderDialogViewProps {
   idPrefix: string;
@@ -22,10 +24,20 @@ interface ReminderDialogViewProps {
   status: CopyStatus;
   onTextChange: (value: string) => void;
   onCopy: () => void;
+  /** True when the sender profile is empty, so the text has no sender data. */
+  senderMissing: boolean;
   onClose?: () => void;
 }
 
-export function ReminderDialogView({ idPrefix, text, status, onTextChange, onCopy, onClose }: ReminderDialogViewProps) {
+export function ReminderDialogView({
+  idPrefix,
+  text,
+  status,
+  onTextChange,
+  onCopy,
+  senderMissing,
+  onClose,
+}: ReminderDialogViewProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fieldId = `${idPrefix}-text`;
 
@@ -51,6 +63,13 @@ export function ReminderDialogView({ idPrefix, text, status, onTextChange, onCop
           }}
         />
       </div>
+      {senderMissing ? (
+        <Alert>
+          <AlertDescription>
+            Ponaglenie nie zawiera danych nadawcy. Uzupełnij je w <a href="/settings">Ustawieniach</a>.
+          </AlertDescription>
+        </Alert>
+      ) : null}
       {status === "error" ? (
         <Alert variant="destructive">
           <AlertDescription>
@@ -86,13 +105,15 @@ export function ReminderDialogView({ idPrefix, text, status, onTextChange, onCop
 function ReminderContent({
   reminder,
   today,
+  sender,
   onClose,
 }: {
   reminder: ClientReminder;
   today: string;
+  sender: SenderProfile;
   onClose: () => void;
 }) {
-  const [text, setText] = useState(() => renderReminder(reminder, today));
+  const [text, setText] = useState(() => renderReminder(reminder, today, sender));
   const { status, copy } = useCopyToClipboard();
   return (
     <>
@@ -109,6 +130,7 @@ function ReminderContent({
         status={status}
         onTextChange={setText}
         onCopy={() => void copy(text)}
+        senderMissing={isSenderProfileEmpty(sender)}
         onClose={onClose}
       />
     </>
@@ -118,12 +140,13 @@ function ReminderContent({
 interface ReminderDialogProps {
   reminder: ClientReminder | null;
   today: string;
+  sender: SenderProfile;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCloseAutoFocus?: () => void;
 }
 
-export function ReminderDialog({ reminder, today, open, onOpenChange, onCloseAutoFocus }: ReminderDialogProps) {
+export function ReminderDialog({ reminder, today, sender, open, onOpenChange, onCloseAutoFocus }: ReminderDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -139,6 +162,7 @@ export function ReminderDialog({ reminder, today, open, onOpenChange, onCloseAut
             key={reminder.clientId}
             reminder={reminder}
             today={today}
+            sender={sender}
             onClose={() => {
               onOpenChange(false);
             }}

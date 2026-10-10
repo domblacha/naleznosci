@@ -74,3 +74,19 @@ export interface EscalationSettingsInput {
   compensation2: string;
   compensation3: string;
 }
+
+/** Sender data inserted into reminders. NIP is 10 digits, bank account 26 digits without `PL`; null means missing. */
+export interface SenderProfile {
+  companyName: string | null;
+  nip: string | null;
+  address: string | null;
+  bankAccount: string | null;
+}
+
+/** Sender profile form/API input as typed text, parsed by `senderProfileInputSchema`. */
+export interface SenderProfileInput {
+  companyName: string;
+  nip: string;
+  address: string;
+  bankAccount: string;
+}
