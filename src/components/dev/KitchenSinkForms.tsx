@@ -2,6 +2,7 @@ import { Lock, LogIn, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClientFormView } from "@/components/clients/ClientFormDialog";
 import { ClientsManager } from "@/components/clients/ClientsManager";
 import {
@@ -717,6 +718,28 @@ export function KitchenSinkForms() {
           settings={DEFAULT_ESCALATION_SETTINGS}
           sender={SAMPLE_SENDER}
         />
+      </Section>
+      <Section title="Tabs: liczniki, pusty panel i panel z treścią">
+        <Tabs defaultValue="reminders">
+          <TabsList variant="line">
+            <TabsTrigger value="reminders">Ponaglenia (3)</TabsTrigger>
+            <TabsTrigger value="escalation">Eskalacja (12)</TabsTrigger>
+            <TabsTrigger value="paused">Wstrzymane (1)</TabsTrigger>
+            <TabsTrigger value="empty">Puste (0)</TabsTrigger>
+          </TabsList>
+          <TabsContent value="reminders" className="text-sm">
+            Panel z treścią: trzy ponaglenia do wysłania.
+          </TabsContent>
+          <TabsContent value="escalation" className="text-sm">
+            Panel z treścią: faktury w eskalacji.
+          </TabsContent>
+          <TabsContent value="paused" className="text-sm">
+            Panel z treścią: wstrzymana faktura.
+          </TabsContent>
+          <TabsContent value="empty" className="text-muted-foreground text-sm">
+            Brak pozycji.
+          </TabsContent>
+        </Tabs>
       </Section>
       <Section title="PasswordToggle">
         <div className="relative h-9 w-40">

@@ -6,14 +6,14 @@ const { pathname } = Astro.url;
 
 const links = [
   { href: "/", label: "Faktury" },
-  { href: "/clients", label: "Klienci" },
   { href: "/history", label: "Historia" },
+  { href: "/clients", label: "Klienci" },
   { href: "/settings", label: "Ustawienia" },
 ];
 ---
 
-<div class="mb-4 flex items-center justify-between rounded-xl border bg-card px-4 py-2 text-sm text-card-foreground">
-  <nav class="flex items-center gap-4" aria-label="Główna nawigacja">
+<div class="mb-4 flex flex-col gap-1 rounded-xl border bg-card px-4 py-2 text-sm text-card-foreground sm:flex-row sm:items-center sm:justify-between">
+  <nav class="flex flex-wrap items-center gap-x-4 gap-y-1" aria-label="Główna nawigacja">
     {links.map((link) => {
       const active = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
       return (
@@ -27,11 +27,13 @@ const links = [
       );
     })}
   </nav>
-  <span class="text-muted-foreground">{user?.email}</span>
-  <form method="POST" action="/api/auth/signout">
-    <Button type="submit" variant="link">
-      {" "}
-      Wyloguj{" "}
-    </Button>
-  </form>
+  <div class="order-first flex items-center justify-between gap-2 sm:contents">
+    <span class="min-w-0 truncate text-muted-foreground">{user?.email}</span>
+    <form method="POST" action="/api/auth/signout">
+      <Button type="submit" variant="link">
+        {" "}
+        Wyloguj{" "}
+      </Button>
+    </form>
+  </div>
 </div>
