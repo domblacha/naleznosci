@@ -52,7 +52,7 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | done     |
 | S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | done     |
 | S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | done     |
-| S-13 | sender-profile                  | podać dane nadawcy (firma, NIP, adres, numer konta), które ponaglenie wstawia samo                         | S-05          | — (poza PRD v1); FR-011           | proposed |
+| S-13 | sender-profile                  | podać dane nadawcy (firma, NIP, adres, numer konta), które ponaglenie wstawia samo                         | S-05          | — (poza PRD v1); FR-011           | in-progress |
 
 ## Streams
 
@@ -235,7 +235,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
   - Które pola są wymagane, a które opcjonalne, i czy walidować numer konta (IBAN PL) oraz NIP nadawcy? — Owner: user. Block: no.
   - Co ponaglenie pokazuje, gdy profil jest pusty: brak bloku nadawcy czy podpowiedź do uzupełnienia profilu? — Owner: user. Block: no.
 - **Risk:** Nowa tabela z RLS (jeden profil na właściciela) i nowy widok. Szablony pozostają stałe (FR-014 poza MVP), więc pole `{nadawca}` trafia tylko do szablonów w kodzie; gdy edytowalne szablony wrócą w kolejnym kamieniu milowym, zastaną to pole gotowe. Technicznie to nowy wpis w mapie pól `renderReminder` (`src/lib/reminder.ts`) i miejsce na niego pod „Z poważaniem” w 4 szablonach.
-- **Status:** proposed
+- **Status:** in-progress
 
 ## Backlog Handoff
 
