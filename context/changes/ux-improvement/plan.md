@@ -332,15 +332,15 @@ Brak — bez zmian schematu i API.
 
 #### Automated
 
-- [x] 3.1 Lint przechodzi: `npm run lint`
-- [x] 3.2 Typy przechodzą: `npx astro check`
-- [x] 3.3 Testy jednostkowe przechodzą: `npm test`
-- [x] 3.4 Build przechodzi: `npm run build`
-- [x] 3.5 Smoke przechodzi na dev serwerze: `npm run smoke`
+- [x] 3.1 Lint przechodzi: `npm run lint` — dadb192
+- [x] 3.2 Typy przechodzą: `npx astro check` — dadb192
+- [x] 3.3 Testy jednostkowe przechodzą: `npm test` — dadb192
+- [x] 3.4 Build przechodzi: `npm run build` — dadb192
+- [x] 3.5 Smoke przechodzi na dev serwerze: `npm run smoke` — dadb192
 
 #### Manual
 
-- [x] 3.6 `/history`: przywrócenie faktury zmniejsza licznik swojego taba, fokus na nagłówku panelu; zmiana daty wpłaty przesortowuje listę
-- [x] 3.7 `/settings`: zmiana pola w „Dane nadawcy”, przełączenie na „Reguła eskalacji” i powrót — wpisana wartość zostaje; po zapisie i przełączeniu tabów formularz pokazuje zapisane wartości
-- [x] 3.8 Wszystkie cztery strony przy 360 px: taby czytelne, bez poziomego przewijania strony
-- [x] 3.9 README opisuje taby zamiast sekcji
+- [x] 3.6 `/history`: przywrócenie faktury zmniejsza licznik swojego taba, fokus na nagłówku panelu; zmiana daty wpłaty przesortowuje listę — dadb192
+- [x] 3.7 `/settings`: zmiana pola w „Dane nadawcy”, przełączenie na „Reguła eskalacji” i powrót — wpisana wartość zostaje; po zapisie i przełączeniu tabów formularz pokazuje zapisane wartości — dadb192
+- [x] 3.8 Wszystkie cztery strony przy 360 px: taby czytelne, bez poziomego przewijania strony — dadb192
+- [x] 3.9 README opisuje taby zamiast sekcji — dadb192
