@@ -52,7 +52,7 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 | S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | done     |
 | S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | done     |
 | S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | done     |
-| S-13 | sender-profile                  | podać dane nadawcy (firma, NIP, adres, numer konta), które ponaglenie wstawia samo                         | S-05          | — (poza PRD v1); FR-011           | in-progress |
+| S-13 | sender-profile                  | podać dane nadawcy (firma, NIP, adres, numer konta), które ponaglenie wstawia samo                         | S-05          | — (poza PRD v1); FR-011           | done     |
 
 ## Streams
 
@@ -235,7 +235,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
   - Które pola są wymagane, a które opcjonalne, i czy walidować numer konta (IBAN PL) oraz NIP nadawcy? — Owner: user. Block: no.
   - Co ponaglenie pokazuje, gdy profil jest pusty: brak bloku nadawcy czy podpowiedź do uzupełnienia profilu? — Owner: user. Block: no.
 - **Risk:** Nowa tabela z RLS (jeden profil na właściciela) i nowy widok. Szablony pozostają stałe (FR-014 poza MVP), więc pole `{nadawca}` trafia tylko do szablonów w kodzie; gdy edytowalne szablony wrócą w kolejnym kamieniu milowym, zastaną to pole gotowe. Technicznie to nowy wpis w mapie pól `renderReminder` (`src/lib/reminder.ts`) i miejsce na niego pod „Z poważaniem” w 4 szablonach.
-- **Status:** in-progress
+- **Status:** done
 
 ## Backlog Handoff
 
@@ -252,7 +252,7 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 | S-08       | pause-and-resume-escalation     | Wstrzymanie i wznowienie eskalacji faktury                  | no                    | Done 2026-10-08 (PR #14)                           |
 | S-09       | client-deactivate-restore       | Dezaktywacja i przywracanie klienta                         | no                    | Done 2026-10-10 (PR #15)                           |
 | S-10       | escalation-settings             | Ustawienia progów, stopy odsetek i rekompensaty             | no                    | Done 2026-10-10 (PR #16)                           |
-| S-13       | sender-profile                  | Profil nadawcy wstawiany do ponagleń                        | yes                   | Odblokowany przez S-05; `/10x-plan sender-profile` |
+| S-13       | sender-profile                  | Profil nadawcy wstawiany do ponagleń                        | no                    | Done 2026-10-10 (PR #18)                           |
 
 ## Open Roadmap Questions
 
@@ -288,3 +288,4 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **S-08: Użytkownik może wstrzymać eskalację faktury (trafia do grupy „wstrzymane”, poza ponaglenia, odsetki rosną dalej, termin i kwotę można edytować) i ją wznowić — faktura wraca na etap wynikający z aktualnej liczby dni po terminie.** — Archived 2026-10-08 → `context/archive/2026-10-08-pause-and-resume-escalation/`. Lesson: —.
 - **S-09: Użytkownik może usunąć klienta (oznaczenie jako nieaktywny z zachowaniem historii, zablokowane, dopóki klient ma nieopłacone faktury) i go przywrócić; duplikaty są wykrywane także wśród klientów nieaktywnych.** — Archived 2026-10-09 → `context/archive/2026-10-09-client-deactivate-restore/`. Lesson: —.
 - **S-10: Użytkownik może skonfigurować dni 4 progów eskalacji, roczną stopę odsetek i 3 progi kwotowe rekompensaty w PLN; zmiana natychmiast wpływa na etapy i kwoty wszystkich otwartych faktur.** — Archived 2026-10-10 → `context/archive/2026-10-10-escalation-settings/`. Lesson: —.
+- **S-13: Użytkownik może zapisać w profilu swoje dane nadawcy (nazwa firmy, NIP, adres, numer konta), a generowane ponaglenie wstawia je samo w miejsce podpisu (pole `{nadawca}` w szablonach) — bez ręcznego dopisywania przy każdym ponagleniu.** — Archived 2026-10-10 → `context/archive/2026-10-10-sender-profile/`. Lesson: —.
