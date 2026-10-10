@@ -5,11 +5,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { CancelInvoiceDialog } from "@/components/invoices/CancelInvoiceDialog";
 import { InvoiceFormDialog } from "@/components/invoices/InvoiceFormDialog";
 import { PaymentDialog } from "@/components/invoices/PaymentDialog";
-import { RemindersSection } from "@/components/invoices/RemindersSection";
+import { INACTIVE_PANEL, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useReloadOnBfcacheRestore } from "@/components/hooks/use-reload-on-bfcache-restore";
 import { chargeSettingsFrom, compensationGrosze, interestGrosze } from "@/lib/charges";
 import { groupInvoices, type EscalationGroup, type EscalationThresholds } from "@/lib/escalation";
 import { formatAmount, formatDate } from "@/lib/format";
-import type { Client, EscalationSettings, Invoice, SenderProfile } from "@/types";
+import type { Client, EscalationSettings, Invoice } from "@/types";
 
 interface Props {
   initialInvoices: Invoice[];
@@ -18,8 +19,11 @@ interface Props {
   today: string;
   /** User's escalation settings, read on the server. */
   settings: EscalationSettings;
-  /** User's sender profile, read on the server; goes into the reminder text. */
-  sender: SenderProfile;
+}
+
+/** An element inside an inactive tab panel cannot take focus, so it counts as unavailable. */
+function isFocusable(el: HTMLElement | null): el is HTMLElement {
+  return !!el && el.isConnected && !el.closest(INACTIVE_PANEL);
 }
 
 function groupLabels([t1, t2, t3, t4]: EscalationThresholds): Record<EscalationGroup, string> {
@@ -34,7 +38,92 @@ function groupLabels([t1, t2, t3, t4]: EscalationThresholds): Record<EscalationG
   };
 }
 
-export function InvoicesManager({ initialInvoices, clients, today, settings, sender }: Props) {
+interface InvoiceGroupsProps {
+  list: { group: EscalationGroup; items: (Invoice & { daysOverdue: number })[] }[];
+  labels: ReturnType<typeof groupLabels>;
+  chargeSettings: ReturnType<typeof chargeSettingsFrom>;
+  onEdit: (invoice: Invoice, opener: HTMLElement) => void;
+  onPay: (invoiceId: string, opener: HTMLElement) => void;
+}
+
+function InvoiceGroups({ list, labels, chargeSettings, onEdit, onPay }: InvoiceGroupsProps) {
+  return list.map(({ group, items }) => (
+    <section key={group} className="space-y-2">
+      <h2 className="text-foreground text-sm font-semibold">
+        {labels[group]} <span className="text-muted-foreground font-normal">({items.length})</span>
+      </h2>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Klient</TableHead>
+            <TableHead>Numer</TableHead>
+            <TableHead className="text-right">Kwota</TableHead>
+            <TableHead>Termin</TableHead>
+            <TableHead className="text-right">Dni po terminie</TableHead>
+            <TableHead className="text-right">Odsetki</TableHead>
+            <TableHead className="text-right">Rekompensata</TableHead>
+            <TableHead />
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {items.map((invoice) => (
+            <TableRow key={invoice.id}>
+              <TableCell>{invoice.clientName}</TableCell>
+              <TableCell>{invoice.number}</TableCell>
+              <TableCell className="text-right">{formatAmount(invoice.amountGrosze)}</TableCell>
+              <TableCell>{formatDate(invoice.dueDate)}</TableCell>
+              <TableCell className="text-right">{invoice.daysOverdue <= 0 ? "—" : invoice.daysOverdue}</TableCell>
+              <TableCell className="text-right">
+                {invoice.daysOverdue <= 0
+                  ? "—"
+                  : formatAmount(
+                      interestGrosze(invoice.amountGrosze, invoice.daysOverdue, chargeSettings.annualRateBp),
+                    )}
+              </TableCell>
+              <TableCell className="text-right">
+                {invoice.daysOverdue <= 0
+                  ? "—"
+                  : formatAmount(
+                      compensationGrosze(
+                        invoice.amountGrosze,
+                        invoice.daysOverdue,
+                        invoice.clientChargesCompensation,
+                        chargeSettings.compensationTiers,
+                      ),
+                    )}
+              </TableCell>
+              <TableCell className="space-x-2 text-right">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-label={`Edytuj fakturę ${invoice.number}`}
+                  onClick={(e) => {
+                    onEdit(invoice, e.currentTarget);
+                  }}
+                >
+                  Edytuj
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-label={`Oznacz fakturę ${invoice.number} jako zapłaconą`}
+                  onClick={(e) => {
+                    onPay(invoice.id, e.currentTarget);
+                  }}
+                >
+                  Zapłacona
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </section>
+  ));
+}
+
+export function InvoicesManager({ initialInvoices, clients, today, settings }: Props) {
+  useReloadOnBfcacheRestore();
   const [invoices, setInvoices] = useState(initialInvoices);
   const [open, setOpen] = useState(false);
   const [payingId, setPayingId] = useState<string | null>(null);
@@ -50,6 +139,12 @@ export function InvoicesManager({ initialInvoices, clients, today, settings, sen
   const groups = useMemo(
     () => groupInvoices(invoices, today, settings.thresholds),
     [invoices, today, settings.thresholds],
+  );
+  const escalationGroups = useMemo(() => groups.filter((g) => g.group !== "paused"), [groups]);
+  const pausedItems = useMemo(() => groups.find((g) => g.group === "paused")?.items ?? [], [groups]);
+  const escalationCount = useMemo(
+    () => escalationGroups.reduce((sum, g) => sum + g.items.length, 0),
+    [escalationGroups],
   );
   const labels = useMemo(() => groupLabels(settings.thresholds), [settings.thresholds]);
   const chargeSettings = useMemo(() => chargeSettingsFrom(settings), [settings]);
@@ -100,7 +195,7 @@ export function InvoicesManager({ initialInvoices, clients, today, settings, sen
 
   function focusOpenerOrAdd() {
     // The row can be gone or moved to another group after a save, so fall back to the "Dodaj fakturę" button.
-    if (openerRef.current?.isConnected) openerRef.current.focus();
+    if (isFocusable(openerRef.current)) openerRef.current.focus();
     else addButtonRef.current?.focus();
   }
 
@@ -144,82 +239,38 @@ export function InvoicesManager({ initialInvoices, clients, today, settings, sen
       ) : (
         <>
           <div className="flex justify-end">{addButton}</div>
-          <RemindersSection invoices={invoices} today={today} settings={settings} sender={sender} />
-          {groups.map(({ group, items }) => (
-            <section key={group} className="space-y-2">
-              <h2 className="text-foreground text-sm font-semibold">
-                {labels[group]} <span className="text-muted-foreground font-normal">({items.length})</span>
-              </h2>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Klient</TableHead>
-                    <TableHead>Numer</TableHead>
-                    <TableHead className="text-right">Kwota</TableHead>
-                    <TableHead>Termin</TableHead>
-                    <TableHead className="text-right">Dni po terminie</TableHead>
-                    <TableHead className="text-right">Odsetki</TableHead>
-                    <TableHead className="text-right">Rekompensata</TableHead>
-                    <TableHead />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {items.map((invoice) => (
-                    <TableRow key={invoice.id}>
-                      <TableCell>{invoice.clientName}</TableCell>
-                      <TableCell>{invoice.number}</TableCell>
-                      <TableCell className="text-right">{formatAmount(invoice.amountGrosze)}</TableCell>
-                      <TableCell>{formatDate(invoice.dueDate)}</TableCell>
-                      <TableCell className="text-right">
-                        {invoice.daysOverdue <= 0 ? "—" : invoice.daysOverdue}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {invoice.daysOverdue <= 0
-                          ? "—"
-                          : formatAmount(
-                              interestGrosze(invoice.amountGrosze, invoice.daysOverdue, chargeSettings.annualRateBp),
-                            )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {invoice.daysOverdue <= 0
-                          ? "—"
-                          : formatAmount(
-                              compensationGrosze(
-                                invoice.amountGrosze,
-                                invoice.daysOverdue,
-                                invoice.clientChargesCompensation,
-                                chargeSettings.compensationTiers,
-                              ),
-                            )}
-                      </TableCell>
-                      <TableCell className="space-x-2 text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          aria-label={`Edytuj fakturę ${invoice.number}`}
-                          onClick={(e) => {
-                            openEditDialog(invoice, e.currentTarget);
-                          }}
-                        >
-                          Edytuj
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          aria-label={`Oznacz fakturę ${invoice.number} jako zapłaconą`}
-                          onClick={(e) => {
-                            openPayDialog(invoice.id, e.currentTarget);
-                          }}
-                        >
-                          Zapłacona
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </section>
-          ))}
+          <Tabs defaultValue="escalation">
+            <TabsList>
+              <TabsTrigger value="escalation">Eskalacja ({escalationCount})</TabsTrigger>
+              <TabsTrigger value="paused">Wstrzymane ({pausedItems.length})</TabsTrigger>
+            </TabsList>
+            <TabsContent value="escalation" forceMount className="space-y-4">
+              {escalationGroups.length === 0 ? (
+                <p className="text-muted-foreground text-sm">Wszystkie otwarte faktury są wstrzymane</p>
+              ) : (
+                <InvoiceGroups
+                  list={escalationGroups}
+                  labels={labels}
+                  chargeSettings={chargeSettings}
+                  onEdit={openEditDialog}
+                  onPay={openPayDialog}
+                />
+              )}
+            </TabsContent>
+            <TabsContent value="paused" forceMount className="space-y-4">
+              {pausedItems.length === 0 ? (
+                <p className="text-muted-foreground text-sm">Nie masz wstrzymanych faktur</p>
+              ) : (
+                <InvoiceGroups
+                  list={groups.filter((g) => g.group === "paused")}
+                  labels={labels}
+                  chargeSettings={chargeSettings}
+                  onEdit={openEditDialog}
+                  onPay={openPayDialog}
+                />
+              )}
+            </TabsContent>
+          </Tabs>
         </>
       )}
       <PaymentDialog
@@ -232,8 +283,7 @@ export function InvoicesManager({ initialInvoices, clients, today, settings, sen
         onSaved={handlePaid}
         onCloseAutoFocus={() => {
           // The row disappears after a save, so fall back to the "Dodaj fakturę" button.
-          if (openerRef.current?.isConnected) openerRef.current.focus();
-          else addButtonRef.current?.focus();
+          focusOpenerOrAdd();
         }}
       />
       <InvoiceFormDialog
@@ -244,7 +294,7 @@ export function InvoicesManager({ initialInvoices, clients, today, settings, sen
         onSaved={handleSaved}
         onCloseAutoFocus={() => {
           // The dialog has no DialogTrigger, so Radix cannot restore focus on its own.
-          if (openerRef.current?.isConnected) openerRef.current.focus();
+          if (isFocusable(openerRef.current)) openerRef.current.focus();
         }}
       />
       <InvoiceFormDialog

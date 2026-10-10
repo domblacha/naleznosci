@@ -1,7 +1,9 @@
 import { Lock, LogIn, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MobileNav } from "@/components/MobileNav";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClientFormView } from "@/components/clients/ClientFormDialog";
 import { ClientsManager } from "@/components/clients/ClientsManager";
 import {
@@ -13,6 +15,7 @@ import { clientErrorMessage } from "@/lib/client-errors";
 import { CancelInvoiceView, CANCEL_DESCRIPTION, cancelTitle } from "@/components/invoices/CancelInvoiceDialog";
 import { InvoiceFormView, PauseEscalationControl } from "@/components/invoices/InvoiceFormDialog";
 import { InvoicesManager } from "@/components/invoices/InvoicesManager";
+import { RemindersManager } from "@/components/invoices/RemindersManager";
 import { PaymentFormView } from "@/components/invoices/PaymentDialog";
 import { ReminderDialogView } from "@/components/invoices/ReminderDialog";
 import { senderProfileInputText } from "@/components/hooks/use-sender-profile-form";
@@ -688,13 +691,30 @@ export function KitchenSinkForms() {
           clients={sampleClients}
           today={SAMPLE_TODAY}
           settings={DEFAULT_ESCALATION_SETTINGS}
+        />
+      </Section>
+      <Section title="Ponaglenia: lista">
+        <RemindersManager
+          invoices={sampleInvoices}
+          hasClients
+          today={SAMPLE_TODAY}
+          settings={DEFAULT_ESCALATION_SETTINGS}
           sender={SAMPLE_SENDER}
         />
       </Section>
       <Section title="Ponaglenia: pusty stan">
-        <InvoicesManager
-          initialInvoices={[sampleInvoice(6, 1, "FV/2026/10/005", 75000, "2026-10-20")]}
-          clients={sampleClients}
+        <RemindersManager
+          invoices={[sampleInvoice(6, 1, "FV/2026/10/005", 75000, "2026-10-20")]}
+          hasClients
+          today={SAMPLE_TODAY}
+          settings={DEFAULT_ESCALATION_SETTINGS}
+          sender={SAMPLE_SENDER}
+        />
+      </Section>
+      <Section title="Ponaglenia: brak klientów">
+        <RemindersManager
+          invoices={[]}
+          hasClients={false}
           today={SAMPLE_TODAY}
           settings={DEFAULT_ESCALATION_SETTINGS}
           sender={SAMPLE_SENDER}
@@ -706,7 +726,6 @@ export function KitchenSinkForms() {
           clients={sampleClients}
           today={SAMPLE_TODAY}
           settings={DEFAULT_ESCALATION_SETTINGS}
-          sender={SAMPLE_SENDER}
         />
       </Section>
       <Section title="Lista faktur: brak klientów">
@@ -715,7 +734,39 @@ export function KitchenSinkForms() {
           clients={[]}
           today={SAMPLE_TODAY}
           settings={DEFAULT_ESCALATION_SETTINGS}
-          sender={SAMPLE_SENDER}
+        />
+      </Section>
+      <Section title="Tabs: liczniki, pusty panel i panel z treścią">
+        <Tabs defaultValue="reminders">
+          <TabsList variant="line">
+            <TabsTrigger value="reminders">Ponaglenia (3)</TabsTrigger>
+            <TabsTrigger value="escalation">Eskalacja (12)</TabsTrigger>
+            <TabsTrigger value="paused">Wstrzymane (1)</TabsTrigger>
+            <TabsTrigger value="empty">Puste (0)</TabsTrigger>
+          </TabsList>
+          <TabsContent value="reminders" className="text-sm">
+            Panel z treścią: trzy ponaglenia do wysłania.
+          </TabsContent>
+          <TabsContent value="escalation" className="text-sm">
+            Panel z treścią: faktury w eskalacji.
+          </TabsContent>
+          <TabsContent value="paused" className="text-sm">
+            Panel z treścią: wstrzymana faktura.
+          </TabsContent>
+          <TabsContent value="empty" className="text-muted-foreground text-sm">
+            Brak pozycji.
+          </TabsContent>
+        </Tabs>
+      </Section>
+      <Section title="Menu mobilne">
+        <MobileNav
+          links={[
+            { href: "/", label: "Ponaglenia", active: true },
+            { href: "/invoices", label: "Faktury", active: false },
+            { href: "/history", label: "Historia", active: false },
+            { href: "/clients", label: "Klienci", active: false },
+            { href: "/settings", label: "Ustawienia", active: false },
+          ]}
         />
       </Section>
       <Section title="PasswordToggle">

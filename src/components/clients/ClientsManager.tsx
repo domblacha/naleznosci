@@ -3,6 +3,7 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { INACTIVE_PANEL, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClientFormDialog } from "@/components/clients/ClientFormDialog";
 import { DeactivateClientDialog } from "@/components/clients/DeactivateClientDialog";
 import { clientErrorMessage } from "@/lib/client-errors";
@@ -30,7 +31,6 @@ export function ClientsManager({ initialClients }: Props) {
   const [restoreError, setRestoreError] = useState<string | null>(null);
   const openerRef = useRef<HTMLElement | null>(null);
   const addButtonRef = useRef<HTMLButtonElement | null>(null);
-  const deletedHeadingRef = useRef<HTMLHeadingElement | null>(null);
   const deactivatedRef = useRef(false);
 
   const sorted = useMemo(
@@ -81,127 +81,130 @@ export function ClientsManager({ initialClients }: Props) {
     }
   }
 
+  const addButton = (
+    <Button
+      ref={addButtonRef}
+      onClick={(e) => {
+        openDialog(null, e.currentTarget);
+      }}
+    >
+      <Plus className="size-4" />
+      Dodaj klienta
+    </Button>
+  );
+
   return (
     <div className="space-y-4">
-      {sorted.length === 0 ? (
+      {clients.length === 0 ? (
         <div className="flex flex-col items-center gap-4 py-16 text-center">
-          <p className="text-muted-foreground">
-            {deactivated.length > 0 ? "Nie masz aktywnych klientów" : "Nie masz jeszcze klientów"}
-          </p>
-          <Button
-            ref={addButtonRef}
-            onClick={(e) => {
-              openDialog(null, e.currentTarget);
-            }}
-          >
-            <Plus className="size-4" />
-            Dodaj klienta
-          </Button>
+          <p className="text-muted-foreground">Nie masz jeszcze klientów</p>
+          {addButton}
         </div>
       ) : (
         <>
-          <div className="flex justify-end">
-            <Button
-              ref={addButtonRef}
-              onClick={(e) => {
-                openDialog(null, e.currentTarget);
-              }}
-            >
-              <Plus className="size-4" />
-              Dodaj klienta
-            </Button>
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nazwa</TableHead>
-                <TableHead>NIP</TableHead>
-                <TableHead>Rekompensata</TableHead>
-                <TableHead>
-                  <span className="sr-only">Akcje</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sorted.map((client) => (
-                <TableRow key={client.id}>
-                  <TableCell>{client.name}</TableCell>
-                  <TableCell>{client.nip ?? "—"}</TableCell>
-                  <TableCell>{client.chargeCompensation ? "Tak" : "Nie"}</TableCell>
-                  <TableCell className="space-x-2 text-right whitespace-nowrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        openDialog(client, e.currentTarget);
-                      }}
-                    >
-                      <Pencil className="size-3.5" />
-                      Edytuj
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        openerRef.current = e.currentTarget;
-                        setDeactivating(client);
-                        setDeactivateOpen(true);
-                      }}
-                    >
-                      <Trash2 className="size-3.5" />
-                      Usuń
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="flex justify-end">{addButton}</div>
+          <Tabs defaultValue="active">
+            <TabsList>
+              <TabsTrigger value="active">Aktywni ({sorted.length})</TabsTrigger>
+              <TabsTrigger value="inactive">Nieaktywni ({deactivated.length})</TabsTrigger>
+            </TabsList>
+            <TabsContent value="active" forceMount className="space-y-4">
+              {sorted.length === 0 ? (
+                <p className="text-muted-foreground text-sm">Nie masz aktywnych klientów</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nazwa</TableHead>
+                      <TableHead>NIP</TableHead>
+                      <TableHead>Rekompensata</TableHead>
+                      <TableHead>
+                        <span className="sr-only">Akcje</span>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sorted.map((client) => (
+                      <TableRow key={client.id}>
+                        <TableCell>{client.name}</TableCell>
+                        <TableCell>{client.nip ?? "—"}</TableCell>
+                        <TableCell>{client.chargeCompensation ? "Tak" : "Nie"}</TableCell>
+                        <TableCell className="space-x-2 text-right whitespace-nowrap">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              openDialog(client, e.currentTarget);
+                            }}
+                          >
+                            <Pencil className="size-3.5" />
+                            Edytuj
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              openerRef.current = e.currentTarget;
+                              setDeactivating(client);
+                              setDeactivateOpen(true);
+                            }}
+                          >
+                            <Trash2 className="size-3.5" />
+                            Usuń
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </TabsContent>
+            <TabsContent value="inactive" forceMount className="space-y-4">
+              {restoreError ? (
+                <Alert variant="destructive">
+                  <AlertDescription>{restoreError}</AlertDescription>
+                </Alert>
+              ) : null}
+              {deactivated.length === 0 ? (
+                <p className="text-muted-foreground text-sm">Nie masz usuniętych klientów</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nazwa</TableHead>
+                      <TableHead>NIP</TableHead>
+                      <TableHead>Data usunięcia</TableHead>
+                      <TableHead>
+                        <span className="sr-only">Akcje</span>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {deactivated.map((client) => (
+                      <TableRow key={client.id}>
+                        <TableCell>{client.name}</TableCell>
+                        <TableCell>{client.nip ?? "—"}</TableCell>
+                        <TableCell>{client.deactivatedOn ? formatDate(client.deactivatedOn) : "—"}</TableCell>
+                        <TableCell className="text-right whitespace-nowrap">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={restoringId === client.id}
+                            aria-label={`Przywróć klienta ${client.name}`}
+                            onClick={() => void restore(client)}
+                          >
+                            Przywróć
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </TabsContent>
+          </Tabs>
         </>
       )}
-      {deactivated.length > 0 ? (
-        <div className="space-y-4 pt-4">
-          <h2 ref={deletedHeadingRef} tabIndex={-1} className="text-foreground text-sm font-semibold outline-none">
-            Usunięci klienci <span className="text-muted-foreground font-normal">({deactivated.length})</span>
-          </h2>
-          {restoreError ? (
-            <Alert variant="destructive">
-              <AlertDescription>{restoreError}</AlertDescription>
-            </Alert>
-          ) : null}
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nazwa</TableHead>
-                <TableHead>NIP</TableHead>
-                <TableHead>Data usunięcia</TableHead>
-                <TableHead>
-                  <span className="sr-only">Akcje</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {deactivated.map((client) => (
-                <TableRow key={client.id}>
-                  <TableCell>{client.name}</TableCell>
-                  <TableCell>{client.nip ?? "—"}</TableCell>
-                  <TableCell>{client.deactivatedOn ? formatDate(client.deactivatedOn) : "—"}</TableCell>
-                  <TableCell className="text-right whitespace-nowrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={restoringId === client.id}
-                      aria-label={`Przywróć klienta ${client.name}`}
-                      onClick={() => void restore(client)}
-                    >
-                      Przywróć
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      ) : null}
       <DeactivateClientDialog
         client={deactivating}
         open={deactivateOpen}
@@ -210,10 +213,10 @@ export function ClientsManager({ initialClients }: Props) {
         onCloseAutoFocus={(e) => {
           e.preventDefault();
           if (deactivatedRef.current) {
-            // The row is gone, so focus moves to the heading of the deleted section.
+            // The row is gone, so focus moves to the "Dodaj klienta" button.
             deactivatedRef.current = false;
-            deletedHeadingRef.current?.focus();
-          } else if (openerRef.current?.isConnected) {
+            addButtonRef.current?.focus();
+          } else if (openerRef.current?.isConnected && !openerRef.current.closest(INACTIVE_PANEL)) {
             openerRef.current.focus();
           }
         }}
@@ -225,7 +228,9 @@ export function ClientsManager({ initialClients }: Props) {
         onSaved={handleSaved}
         onCloseAutoFocus={() => {
           // The dialog has no DialogTrigger, so Radix cannot restore focus on its own.
-          if (openerRef.current?.isConnected) openerRef.current.focus();
+          const opener = openerRef.current;
+          if (opener?.isConnected && !opener.closest(INACTIVE_PANEL)) opener.focus();
+          else addButtonRef.current?.focus();
         }}
       />
     </div>

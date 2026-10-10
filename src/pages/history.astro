@@ -1,8 +1,7 @@
 ---
 import Topbar from "@/components/Topbar.astro";
 import Layout from "@/layouts/Layout.astro";
-import { PaidInvoicesManager } from "@/components/invoices/PaidInvoicesManager";
-import { CancelledInvoicesSection } from "@/components/invoices/CancelledInvoicesSection";
+import { HistoryManager } from "@/components/invoices/HistoryManager";
 import { createClient } from "@/lib/supabase";
 import { listCancelledInvoices, listPaidInvoices } from "@/lib/services/invoices";
 import { todayInPoland } from "@/lib/escalation";
@@ -37,10 +36,7 @@ const today = todayInPoland(new Date());
           <AlertDescription>{loadError}</AlertDescription>
         </Alert>
       ) : (
-        <>
-          <PaidInvoicesManager initialInvoices={invoices} today={today} client:load />
-          <CancelledInvoicesSection initialInvoices={cancelledInvoices} client:load />
-        </>
+        <HistoryManager initialPaid={invoices} initialCancelled={cancelledInvoices} today={today} client:load />
       )}
     </main>
   </div>

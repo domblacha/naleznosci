@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase";
 
 // Prefix-matched protected routes (future routes). "/" is protected separately with an exact match,
 // because a "/" prefix would match every path and cause a redirect loop.
-const PROTECTED_ROUTES: string[] = ["/clients", "/history", "/settings"];
+const PROTECTED_ROUTES: string[] = ["/clients", "/history", "/invoices", "/settings"];
 const AUTH_PAGES = ["/auth/signin", "/auth/signup"];
 
 export const onRequest = defineMiddleware(async (context, next) => {
