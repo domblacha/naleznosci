@@ -1,7 +1,7 @@
 ---
 change_id: escalation-settings
 title: Ustawienia reguły eskalacji
-status: implementing
+status: implemented
 created: 2026-10-10
 updated: 2026-10-10
 ---

@@ -402,17 +402,17 @@ Jedno dodatkowe zapytanie (`maybeSingle` po kluczu głównym) na stronach `/` i 
 
 #### Automated
 
-- [x] 4.1 Typy i Astro przechodzą: `npx astro check`
-- [x] 4.2 Lint przechodzi (bez literałów kolorów i klas palety): `npm run lint`
-- [x] 4.3 Testy jednostkowe przechodzą: `npm test`
-- [x] 4.4 Build przechodzi: `npm run build`
-- [x] 4.5 Smoke nadal przechodzi: `npm run smoke`
+- [x] 4.1 Typy i Astro przechodzą: `npx astro check` — a60af04
+- [x] 4.2 Lint przechodzi (bez literałów kolorów i klas palety): `npm run lint` — a60af04
+- [x] 4.3 Testy jednostkowe przechodzą: `npm test` — a60af04
+- [x] 4.4 Build przechodzi: `npm run build` — a60af04
+- [x] 4.5 Smoke nadal przechodzi: `npm run smoke` — a60af04
 
 #### Manual
 
-- [x] 4.6 Niezalogowany użytkownik wchodzący na `/settings` trafia na `/auth/signin`
-- [x] 4.7 Nowy użytkownik widzi na `/settings` wartości domyślne (3/7/14/30, 13,75, 170,00 / 297,50 / 425,00)
-- [x] 4.8 Zapis nierosnących progów lub stopy 13,755 pokazuje błąd przy polu i nic nie zapisuje
-- [x] 4.9 Zapis poprawnych ustawień pokazuje „Zapisano ustawienia”, wartości zostają po odświeżeniu, a `/` od razu liczy się z nowych ustawień
-- [x] 4.10 „Przywróć domyślne”, a potem „Zapisz”, wraca do wartości domyślnych
-- [x] 4.11 `/dev/ui` pokazuje stany formularza ustawień poprawnie w trybie jasnym i ciemnym
+- [x] 4.6 Niezalogowany użytkownik wchodzący na `/settings` trafia na `/auth/signin` — a60af04
+- [x] 4.7 Nowy użytkownik widzi na `/settings` wartości domyślne (3/7/14/30, 13,75, 170,00 / 297,50 / 425,00) — a60af04
+- [x] 4.8 Zapis nierosnących progów lub stopy 13,755 pokazuje błąd przy polu i nic nie zapisuje — a60af04
+- [x] 4.9 Zapis poprawnych ustawień pokazuje „Zapisano ustawienia”, wartości zostają po odświeżeniu, a `/` od razu liczy się z nowych ustawień — a60af04
+- [x] 4.10 „Przywróć domyślne”, a potem „Zapisz”, wraca do wartości domyślnych — a60af04
+- [x] 4.11 `/dev/ui` pokazuje stany formularza ustawień poprawnie w trybie jasnym i ciemnym — a60af04
