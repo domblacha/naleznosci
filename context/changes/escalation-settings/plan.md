@@ -354,33 +354,33 @@ Jedno dodatkowe zapytanie (`maybeSingle` po kluczu głównym) na stronach `/` i 
 
 #### Automated
 
-- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up`
-- [x] 1.2 Typy i Astro przechodzą: `npx astro check`
-- [x] 1.3 Lint przechodzi: `npm run lint`
-- [x] 1.4 Testy jednostkowe przechodzą, w tym `settings-schemas.test.ts` i nowe testy `charges.test.ts`: `npm test`
-- [x] 1.5 Build przechodzi: `npm run build`
-- [x] 1.6 Smoke przechodzi, łącznie z grupą `settingsSteps`: `npm run smoke`
+- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up` — 3f51595
+- [x] 1.2 Typy i Astro przechodzą: `npx astro check` — 3f51595
+- [x] 1.3 Lint przechodzi: `npm run lint` — 3f51595
+- [x] 1.4 Testy jednostkowe przechodzą, w tym `settings-schemas.test.ts` i nowe testy `charges.test.ts`: `npm test` — 3f51595
+- [x] 1.5 Build przechodzi: `npm run build` — 3f51595
+- [x] 1.6 Smoke przechodzi, łącznie z grupą `settingsSteps`: `npm run smoke` — 3f51595
 
 #### Manual
 
-- [x] 1.7 W Supabase Studio wiersz `user_settings` z nierosnącymi progami jest odrzucany przez check
+- [x] 1.7 W Supabase Studio wiersz `user_settings` z nierosnącymi progami jest odrzucany przez check — 3f51595
 
 ### Phase 2: Zamrożenie kwot zapłaconych faktur
 
 #### Automated
 
-- [ ] 2.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up`
-- [ ] 2.2 Typy i Astro przechodzą: `npx astro check`
-- [ ] 2.3 Lint przechodzi: `npm run lint`
-- [ ] 2.4 Testy jednostkowe przechodzą, w tym testy `paymentSnapshot` i `frozenChargesAsOf`: `npm test`
-- [ ] 2.5 Build przechodzi: `npm run build`
-- [ ] 2.6 Smoke przechodzi, łącznie z grupą `snapshotSteps`: `npm run smoke`
+- [x] 2.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up`
+- [x] 2.2 Typy i Astro przechodzą: `npx astro check`
+- [x] 2.3 Lint przechodzi: `npm run lint`
+- [x] 2.4 Testy jednostkowe przechodzą, w tym testy `paymentSnapshot` i `frozenChargesAsOf`: `npm test`
+- [x] 2.5 Build przechodzi: `npm run build`
+- [x] 2.6 Smoke przechodzi, łącznie z grupą `snapshotSteps`: `npm run smoke`
 
 #### Manual
 
-- [ ] 2.7 Kwoty zapłaconych faktur w `/history` po migracji są identyczne jak przed nią
-- [ ] 2.8 Przełączenie „naliczaj rekompensatę” u klienta nie zmienia rekompensaty jego zapłaconych faktur w `/history`
-- [ ] 2.9 Zmiana daty wpłaty w `/history` na dzień w terminie pokazuje rekompensatę 0, a powrót na datę po terminie znów pokazuje kwotę z migawki
+- [x] 2.7 Kwoty zapłaconych faktur w `/history` po migracji są identyczne jak przed nią
+- [x] 2.8 Przełączenie „naliczaj rekompensatę” u klienta nie zmienia rekompensaty jego zapłaconych faktur w `/history`
+- [x] 2.9 Zmiana daty wpłaty w `/history` na dzień w terminie pokazuje rekompensatę 0, a powrót na datę po terminie znów pokazuje kwotę z migawki
 
 ### Phase 3: Ustawienia w wyliczeniach otwartych faktur
 

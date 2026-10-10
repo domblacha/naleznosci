@@ -5,7 +5,9 @@ import {
   compensationGrosze,
   DEFAULT_CHARGE_SETTINGS,
   DEFAULT_ESCALATION_SETTINGS,
+  frozenChargesAsOf,
   interestGrosze,
+  paymentSnapshot,
 } from "@/lib/charges";
 
 describe("interestGrosze", () => {
@@ -116,5 +118,58 @@ describe("chargeSettingsFrom", () => {
     for (const [amount, expected] of cases) {
       expect(compensationGrosze(amount, 1, true, settings.compensationTiers), `${amount} gr`).toBe(expected);
     }
+  });
+});
+
+describe("paymentSnapshot i frozenChargesAsOf", () => {
+  const custom = chargeSettingsFrom({
+    thresholds: [3, 7, 14, 30],
+    annualRateBp: 1000,
+    compensationGrosze: [10000, 20000, 30000],
+  });
+  const invoices = [
+    { dueDate: "2026-09-01", amountGrosze: 123456, clientChargesCompensation: true },
+    { dueDate: "2026-09-01", amountGrosze: 650000, clientChargesCompensation: true },
+    { dueDate: "2026-09-01", amountGrosze: 5000000, clientChargesCompensation: true },
+    { dueDate: "2026-09-01", amountGrosze: 650000, clientChargesCompensation: false },
+  ];
+
+  it("zgadza się z chargesAsOf dla tych samych ustawień", () => {
+    for (const settings of [DEFAULT_CHARGE_SETTINGS, custom]) {
+      for (const invoice of invoices) {
+        for (const asOf of ["2026-08-20", "2026-09-01", "2026-09-02", "2026-10-11"]) {
+          expect(frozenChargesAsOf(invoice, paymentSnapshot(invoice, settings), asOf)).toEqual(
+            chargesAsOf(invoice, asOf, settings),
+          );
+        }
+      }
+    }
+  });
+
+  it("zapisuje kwotę progu i stopę z ustawień", () => {
+    expect(paymentSnapshot(invoices[1], custom)).toEqual({ rateBp: 1000, compensationGrosze: 20000 });
+  });
+
+  it("przy wpłacie w terminie nie pokazuje rekompensaty mimo kwoty w migawce", () => {
+    const snapshot = { rateBp: 1375, compensationGrosze: 17000 };
+    expect(frozenChargesAsOf(invoices[0], snapshot, "2026-09-01")).toEqual({
+      days: 0,
+      interestGrosze: 0,
+      compensationGrosze: 0,
+    });
+  });
+
+  it("dla klienta bez rekompensaty zapisuje 0", () => {
+    const snapshot = paymentSnapshot(invoices[3], DEFAULT_CHARGE_SETTINGS);
+    expect(snapshot.compensationGrosze).toBe(0);
+    expect(frozenChargesAsOf(invoices[3], snapshot, "2026-10-11").compensationGrosze).toBe(0);
+  });
+
+  it("zmiana ustawień nie zmienia wyniku dla tej samej migawki", () => {
+    const snapshot = paymentSnapshot(invoices[0], DEFAULT_CHARGE_SETTINGS);
+    const frozen = frozenChargesAsOf(invoices[0], snapshot, "2026-10-11");
+    // Po zmianie ustawień bieżące wyliczenie jest inne, a wynik z migawki zostaje taki jak przy wpłacie.
+    expect(chargesAsOf(invoices[0], "2026-10-11", custom)).not.toEqual(frozen);
+    expect(frozen).toEqual(chargesAsOf(invoices[0], "2026-10-11", DEFAULT_CHARGE_SETTINGS));
   });
 });

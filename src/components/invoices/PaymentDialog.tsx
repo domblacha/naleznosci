@@ -5,7 +5,7 @@ import { FormField } from "@/components/auth/FormField";
 import { ServerError } from "@/components/auth/ServerError";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { usePaymentForm } from "@/components/hooks/use-payment-form";
-import { chargesAsOf, type ChargesAsOf } from "@/lib/charges";
+import { chargesAsOf, frozenChargesAsOf, type ChargesAsOf } from "@/lib/charges";
 import { formatAmount } from "@/lib/format";
 import { paymentInputSchema } from "@/lib/invoice-schemas";
 import type { Invoice } from "@/types";
@@ -83,6 +83,15 @@ function PaymentForm({
     onSaved,
   });
   const valid = paymentInputSchema(today).safeParse({ paidOn: form.paidOn }).success;
+  // Changing the date keeps the snapshot frozen when the invoice was marked paid.
+  const preview = (paidOn: string) =>
+    mode === "edit"
+      ? frozenChargesAsOf(
+          invoice,
+          { rateBp: invoice.paidRateBp ?? 0, compensationGrosze: invoice.paidCompensationGrosze ?? 0 },
+          paidOn,
+        )
+      : chargesAsOf(invoice, paidOn);
   return (
     <PaymentFormView
       idPrefix="payment"
@@ -91,7 +100,7 @@ function PaymentForm({
       error={form.error}
       serverError={form.serverError}
       pending={form.pending}
-      preview={valid ? chargesAsOf(invoice, form.paidOn) : null}
+      preview={valid ? preview(form.paidOn) : null}
       onPaidOnChange={form.setPaidOn}
       onSubmit={(e) => void form.submit(e)}
     />

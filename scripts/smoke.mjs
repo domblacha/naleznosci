@@ -517,6 +517,77 @@ function settingsSteps() {
   ];
 }
 
+// Needs user A (signed in) and the settings API. Restores the defaults at the end so other groups are not affected.
+function snapshotSteps() {
+  let clientId;
+  let invoiceId;
+  const putSettings =
+    (annualRate, [compensation1, compensation2, compensation3] = ["100", "200", "300"]) =>
+    () =>
+      request("/api/settings", {
+        method: "PUT",
+        json: {
+          threshold1: "3",
+          threshold2: "7",
+          threshold3: "14",
+          threshold4: "30",
+          annualRate,
+          compensation1,
+          compensation2,
+          compensation3,
+        },
+        jar,
+      });
+  const payment = (method, paidOn) => () =>
+    request(`/api/invoices/${invoiceId}/payment`, { method, json: paidOn ? { paidOn } : undefined, jar });
+  const snapshot = (paidOn, rateBp, compensationGrosze) => ({
+    status: 200,
+    check: (a) =>
+      a.body?.invoice?.paidOn === paidOn &&
+      a.body?.invoice?.paidRateBp === rateBp &&
+      a.body?.invoice?.paidCompensationGrosze === compensationGrosze,
+  });
+  return [
+    [
+      "snapshot: client with compensation",
+      () => request("/api/clients", clientJson(jar, { name: `Migawka ${stamp}`, nip: null, chargeCompensation: true })),
+      {
+        status: 201,
+        check: (a) => {
+          clientId = a.body?.client?.id;
+          return Boolean(clientId);
+        },
+      },
+    ],
+    [
+      "snapshot: invoice 40 days overdue",
+      () =>
+        request("/api/invoices", {
+          method: "POST",
+          json: { clientId, number: `FV/M/${stamp}`, amount: "1 234,56", dueDate: daysAgo(40) },
+          jar,
+        }),
+      {
+        status: 201,
+        check: (a) => {
+          invoiceId = a.body?.invoice?.id;
+          return Boolean(invoiceId) && a.body.invoice.paidRateBp === null;
+        },
+      },
+    ],
+    ["snapshot: settings 10% and 100/200/300 zl", putSettings("10"), { status: 200 }],
+    ["snapshot: mark paid freezes rate and tier amount", payment("PUT", daysAgo(0)), snapshot(daysAgo(0), 1000, 10000)],
+    ["snapshot: settings 20%", putSettings("20"), { status: 200 }],
+    ["snapshot: change date keeps the snapshot", payment("PUT", daysAgo(5)), snapshot(daysAgo(5), 1000, 10000)],
+    ["snapshot: reopen clears the snapshot", payment("DELETE"), snapshot(null, null, null)],
+    [
+      "snapshot: restore default settings",
+      putSettings("13,75", ["170", "297,50", "425"]),
+      { status: 200, check: (a) => a.body?.settings?.annualRateBp === 1375 },
+    ],
+  ];
+}
+
 const steps = [
   [
     "clients API rejects anonymous user",
@@ -561,6 +632,7 @@ const steps = [
   ...clientSteps(),
   ...invoiceSteps(),
   ...settingsSteps(),
+  ...snapshotSteps(),
   [
     "signout clears session",
     () => request("/api/auth/signout", { method: "POST" }),

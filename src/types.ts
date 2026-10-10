@@ -27,6 +27,10 @@ export interface Invoice {
   dueDate: string;
   /** YYYY-MM-DD; null = faktura otwarta */
   paidOn: string | null;
+  /** Annual rate (bp) frozen when the invoice was marked paid; null = invoice open. */
+  paidRateBp: number | null;
+  /** Compensation of the invoice's tier (grosze, 0 when the client doesn't charge it) frozen when marked paid; null = invoice open. */
+  paidCompensationGrosze: number | null;
   /** YYYY-MM-DD; null = faktura nieanulowana */
   cancelledOn: string | null;
   /** YYYY-MM-DD; null = eskalacja niewstrzymana */

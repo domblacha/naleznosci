@@ -31,6 +31,8 @@ export interface ChargeSettings {
 // Źródło: odsetki handlowe za II półrocze 2026 oraz art. 10 ustawy o przeciwdziałaniu
 // nadmiernym opóźnieniom w transakcjach handlowych (rekompensata 40/70/100 EUR po ok. 4,25 zł).
 // Granice progów są ustawowe; użytkownik zmienia tylko stopę i kwoty (chargeSettingsFrom).
+// UWAGA: backfill migawki w supabase/migrations/20261010130000_add_invoice_payment_snapshot.sql powiela te
+// wartości; w chwili tej migracji muszą się zgadzać.
 export const DEFAULT_CHARGE_SETTINGS: ChargeSettings = {
   annualRateBp: 1375,
   compensationTiers: [
@@ -122,5 +124,43 @@ export function chargesAsOf(
       invoice.clientChargesCompensation,
       settings.compensationTiers,
     ),
+  };
+}
+
+/** Stopa i kwota rekompensaty zamrożone na fakturze przy oznaczeniu jako zapłacona. */
+export interface PaymentSnapshot {
+  rateBp: number;
+  // Kwota progu faktury niezależna od dni (0, gdy klient nie nalicza rekompensaty).
+  compensationGrosze: number;
+}
+
+/** Migawka z ustawień właściciela w chwili oznaczenia faktury jako zapłaconej. */
+export function paymentSnapshot(
+  invoice: { amountGrosze: number; clientChargesCompensation: boolean },
+  settings: ChargeSettings,
+): PaymentSnapshot {
+  return {
+    rateBp: settings.annualRateBp,
+    // Dowolny dodatni dzień daje kwotę progu.
+    compensationGrosze: compensationGrosze(
+      invoice.amountGrosze,
+      1,
+      invoice.clientChargesCompensation,
+      settings.compensationTiers,
+    ),
+  };
+}
+
+/** Jak chargesAsOf, ale tylko z danych faktury i jej migawki (historia zapłaconych faktur). */
+export function frozenChargesAsOf(
+  invoice: { dueDate: string; amountGrosze: number },
+  snapshot: PaymentSnapshot,
+  asOf: string,
+): ChargesAsOf {
+  const days = Math.max(0, daysOverdue(invoice.dueDate, asOf));
+  return {
+    days,
+    interestGrosze: interestGrosze(invoice.amountGrosze, days, snapshot.rateBp),
+    compensationGrosze: days > 0 ? snapshot.compensationGrosze : 0,
   };
 }
