@@ -1,5 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { chargeSettingsFrom, paymentSnapshot } from "@/lib/charges";
 import { isInvoiceLocked, lockedFieldsChanged } from "@/lib/invoice-lock";
+import { getSettings } from "@/lib/services/settings";
 import type { Invoice, InvoiceInput } from "@/types";
 
 export type InvoiceErrorCode =
@@ -7,7 +9,7 @@ export type InvoiceErrorCode =
 export type InvoiceResult = { ok: true; invoice: Invoice } | { ok: false; code: InvoiceErrorCode };
 
 const COLUMNS =
-  "id, client_id, number, amount_grosze, due_date, paid_on, cancelled_on, paused_on, created_at, clients(name, charge_compensation)";
+  "id, client_id, number, amount_grosze, due_date, paid_on, paid_rate_bp, paid_compensation_grosze, cancelled_on, paused_on, created_at, clients(name, charge_compensation)";
 const UNIQUE_VIOLATION = "23505";
 const FOREIGN_KEY_VIOLATION = "23503";
 const RAISE_EXCEPTION = "P0001";
@@ -24,6 +26,8 @@ interface InvoiceRow {
   amount_grosze: number;
   due_date: string;
   paid_on: string | null;
+  paid_rate_bp: number | null;
+  paid_compensation_grosze: number | null;
   cancelled_on: string | null;
   paused_on: string | null;
   created_at: string;
@@ -40,6 +44,8 @@ function toInvoice(row: InvoiceRow): Invoice {
     amountGrosze: row.amount_grosze,
     dueDate: row.due_date,
     paidOn: row.paid_on,
+    paidRateBp: row.paid_rate_bp,
+    paidCompensationGrosze: row.paid_compensation_grosze,
     cancelledOn: row.cancelled_on,
     pausedOn: row.paused_on,
     createdAt: row.created_at,
@@ -101,26 +107,79 @@ export async function createInvoice(supabase: SupabaseClient, input: InvoiceInpu
 }
 
 /**
- * Sets or clears (null) the payment date; a paid invoice is never paused, so the pause is cleared too.
- * RLS hides foreign rows, so "no row returned" means not_found.
+ * Marks an open invoice paid, changes the payment date of a paid one, or reopens it (null).
+ * Marking freezes the owner's current rate and the invoice's compensation tier amount on the invoice;
+ * changing the date keeps that snapshot, reopening clears it. A paid invoice is never paused, so marking
+ * clears the pause. RLS hides foreign rows, and the update repeats the open/paid condition read before,
+ * so "no row" (also after a concurrent change) means not_found.
  */
 export async function setInvoicePayment(
   supabase: SupabaseClient,
   id: string,
   paidOn: string | null,
 ): Promise<InvoiceResult> {
-  let query = supabase
-    .from("invoices")
-    .update({ paid_on: paidOn, paused_on: null })
-    .eq("id", id)
-    .is("cancelled_on", null);
   // Reopening applies only to a paid invoice, so it never silently resumes an open, paused one.
-  if (paidOn === null) query = query.not("paid_on", "is", null);
+  if (paidOn === null) {
+    return updateResult(
+      await supabase
+        .from("invoices")
+        .update({ paid_on: null, paid_rate_bp: null, paid_compensation_grosze: null, paused_on: null })
+        .eq("id", id)
+        .is("cancelled_on", null)
+        .not("paid_on", "is", null)
+        .select(COLUMNS),
+    );
+  }
 
-  const { data, error } = await query.select(COLUMNS).maybeSingle();
-  if (error) return { ok: false, code: toErrorCode(error) };
-  if (!data) return { ok: false, code: "not_found" };
-  return { ok: true, invoice: toInvoice(data as unknown as InvoiceRow) };
+  const { data: current, error: readError } = await supabase
+    .from("invoices")
+    .select(COLUMNS)
+    .eq("id", id)
+    .is("cancelled_on", null)
+    .maybeSingle();
+  if (readError) return { ok: false, code: "unknown" };
+  if (!current) return { ok: false, code: "not_found" };
+
+  const invoice = toInvoice(current as unknown as InvoiceRow);
+  if (invoice.paidOn !== null) {
+    return updateResult(
+      await supabase
+        .from("invoices")
+        .update({ paid_on: paidOn })
+        .eq("id", id)
+        .is("cancelled_on", null)
+        .not("paid_on", "is", null)
+        .select(COLUMNS),
+    );
+  }
+
+  const settings = await getSettings(supabase).catch(() => null);
+  if (!settings) return { ok: false, code: "unknown" };
+  const snapshot = paymentSnapshot(invoice, chargeSettingsFrom(settings));
+  return updateResult(
+    await supabase
+      .from("invoices")
+      .update({
+        paid_on: paidOn,
+        paid_rate_bp: snapshot.rateBp,
+        paid_compensation_grosze: snapshot.compensationGrosze,
+        paused_on: null,
+      })
+      .eq("id", id)
+      .is("cancelled_on", null)
+      .is("paid_on", null)
+      .select(COLUMNS),
+  );
+}
+
+/** Result of an update that returns 0 or 1 invoice rows. */
+function updateResult(result: {
+  data: unknown[] | null;
+  error: { code?: string; message?: string; details?: string } | null;
+}): InvoiceResult {
+  if (result.error) return { ok: false, code: toErrorCode(result.error) };
+  if (!result.data || result.data.length === 0) return { ok: false, code: "not_found" };
+  return { ok: true, invoice: toInvoice(result.data[0] as InvoiceRow) };
 }
 
 /**

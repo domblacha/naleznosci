@@ -3,7 +3,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PaymentDialog } from "@/components/invoices/PaymentDialog";
-import { chargesAsOf } from "@/lib/charges";
+import { frozenChargesAsOf } from "@/lib/charges";
 import { formatAmount, formatDate } from "@/lib/format";
 import { invoiceErrorMessage } from "@/lib/invoice-errors";
 import type { Invoice } from "@/types";
@@ -93,7 +93,12 @@ export function PaidInvoicesManager({ initialInvoices, today }: Props) {
           </TableHeader>
           <TableBody>
             {invoices.map((invoice) => {
-              const charges = chargesAsOf(invoice, invoice.paidOn ?? today);
+              // Paid invoices always carry a snapshot (invoices_payment_snapshot_check).
+              const charges = frozenChargesAsOf(
+                invoice,
+                { rateBp: invoice.paidRateBp ?? 0, compensationGrosze: invoice.paidCompensationGrosze ?? 0 },
+                invoice.paidOn ?? today,
+              );
               return (
                 <TableRow key={invoice.id}>
                   <TableCell>{invoice.clientName}</TableCell>

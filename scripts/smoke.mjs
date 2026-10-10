@@ -478,6 +478,116 @@ function deactivationSteps() {
   ];
 }
 
+// Needs user B (signed in by clientSteps). Restores the defaults at the end so other groups are not affected.
+function settingsSteps() {
+  const put = (jar, json) => () => request("/api/settings", { method: "PUT", json, jar });
+  const input = (thresholds, annualRate, compensation) => ({
+    threshold1: thresholds[0],
+    threshold2: thresholds[1],
+    threshold3: thresholds[2],
+    threshold4: thresholds[3],
+    annualRate,
+    compensation1: compensation[0],
+    compensation2: compensation[1],
+    compensation3: compensation[2],
+  });
+  const settingsA = input(["1", "2", "3", "4"], "10,5", ["100", "200", "300,50"]);
+  const settingsB = input(["5", "10", "20", "40"], "8", ["0", "1 000", "2000,01"]);
+  const defaults = input(["3", "7", "14", "30"], "13,75", ["170", "297,50", "425"]);
+  const saved = (thresholds, annualRateBp, compensationGrosze) => ({
+    status: 200,
+    check: (a) => JSON.stringify(a.body?.settings) === JSON.stringify({ thresholds, annualRateBp, compensationGrosze }),
+  });
+  return [
+    ["settings API rejects anonymous user", put(new Map(), settingsA), { status: 401 }],
+    [
+      "settings A: non-increasing thresholds -> 400",
+      put(jar, { ...settingsA, threshold2: "1" }),
+      { status: 400, check: (a) => a.body?.error === "invalid_input" && Boolean(a.body?.fieldErrors?.threshold2) },
+    ],
+    ["settings A: save", put(jar, settingsA), saved([1, 2, 3, 4], 1050, [10000, 20000, 30050])],
+    ["settings B: save own settings", put(jarB, settingsB), saved([5, 10, 20, 40], 800, [0, 100000, 200001])],
+    [
+      "settings A: B's save did not change A",
+      put(jar, { ...settingsA, annualRate: "10,50" }),
+      saved([1, 2, 3, 4], 1050, [10000, 20000, 30050]),
+    ],
+    ["settings A: restore defaults", put(jar, defaults), saved([3, 7, 14, 30], 1375, [17000, 29750, 42500])],
+    ["settings B: restore defaults", put(jarB, defaults), saved([3, 7, 14, 30], 1375, [17000, 29750, 42500])],
+  ];
+}
+
+// Needs user A (signed in) and the settings API. Restores the defaults at the end so other groups are not affected.
+function snapshotSteps() {
+  let clientId;
+  let invoiceId;
+  const putSettings =
+    (annualRate, [compensation1, compensation2, compensation3] = ["100", "200", "300"]) =>
+    () =>
+      request("/api/settings", {
+        method: "PUT",
+        json: {
+          threshold1: "3",
+          threshold2: "7",
+          threshold3: "14",
+          threshold4: "30",
+          annualRate,
+          compensation1,
+          compensation2,
+          compensation3,
+        },
+        jar,
+      });
+  const payment = (method, paidOn) => () =>
+    request(`/api/invoices/${invoiceId}/payment`, { method, json: paidOn ? { paidOn } : undefined, jar });
+  const snapshot = (paidOn, rateBp, compensationGrosze) => ({
+    status: 200,
+    check: (a) =>
+      a.body?.invoice?.paidOn === paidOn &&
+      a.body?.invoice?.paidRateBp === rateBp &&
+      a.body?.invoice?.paidCompensationGrosze === compensationGrosze,
+  });
+  return [
+    [
+      "snapshot: client with compensation",
+      () => request("/api/clients", clientJson(jar, { name: `Migawka ${stamp}`, nip: null, chargeCompensation: true })),
+      {
+        status: 201,
+        check: (a) => {
+          clientId = a.body?.client?.id;
+          return Boolean(clientId);
+        },
+      },
+    ],
+    [
+      "snapshot: invoice 40 days overdue",
+      () =>
+        request("/api/invoices", {
+          method: "POST",
+          json: { clientId, number: `FV/M/${stamp}`, amount: "1 234,56", dueDate: daysAgo(40) },
+          jar,
+        }),
+      {
+        status: 201,
+        check: (a) => {
+          invoiceId = a.body?.invoice?.id;
+          return Boolean(invoiceId) && a.body.invoice.paidRateBp === null;
+        },
+      },
+    ],
+    ["snapshot: settings 10% and 100/200/300 zl", putSettings("10"), { status: 200 }],
+    ["snapshot: mark paid freezes rate and tier amount", payment("PUT", daysAgo(0)), snapshot(daysAgo(0), 1000, 10000)],
+    ["snapshot: settings 20%", putSettings("20"), { status: 200 }],
+    ["snapshot: change date keeps the snapshot", payment("PUT", daysAgo(5)), snapshot(daysAgo(5), 1000, 10000)],
+    ["snapshot: reopen clears the snapshot", payment("DELETE"), snapshot(null, null, null)],
+    [
+      "snapshot: restore default settings",
+      putSettings("13,75", ["170", "297,50", "425"]),
+      { status: 200, check: (a) => a.body?.settings?.annualRateBp === 1375 },
+    ],
+  ];
+}
+
 const steps = [
   [
     "clients API rejects anonymous user",
@@ -521,6 +631,8 @@ const steps = [
   ["signin page redirects signed-in user", () => request("/auth/signin"), { status: 302, location: "/" }],
   ...clientSteps(),
   ...invoiceSteps(),
+  ...settingsSteps(),
+  ...snapshotSteps(),
   [
     "signout clears session",
     () => request("/api/auth/signout", { method: "POST" }),

@@ -1,3 +1,5 @@
+import type { EscalationThresholds } from "@/lib/escalation";
+
 export interface Client {
   id: string;
   name: string;
@@ -25,6 +27,10 @@ export interface Invoice {
   dueDate: string;
   /** YYYY-MM-DD; null = faktura otwarta */
   paidOn: string | null;
+  /** Annual rate (bp) frozen when the invoice was marked paid; null = invoice open. */
+  paidRateBp: number | null;
+  /** Compensation of the invoice's tier (grosze, 0 when the client doesn't charge it) frozen when marked paid; null = invoice open. */
+  paidCompensationGrosze: number | null;
   /** YYYY-MM-DD; null = faktura nieanulowana */
   cancelledOn: string | null;
   /** YYYY-MM-DD; null = eskalacja niewstrzymana */
@@ -43,4 +49,28 @@ export interface InvoiceInput {
 export interface PaymentInput {
   /** YYYY-MM-DD */
   paidOn: string;
+}
+
+/** User's escalation rule. All values are integers (days, basis points, grosze). */
+export interface EscalationSettings {
+  /** Days overdue that start stages 1–4, strictly increasing. */
+  thresholds: EscalationThresholds;
+  /** Annual interest rate in basis points (13,75% = 1375). */
+  annualRateBp: number;
+  /** Compensation for invoice amount ≤ 5 000 zł, > 5 000 zł and < 50 000 zł, ≥ 50 000 zł. */
+  compensationGrosze: readonly [number, number, number];
+}
+
+/** Settings form/API input as typed text, parsed by `settingsInputSchema`. */
+export interface EscalationSettingsInput {
+  threshold1: string;
+  threshold2: string;
+  threshold3: string;
+  threshold4: string;
+  /** Percent, e.g. "13,75" */
+  annualRate: string;
+  /** Amounts in zł, e.g. "297,50" */
+  compensation1: string;
+  compensation2: string;
+  compensation3: string;
 }

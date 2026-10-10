@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parseHundredths } from "@/lib/format";
 import type { InvoiceInput, PaymentInput } from "@/types";
 
 const AMOUNT_MESSAGE = "Podaj kwotę większą od zera, np. 1 234,56";
@@ -7,7 +8,6 @@ const PAID_ON_MESSAGE = "Podaj poprawną datę wpłaty";
 const PAID_ON_FUTURE_MESSAGE = "Data wpłaty nie może być późniejsza niż dziś";
 // Must match the amount_grosze check in supabase/migrations/*_create_invoices.sql.
 const MAX_AMOUNT_GROSZE = 99_999_999_999;
-const AMOUNT_PATTERN = /^(\d+)(?:[.,](\d{1,2}))?$/;
 const DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 
 const numberSchema = z
@@ -17,11 +17,8 @@ const numberSchema = z
 
 /** Parses "1 234,56" into grosze without floating point. Returns null when the text is not a valid amount. */
 function parseAmountGrosze(text: string): number | null {
-  const match = AMOUNT_PATTERN.exec(text.replace(/\s/g, ""));
-  if (!match) return null;
-  const [, whole, fraction = ""] = match;
-  const grosze = Number(whole) * 100 + Number(fraction.padEnd(2, "0"));
-  return grosze > 0 && grosze <= MAX_AMOUNT_GROSZE ? grosze : null;
+  const grosze = parseHundredths(text);
+  return grosze !== null && grosze > 0 && grosze <= MAX_AMOUNT_GROSZE ? grosze : null;
 }
 
 const amountSchema = z.string({ error: AMOUNT_MESSAGE }).transform((value, ctx) => {

@@ -5,10 +5,10 @@ import { FormField } from "@/components/auth/FormField";
 import { ServerError } from "@/components/auth/ServerError";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { usePaymentForm } from "@/components/hooks/use-payment-form";
-import { chargesAsOf, type ChargesAsOf } from "@/lib/charges";
+import { chargesAsOf, chargeSettingsFrom, frozenChargesAsOf, type ChargesAsOf } from "@/lib/charges";
 import { formatAmount } from "@/lib/format";
 import { paymentInputSchema } from "@/lib/invoice-schemas";
-import type { Invoice } from "@/types";
+import type { EscalationSettings, Invoice } from "@/types";
 
 interface PaymentFormViewProps {
   idPrefix: string;
@@ -65,24 +65,35 @@ export function PaymentFormView({
   );
 }
 
-function PaymentForm({
-  invoice,
-  today,
-  mode,
-  onSaved,
-}: {
+export type PaymentDialogMode = "mark" | "edit";
+
+/** Marking uses the user's current settings (the same values the server snapshots); editing uses the snapshot. */
+type PaymentModeProps = { mode: "mark"; settings: EscalationSettings } | { mode: "edit" };
+
+type PaymentFormProps = {
   invoice: Invoice;
   today: string;
-  mode: PaymentDialogMode;
   onSaved: (invoice: Invoice) => void;
-}) {
+} & PaymentModeProps;
+
+function PaymentForm(props: PaymentFormProps) {
+  const { invoice, today, onSaved } = props;
   const form = usePaymentForm({
     invoiceId: invoice.id,
-    initialPaidOn: mode === "edit" ? (invoice.paidOn ?? today) : today,
+    initialPaidOn: props.mode === "edit" ? (invoice.paidOn ?? today) : today,
     today,
     onSaved,
   });
   const valid = paymentInputSchema(today).safeParse({ paidOn: form.paidOn }).success;
+  // Changing the date keeps the snapshot frozen when the invoice was marked paid.
+  const preview = (paidOn: string) =>
+    props.mode === "edit"
+      ? frozenChargesAsOf(
+          invoice,
+          { rateBp: invoice.paidRateBp ?? 0, compensationGrosze: invoice.paidCompensationGrosze ?? 0 },
+          paidOn,
+        )
+      : chargesAsOf(invoice, paidOn, chargeSettingsFrom(props.settings));
   return (
     <PaymentFormView
       idPrefix="payment"
@@ -91,34 +102,26 @@ function PaymentForm({
       error={form.error}
       serverError={form.serverError}
       pending={form.pending}
-      preview={valid ? chargesAsOf(invoice, form.paidOn) : null}
+      preview={valid ? preview(form.paidOn) : null}
       onPaidOnChange={form.setPaidOn}
       onSubmit={(e) => void form.submit(e)}
     />
   );
 }
 
-export type PaymentDialogMode = "mark" | "edit";
-
-interface PaymentDialogProps {
+type PaymentDialogProps = {
   invoice: Invoice | null;
   today: string;
   open: boolean;
-  mode: PaymentDialogMode;
   onOpenChange: (open: boolean) => void;
   onSaved: (invoice: Invoice) => void;
   onCloseAutoFocus?: () => void;
-}
+} & PaymentModeProps;
 
-export function PaymentDialog({
-  invoice,
-  today,
-  open,
-  mode,
-  onOpenChange,
-  onSaved,
-  onCloseAutoFocus,
-}: PaymentDialogProps) {
+export function PaymentDialog(props: PaymentDialogProps) {
+  const { invoice, today, open, mode, onOpenChange, onSaved, onCloseAutoFocus } = props;
+  const modeProps: PaymentModeProps =
+    props.mode === "mark" ? { mode: "mark", settings: props.settings } : { mode: "edit" };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -135,7 +138,7 @@ export function PaymentDialog({
         </DialogHeader>
         {/* Mounted only while open and keyed by invoice, so the form state resets on every opening. */}
         {invoice ? (
-          <PaymentForm key={invoice.id} invoice={invoice} today={today} mode={mode} onSaved={onSaved} />
+          <PaymentForm key={invoice.id} invoice={invoice} today={today} onSaved={onSaved} {...modeProps} />
         ) : null}
       </DialogContent>
     </Dialog>

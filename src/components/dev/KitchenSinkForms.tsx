@@ -15,8 +15,10 @@ import { InvoiceFormView, PauseEscalationControl } from "@/components/invoices/I
 import { InvoicesManager } from "@/components/invoices/InvoicesManager";
 import { PaymentFormView } from "@/components/invoices/PaymentDialog";
 import { ReminderDialogView } from "@/components/invoices/ReminderDialog";
+import { settingsInputText } from "@/components/hooks/use-settings-form";
+import { SettingsFormView } from "@/components/settings/SettingsForm";
 import { amountInputText } from "@/lib/format";
-import { chargesAsOf } from "@/lib/charges";
+import { chargesAsOf, chargeSettingsFrom, DEFAULT_ESCALATION_SETTINGS } from "@/lib/charges";
 import { isInvoiceLocked } from "@/lib/invoice-lock";
 import { buildClientReminders, renderReminder } from "@/lib/reminder";
 import type { Client, Invoice } from "@/types";
@@ -76,6 +78,8 @@ function sampleInvoice(
     amountGrosze,
     dueDate,
     paidOn: null,
+    paidRateBp: null,
+    paidCompensationGrosze: null,
     cancelledOn: null,
     pausedOn: null,
     createdAt: "2026-01-01T00:00:00Z",
@@ -92,9 +96,19 @@ const sampleInvoices: Invoice[] = [
   sampleInvoice(6, 1, "FV/2026/10/005", 75000, "2026-10-20"),
 ];
 
-const sampleReminder = buildClientReminders(sampleInvoices, SAMPLE_TODAY).find(
-  (r) => r.clientId === sampleClients[0].id,
-);
+const defaultSettingsText = settingsInputText(DEFAULT_ESCALATION_SETTINGS);
+const customSettingsText = settingsInputText({
+  thresholds: [5, 10, 21, 45],
+  annualRateBp: 1150,
+  compensationGrosze: [17000, 30000, 43000],
+});
+
+const sampleReminder = buildClientReminders(
+  sampleInvoices,
+  SAMPLE_TODAY,
+  DEFAULT_ESCALATION_SETTINGS.thresholds,
+  chargeSettingsFrom(DEFAULT_ESCALATION_SETTINGS),
+).find((r) => r.clientId === sampleClients[0].id);
 const sampleReminderText = sampleReminder ? renderReminder(sampleReminder, SAMPLE_TODAY) : "";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -448,7 +462,7 @@ export function KitchenSinkForms() {
           paidOn={SAMPLE_TODAY}
           today={SAMPLE_TODAY}
           pending={false}
-          preview={chargesAsOf(sampleInvoices[0], SAMPLE_TODAY)}
+          preview={chargesAsOf(sampleInvoices[0], SAMPLE_TODAY, chargeSettingsFrom(DEFAULT_ESCALATION_SETTINGS))}
           onPaidOnChange={noop}
           onSubmit={noop}
         />
@@ -472,8 +486,73 @@ export function KitchenSinkForms() {
           today={SAMPLE_TODAY}
           serverError="Nie znaleziono faktury. Odśwież stronę."
           pending
-          preview={chargesAsOf(sampleInvoices[0], "2026-08-10")}
+          preview={chargesAsOf(sampleInvoices[0], "2026-08-10", chargeSettingsFrom(DEFAULT_ESCALATION_SETTINGS))}
           onPaidOnChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Ustawienia: domyślne">
+        <SettingsFormView
+          idPrefix="ks-settings-default"
+          values={defaultSettingsText}
+          errors={{}}
+          pending={false}
+          saved={false}
+          onFieldChange={noop}
+          onReset={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Ustawienia: błędy pól (nierosnące progi, zła stopa)">
+        <SettingsFormView
+          idPrefix="ks-settings-errors"
+          values={{ ...defaultSettingsText, threshold2: "3", threshold4: "14", annualRate: "13,755" }}
+          errors={{
+            threshold2: "Próg musi być większy niż próg poprzedniego etapu",
+            threshold4: "Próg musi być większy niż próg poprzedniego etapu",
+            annualRate: "Podaj stopę od 0 do 100 z najwyżej 2 miejscami po przecinku, np. 13,75",
+          }}
+          pending={false}
+          saved={false}
+          onFieldChange={noop}
+          onReset={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Ustawienia: błąd serwera">
+        <SettingsFormView
+          idPrefix="ks-settings-server-error"
+          values={customSettingsText}
+          errors={{}}
+          serverError="Coś poszło nie tak. Spróbuj ponownie."
+          pending={false}
+          saved={false}
+          onFieldChange={noop}
+          onReset={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Ustawienia: pending">
+        <SettingsFormView
+          idPrefix="ks-settings-pending"
+          values={customSettingsText}
+          errors={{}}
+          pending
+          saved={false}
+          onFieldChange={noop}
+          onReset={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Ustawienia: po zapisie">
+        <SettingsFormView
+          idPrefix="ks-settings-saved"
+          values={customSettingsText}
+          errors={{}}
+          pending={false}
+          saved
+          onFieldChange={noop}
+          onReset={noop}
           onSubmit={noop}
         />
       </Section>
@@ -509,20 +588,36 @@ export function KitchenSinkForms() {
         </>
       ) : null}
       <Section title="Lista faktur: grupy">
-        <InvoicesManager initialInvoices={sampleInvoices} clients={sampleClients} today={SAMPLE_TODAY} />
+        <InvoicesManager
+          initialInvoices={sampleInvoices}
+          clients={sampleClients}
+          today={SAMPLE_TODAY}
+          settings={DEFAULT_ESCALATION_SETTINGS}
+        />
       </Section>
       <Section title="Ponaglenia: pusty stan">
         <InvoicesManager
           initialInvoices={[sampleInvoice(6, 1, "FV/2026/10/005", 75000, "2026-10-20")]}
           clients={sampleClients}
           today={SAMPLE_TODAY}
+          settings={DEFAULT_ESCALATION_SETTINGS}
         />
       </Section>
       <Section title="Lista faktur: brak faktur">
-        <InvoicesManager initialInvoices={[]} clients={sampleClients} today={SAMPLE_TODAY} />
+        <InvoicesManager
+          initialInvoices={[]}
+          clients={sampleClients}
+          today={SAMPLE_TODAY}
+          settings={DEFAULT_ESCALATION_SETTINGS}
+        />
       </Section>
       <Section title="Lista faktur: brak klientów">
-        <InvoicesManager initialInvoices={[]} clients={[]} today={SAMPLE_TODAY} />
+        <InvoicesManager
+          initialInvoices={[]}
+          clients={[]}
+          today={SAMPLE_TODAY}
+          settings={DEFAULT_ESCALATION_SETTINGS}
+        />
       </Section>
       <Section title="PasswordToggle">
         <div className="relative h-9 w-40">

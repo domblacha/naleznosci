@@ -5,21 +5,28 @@ import { InvoicesManager } from "@/components/invoices/InvoicesManager";
 import { createClient } from "@/lib/supabase";
 import { listActiveClients } from "@/lib/services/clients";
 import { listOpenInvoices } from "@/lib/services/invoices";
+import { getSettings } from "@/lib/services/settings";
+import { DEFAULT_ESCALATION_SETTINGS } from "@/lib/charges";
 import { todayInPoland } from "@/lib/escalation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import type { Client, Invoice } from "@/types";
+import type { Client, EscalationSettings, Invoice } from "@/types";
 
 export const prerender = false;
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 let invoices: Invoice[] = [];
 let clients: Client[] = [];
+let settings: EscalationSettings = DEFAULT_ESCALATION_SETTINGS;
 let loadError: string | null = null;
 if (!supabase) {
   loadError = "Lista faktur jest niedostępna: brak konfiguracji serwera.";
 } else {
   try {
-    [invoices, clients] = await Promise.all([listOpenInvoices(supabase), listActiveClients(supabase)]);
+    [invoices, clients, settings] = await Promise.all([
+      listOpenInvoices(supabase),
+      listActiveClients(supabase),
+      getSettings(supabase),
+    ]);
   } catch {
     loadError = "Nie udało się wczytać faktur. Odśwież stronę.";
   }
@@ -37,7 +44,7 @@ const today = todayInPoland(new Date());
           <AlertDescription>{loadError}</AlertDescription>
         </Alert>
       ) : (
-        <InvoicesManager initialInvoices={invoices} clients={clients} today={today} client:load />
+        <InvoicesManager initialInvoices={invoices} clients={clients} today={today} settings={settings} client:load />
       )}
     </main>
   </div>
