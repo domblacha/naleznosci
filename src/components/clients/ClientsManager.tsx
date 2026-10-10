@@ -1,21 +1,43 @@
 import { useMemo, useRef, useState } from "react";
-import { Pencil, Plus } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ClientFormDialog } from "@/components/clients/ClientFormDialog";
+import { DeactivateClientDialog } from "@/components/clients/DeactivateClientDialog";
+import { clientErrorMessage } from "@/lib/client-errors";
+import { formatDate } from "@/lib/format";
 import type { Client } from "@/types";
 
 interface Props {
   initialClients: Client[];
 }
 
+/** Latest deletion first, then by name so equal dates keep a stable order. */
+function sortDeactivated(clients: Client[]): Client[] {
+  return [...clients].sort(
+    (a, b) => (b.deactivatedOn ?? "").localeCompare(a.deactivatedOn ?? "") || a.name.localeCompare(b.name, "pl"),
+  );
+}
+
 export function ClientsManager({ initialClients }: Props) {
   const [clients, setClients] = useState(initialClients);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Client | null>(null);
+  const [deactivating, setDeactivating] = useState<Client | null>(null);
+  const [deactivateOpen, setDeactivateOpen] = useState(false);
+  const [restoringId, setRestoringId] = useState<string | null>(null);
+  const [restoreError, setRestoreError] = useState<string | null>(null);
   const openerRef = useRef<HTMLElement | null>(null);
+  const addButtonRef = useRef<HTMLButtonElement | null>(null);
+  const deletedHeadingRef = useRef<HTMLHeadingElement | null>(null);
+  const deactivatedRef = useRef(false);
 
-  const sorted = useMemo(() => [...clients].sort((a, b) => a.name.localeCompare(b.name, "pl")), [clients]);
+  const sorted = useMemo(
+    () => clients.filter((c) => !c.deactivatedOn).sort((a, b) => a.name.localeCompare(b.name, "pl")),
+    [clients],
+  );
+  const deactivated = useMemo(() => sortDeactivated(clients.filter((c) => c.deactivatedOn)), [clients]);
 
   function openDialog(client: Client | null, opener: HTMLElement) {
     openerRef.current = opener;
@@ -30,12 +52,44 @@ export function ClientsManager({ initialClients }: Props) {
     setOpen(false);
   }
 
+  function handleDeactivated(saved: Client) {
+    setClients((prev) => prev.map((c) => (c.id === saved.id ? saved : c)));
+    setRestoreError(null);
+    deactivatedRef.current = true;
+    setDeactivateOpen(false);
+  }
+
+  async function restore(client: Client) {
+    if (restoringId) return;
+    setRestoreError(null);
+    setRestoringId(client.id);
+    try {
+      const response = await fetch(`/api/clients/${client.id}/deactivation`, { method: "DELETE" });
+      const body = (await response.json().catch(() => ({}))) as { error?: string; client?: Client };
+      if (response.ok && body.client) {
+        const restored = body.client;
+        setClients((prev) => prev.map((c) => (c.id === restored.id ? restored : c)));
+        // The "Dodaj klienta" button is rendered in both the empty and the filled state.
+        requestAnimationFrame(() => addButtonRef.current?.focus());
+        return;
+      }
+      setRestoreError(clientErrorMessage(body.error ?? "unknown"));
+    } catch {
+      setRestoreError(clientErrorMessage("unknown"));
+    } finally {
+      setRestoringId(null);
+    }
+  }
+
   return (
     <div className="space-y-4">
       {sorted.length === 0 ? (
         <div className="flex flex-col items-center gap-4 py-16 text-center">
-          <p className="text-muted-foreground">Nie masz jeszcze klientów</p>
+          <p className="text-muted-foreground">
+            {deactivated.length > 0 ? "Nie masz aktywnych klientów" : "Nie masz jeszcze klientów"}
+          </p>
           <Button
+            ref={addButtonRef}
             onClick={(e) => {
               openDialog(null, e.currentTarget);
             }}
@@ -48,6 +102,7 @@ export function ClientsManager({ initialClients }: Props) {
         <>
           <div className="flex justify-end">
             <Button
+              ref={addButtonRef}
               onClick={(e) => {
                 openDialog(null, e.currentTarget);
               }}
@@ -73,7 +128,7 @@ export function ClientsManager({ initialClients }: Props) {
                   <TableCell>{client.name}</TableCell>
                   <TableCell>{client.nip ?? "—"}</TableCell>
                   <TableCell>{client.chargeCompensation ? "Tak" : "Nie"}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="space-x-2 text-right whitespace-nowrap">
                     <Button
                       variant="outline"
                       size="sm"
@@ -84,6 +139,18 @@ export function ClientsManager({ initialClients }: Props) {
                       <Pencil className="size-3.5" />
                       Edytuj
                     </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        openerRef.current = e.currentTarget;
+                        setDeactivating(client);
+                        setDeactivateOpen(true);
+                      }}
+                    >
+                      <Trash2 className="size-3.5" />
+                      Usuń
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -91,6 +158,66 @@ export function ClientsManager({ initialClients }: Props) {
           </Table>
         </>
       )}
+      {deactivated.length > 0 ? (
+        <div className="space-y-4 pt-4">
+          <h2 ref={deletedHeadingRef} tabIndex={-1} className="text-foreground text-sm font-semibold outline-none">
+            Usunięci klienci <span className="text-muted-foreground font-normal">({deactivated.length})</span>
+          </h2>
+          {restoreError ? (
+            <Alert variant="destructive">
+              <AlertDescription>{restoreError}</AlertDescription>
+            </Alert>
+          ) : null}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nazwa</TableHead>
+                <TableHead>NIP</TableHead>
+                <TableHead>Data usunięcia</TableHead>
+                <TableHead>
+                  <span className="sr-only">Akcje</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {deactivated.map((client) => (
+                <TableRow key={client.id}>
+                  <TableCell>{client.name}</TableCell>
+                  <TableCell>{client.nip ?? "—"}</TableCell>
+                  <TableCell>{client.deactivatedOn ? formatDate(client.deactivatedOn) : "—"}</TableCell>
+                  <TableCell className="text-right whitespace-nowrap">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={restoringId === client.id}
+                      aria-label={`Przywróć klienta ${client.name}`}
+                      onClick={() => void restore(client)}
+                    >
+                      Przywróć
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      ) : null}
+      <DeactivateClientDialog
+        client={deactivating}
+        open={deactivateOpen}
+        onOpenChange={setDeactivateOpen}
+        onDeactivated={handleDeactivated}
+        onCloseAutoFocus={(e) => {
+          e.preventDefault();
+          if (deactivatedRef.current) {
+            // The row is gone, so focus moves to the heading of the deleted section.
+            deactivatedRef.current = false;
+            deletedHeadingRef.current?.focus();
+          } else if (openerRef.current?.isConnected) {
+            openerRef.current.focus();
+          }
+        }}
+      />
       <ClientFormDialog
         open={open}
         onOpenChange={setOpen}
