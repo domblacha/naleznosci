@@ -369,34 +369,34 @@ Jedno dodatkowe zapytanie (`maybeSingle` po kluczu głównym) na stronach `/` i 
 
 #### Automated
 
-- [x] 2.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up`
-- [x] 2.2 Typy i Astro przechodzą: `npx astro check`
-- [x] 2.3 Lint przechodzi: `npm run lint`
-- [x] 2.4 Testy jednostkowe przechodzą, w tym testy `paymentSnapshot` i `frozenChargesAsOf`: `npm test`
-- [x] 2.5 Build przechodzi: `npm run build`
-- [x] 2.6 Smoke przechodzi, łącznie z grupą `snapshotSteps`: `npm run smoke`
+- [x] 2.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up` — 6794af3
+- [x] 2.2 Typy i Astro przechodzą: `npx astro check` — 6794af3
+- [x] 2.3 Lint przechodzi: `npm run lint` — 6794af3
+- [x] 2.4 Testy jednostkowe przechodzą, w tym testy `paymentSnapshot` i `frozenChargesAsOf`: `npm test` — 6794af3
+- [x] 2.5 Build przechodzi: `npm run build` — 6794af3
+- [x] 2.6 Smoke przechodzi, łącznie z grupą `snapshotSteps`: `npm run smoke` — 6794af3
 
 #### Manual
 
-- [x] 2.7 Kwoty zapłaconych faktur w `/history` po migracji są identyczne jak przed nią
-- [x] 2.8 Przełączenie „naliczaj rekompensatę” u klienta nie zmienia rekompensaty jego zapłaconych faktur w `/history`
-- [x] 2.9 Zmiana daty wpłaty w `/history` na dzień w terminie pokazuje rekompensatę 0, a powrót na datę po terminie znów pokazuje kwotę z migawki
+- [x] 2.7 Kwoty zapłaconych faktur w `/history` po migracji są identyczne jak przed nią — 6794af3
+- [x] 2.8 Przełączenie „naliczaj rekompensatę” u klienta nie zmienia rekompensaty jego zapłaconych faktur w `/history` — 6794af3
+- [x] 2.9 Zmiana daty wpłaty w `/history` na dzień w terminie pokazuje rekompensatę 0, a powrót na datę po terminie znów pokazuje kwotę z migawki — 6794af3
 
 ### Phase 3: Ustawienia w wyliczeniach otwartych faktur
 
 #### Automated
 
-- [ ] 3.1 Typy i Astro przechodzą: `npx astro check`
-- [ ] 3.2 Lint przechodzi: `npm run lint`
-- [ ] 3.3 Testy jednostkowe przechodzą: `npm test`
-- [ ] 3.4 Build przechodzi: `npm run build`
-- [ ] 3.5 Smoke nadal przechodzi: `npm run smoke`
-- [ ] 3.6 W `src/components/invoices/` nie ma importów `DEFAULT_THRESHOLDS` ani `DEFAULT_CHARGE_SETTINGS`: `grep -rE "DEFAULT_(THRESHOLDS|CHARGE_SETTINGS)" src/components/invoices` nic nie zwraca
+- [x] 3.1 Typy i Astro przechodzą: `npx astro check`
+- [x] 3.2 Lint przechodzi: `npm run lint`
+- [x] 3.3 Testy jednostkowe przechodzą: `npm test`
+- [x] 3.4 Build przechodzi: `npm run build`
+- [x] 3.5 Smoke nadal przechodzi: `npm run smoke`
+- [x] 3.6 W `src/components/invoices/` nie ma importów `DEFAULT_THRESHOLDS` ani `DEFAULT_CHARGE_SETTINGS`: `grep -rE "DEFAULT_(THRESHOLDS|CHARGE_SETTINGS)" src/components/invoices` nic nie zwraca
 
 #### Manual
 
-- [ ] 3.7 Po zapisaniu przez API progów 1/2/3/4 faktura 2 dni po terminie trafia na `/` do „Etap 2 · od 2 dni po terminie”, a jej ponaglenie ma ton etapu 2
-- [ ] 3.8 Po zapisaniu innej stopy i kwot odsetki i rekompensata na `/` oraz podgląd „Zapłacona” odpowiadają nowym ustawieniom, a kwoty w `/history` się nie zmieniają
+- [x] 3.7 Po zapisaniu przez API progów 1/2/3/4 faktura 2 dni po terminie trafia na `/` do „Etap 2 · od 2 dni po terminie”, a jej ponaglenie ma ton etapu 2
+- [x] 3.8 Po zapisaniu innej stopy i kwot odsetki i rekompensata na `/` oraz podgląd „Zapłacona” odpowiadają nowym ustawieniom, a kwoty w `/history` się nie zmieniają
 
 ### Phase 4: Ekran `/settings`
 

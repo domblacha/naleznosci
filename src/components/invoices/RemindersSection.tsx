@@ -3,17 +3,23 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ReminderDialog } from "@/components/invoices/ReminderDialog";
 import { formatAmount } from "@/lib/format";
+import { chargeSettingsFrom } from "@/lib/charges";
 import { buildClientReminders } from "@/lib/reminder";
-import type { Invoice } from "@/types";
+import type { EscalationSettings, Invoice } from "@/types";
 
 interface Props {
   invoices: Invoice[];
   /** YYYY-MM-DD, "today" in Poland, computed on the server. */
   today: string;
+  /** User's escalation settings: stage thresholds, interest rate and compensation amounts. */
+  settings: EscalationSettings;
 }
 
-export function RemindersSection({ invoices, today }: Props) {
-  const reminders = useMemo(() => buildClientReminders(invoices, today), [invoices, today]);
+export function RemindersSection({ invoices, today, settings }: Props) {
+  const reminders = useMemo(
+    () => buildClientReminders(invoices, today, settings.thresholds, chargeSettingsFrom(settings)),
+    [invoices, today, settings],
+  );
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const openerRef = useRef<HTMLElement | null>(null);

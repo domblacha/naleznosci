@@ -6,31 +6,33 @@ import { CancelInvoiceDialog } from "@/components/invoices/CancelInvoiceDialog";
 import { InvoiceFormDialog } from "@/components/invoices/InvoiceFormDialog";
 import { PaymentDialog } from "@/components/invoices/PaymentDialog";
 import { RemindersSection } from "@/components/invoices/RemindersSection";
-import { compensationGrosze, interestGrosze } from "@/lib/charges";
-import { DEFAULT_THRESHOLDS, groupInvoices, type EscalationGroup } from "@/lib/escalation";
+import { chargeSettingsFrom, compensationGrosze, interestGrosze } from "@/lib/charges";
+import { groupInvoices, type EscalationGroup, type EscalationThresholds } from "@/lib/escalation";
 import { formatAmount, formatDate } from "@/lib/format";
-import type { Client, Invoice } from "@/types";
+import type { Client, EscalationSettings, Invoice } from "@/types";
 
 interface Props {
   initialInvoices: Invoice[];
   clients: Client[];
   /** YYYY-MM-DD, "today" in Poland, computed on the server. */
   today: string;
+  /** User's escalation settings, read on the server. */
+  settings: EscalationSettings;
 }
 
-const [T1, T2, T3, T4] = DEFAULT_THRESHOLDS;
+function groupLabels([t1, t2, t3, t4]: EscalationThresholds): Record<EscalationGroup, string> {
+  return {
+    stage_4: `Etap 4 · od ${t4} dni po terminie`,
+    stage_3: `Etap 3 · od ${t3} dni po terminie`,
+    stage_2: `Etap 2 · od ${t2} dni po terminie`,
+    stage_1: `Etap 1 · od ${t1} dni po terminie`,
+    pre_threshold: "Po terminie, przed etapem 1",
+    current: "Bieżące",
+    paused: "Wstrzymane",
+  };
+}
 
-const GROUP_LABELS: Record<EscalationGroup, string> = {
-  stage_4: `Etap 4 · od ${T4} dni po terminie`,
-  stage_3: `Etap 3 · od ${T3} dni po terminie`,
-  stage_2: `Etap 2 · od ${T2} dni po terminie`,
-  stage_1: `Etap 1 · od ${T1} dni po terminie`,
-  pre_threshold: "Po terminie, przed etapem 1",
-  current: "Bieżące",
-  paused: "Wstrzymane",
-};
-
-export function InvoicesManager({ initialInvoices, clients, today }: Props) {
+export function InvoicesManager({ initialInvoices, clients, today, settings }: Props) {
   const [invoices, setInvoices] = useState(initialInvoices);
   const [open, setOpen] = useState(false);
   const [payingId, setPayingId] = useState<string | null>(null);
@@ -43,7 +45,12 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
   const openerRef = useRef<HTMLElement | null>(null);
   const addButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const groups = useMemo(() => groupInvoices(invoices, today), [invoices, today]);
+  const groups = useMemo(
+    () => groupInvoices(invoices, today, settings.thresholds),
+    [invoices, today, settings.thresholds],
+  );
+  const labels = useMemo(() => groupLabels(settings.thresholds), [settings.thresholds]);
+  const chargeSettings = useMemo(() => chargeSettingsFrom(settings), [settings]);
 
   function openDialog(opener: HTMLElement) {
     openerRef.current = opener;
@@ -135,11 +142,11 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
       ) : (
         <>
           <div className="flex justify-end">{addButton}</div>
-          <RemindersSection invoices={invoices} today={today} />
+          <RemindersSection invoices={invoices} today={today} settings={settings} />
           {groups.map(({ group, items }) => (
             <section key={group} className="space-y-2">
               <h2 className="text-foreground text-sm font-semibold">
-                {GROUP_LABELS[group]} <span className="text-muted-foreground font-normal">({items.length})</span>
+                {labels[group]} <span className="text-muted-foreground font-normal">({items.length})</span>
               </h2>
               <Table>
                 <TableHeader>
@@ -167,7 +174,9 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
                       <TableCell className="text-right">
                         {invoice.daysOverdue <= 0
                           ? "—"
-                          : formatAmount(interestGrosze(invoice.amountGrosze, invoice.daysOverdue))}
+                          : formatAmount(
+                              interestGrosze(invoice.amountGrosze, invoice.daysOverdue, chargeSettings.annualRateBp),
+                            )}
                       </TableCell>
                       <TableCell className="text-right">
                         {invoice.daysOverdue <= 0
@@ -177,6 +186,7 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
                                 invoice.amountGrosze,
                                 invoice.daysOverdue,
                                 invoice.clientChargesCompensation,
+                                chargeSettings.compensationTiers,
                               ),
                             )}
                       </TableCell>
@@ -214,6 +224,7 @@ export function InvoicesManager({ initialInvoices, clients, today }: Props) {
         invoice={paying}
         today={today}
         mode="mark"
+        settings={settings}
         open={payOpen}
         onOpenChange={setPayOpen}
         onSaved={handlePaid}
