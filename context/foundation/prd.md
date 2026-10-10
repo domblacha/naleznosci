@@ -30,13 +30,16 @@ Deterministyczna eskalacja — stałe, konfigurowalne progi dni po terminie — 
 ## Success Criteria
 
 ### Primary
+
 - Użytkownik przechodzi pełny przepływ: rejestruje się i loguje, dodaje klienta i fakturę, widzi ją poprawnie przypisaną do grupy/etapu eskalacji na liście, generuje i kopiuje do schowka treść ponaglenia dla klienta w tonie odpowiadającym etapowi, a po oznaczeniu faktury jako zapłaconej znika ona natychmiast z eskalacji.
 - Klient z kilkoma fakturami na etapach 1–4 dostaje jedno zbiorcze ponaglenie z listą pozycji (z odsetkami i rekompensatą), nie osobne per faktura.
 
 ### Secondary
+
 - Dashboard z prognozą wpływów na 30 dni daje sensowną orientację finansową użytkownikowi.
 
 ### Guardrails
+
 - Wyliczenia odsetek i rekompensaty są poprawne: odsetki = kwota × roczna stopa × dni po terminie / 365, rekompensata = kwota z progu odpowiadającego wartości faktury (0 dla klientów z wyłączoną rekompensatą), wszystkie kwoty zaokrąglone do grosza.
 - Etap eskalacji jest deterministyczny — ta sama faktura, ta sama data i te same ustawienia zawsze dają ten sam etap, bez losowości ani niespójności.
 
@@ -49,6 +52,7 @@ Deterministyczna eskalacja — stałe, konfigurowalne progi dni po terminie — 
 - **Then** widzi fakturę w grupie właściwego etapu, a wygenerowana treść w tonie najwyższego etapu klienta jest gotowa do skopiowania do schowka
 
 #### Acceptance Criteria
+
 - Etap eskalacji wynika wyłącznie z liczby dni po terminie (wg czasu polskiego) i skonfigurowanych progów — bez ręcznej ingerencji.
 - Jeśli klient ma kilka faktur na etapach 1–4, generowana jest jedna zbiorcza treść z listą pozycji; faktury wstrzymane i przed pierwszym progiem nie są w niej ujęte.
 - Każda pozycja zawiera numer, kwotę, termin, dni po terminie, odsetki i rekompensatę (0 dla klienta z wyłączoną rekompensatą); treść kończy suma, kwoty zaokrąglone do grosza.
@@ -60,6 +64,7 @@ Deterministyczna eskalacja — stałe, konfigurowalne progi dni po terminie — 
 - **Then** faktura natychmiast znika z listy otwartych faktur i z ponagleń, a w historii widać ją z odsetkami naliczonymi do dnia wpłaty
 
 #### Acceptance Criteria
+
 - Faktura nie pojawia się w żadnej grupie listy otwartych faktur ani w treści ponaglenia klienta.
 - Odsetki zapłaconej faktury nie rosną po dacie wpłaty.
 - Jeśli była to ostatnia faktura klienta na etapach 1–4, dla klienta nie da się już wygenerować ponaglenia.
@@ -71,6 +76,7 @@ Deterministyczna eskalacja — stałe, konfigurowalne progi dni po terminie — 
 - **Then** w czasie wstrzymania faktura jest w grupie „wstrzymane” i poza ponagleniami, a po wznowieniu trafia na etap wynikający z aktualnej liczby dni po terminie
 
 #### Acceptance Criteria
+
 - W czasie wstrzymania odsetki nadal rosną.
 - W czasie wstrzymania można edytować termin i kwotę faktury; po wznowieniu znów są zablokowane, jeśli faktura jest po terminie.
 - Wznowienie nie resetuje licznika dni — etap może „przeskoczyć” o kilka poziomów.
@@ -78,11 +84,13 @@ Deterministyczna eskalacja — stałe, konfigurowalne progi dni po terminie — 
 ## Functional Requirements
 
 ### Uwierzytelnianie
+
 - FR-001: Użytkownik może zarejestrować konto, zalogować się (email + hasło) i wylogować. Priority: must-have
   > Socrates: Counter-argument considered: "brak kontrargumentu". Resolution: kept as written.
   > Rewizja 2026-09-16: dodano rejestrację i wylogowanie — wcześniej nie było wiadomo, skąd bierze się konto. Reset hasła poza MVP.
 
 ### Klienci i faktury
+
 - FR-002: Użytkownik może dodać klienta (z opcjonalnym NIP i przełącznikiem „naliczaj rekompensatę”, domyślnie włączonym), edytować go, usunąć i przywrócić. Duplikat wykrywany jest po NIP, a przy braku NIP po nazwie (bez rozróżniania wielkości liter), także wśród klientów nieaktywnych. Usunięcie oznacza klienta jako nieaktywnego z zachowaniem historii i jest zablokowane, dopóki klient ma nieopłacone faktury. Priority: must-have
   > Socrates: Counter-argument considered (round 2): "trwałe usunięcie klienta kasuje historię faktur i wyliczeń" + "brak walidacji duplikatów rozdrabnia dane". Resolution: usunięcie zmienione na oznaczenie jako nieaktywny (klient nieaktywny, historia zachowana); dodano walidację duplikatów przy tworzeniu klienta.
   > Rewizja 2026-09-16: doprecyzowano klucz duplikatu, blokadę usunięcia klienta z otwartymi fakturami, przywracanie oraz przełącznik rekompensaty dla klientów-konsumentów.
@@ -94,6 +102,7 @@ Deterministyczna eskalacja — stałe, konfigurowalne progi dni po terminie — 
   > Rewizja 2026-09-16: tylko wpłata w całości — częściowe wpłaty poza MVP.
 
 ### Eskalacja i wyliczenia
+
 - FR-005: System automatycznie przypisuje każdej nieopłaconej, niewstrzymanej fakturze stan na podstawie liczby dni po terminie: bieżąca, po terminie przed pierwszym progiem, albo jeden z 4 etapów eskalacji (domyślne progi +3, +7, +14, +30). Etap 4 jest końcowy. Priority: must-have
   > Socrates: Counter-argument considered: "brak możliwości ręcznego wstrzymania eskalacji dla faktury w trakcie negocjacji". Resolution: dodano FR-013 — ręczne wstrzymanie eskalacji.
   > Rewizja 2026-09-16: doprecyzowano stan przed pierwszym progiem oraz końcowość etapu 4.
@@ -113,14 +122,19 @@ Deterministyczna eskalacja — stałe, konfigurowalne progi dni po terminie — 
   > Rewizja 2026-09-16: dodano wznowienie i jego skutek dla etapu.
 
 ### Widoki i ponaglenia
-- FR-010: Użytkownik widzi listę otwartych faktur pogrupowaną na: bieżące, po terminie przed pierwszym progiem, etapy 1–4 oraz wstrzymane; może filtrować po kliencie i sortować po liczbie dni po terminie lub kwocie. Faktury zapłacone i anulowane są dostępne w osobnym widoku historii. Priority: must-have
+
+- FR-010: Użytkownik widzi listę otwartych faktur pogrupowaną na: bieżące, po terminie przed pierwszym progiem, etapy 1–4 oraz wstrzymane. Faktury zapłacone i anulowane są dostępne w osobnym widoku historii. Priority: must-have
   > Socrates: Counter-argument considered: "brak sortowania/filtrowania per klient utrudnia czytelność przy większej liczbie klientów". Resolution: rozszerzono FR o filtrowanie/sortowanie per klient.
   > Rewizja 2026-09-16: doprecyzowano grupy, kryteria filtrowania/sortowania i widok historii.
+  > Rewizja 2026-10-10: filtrowanie i sortowanie wydzielone do FR-015 (nice-to-have) — wycięte z MVP zgodnie z Open Question #1.
+- FR-015: Użytkownik może filtrować listę otwartych faktur po kliencie i sortować ją po liczbie dni po terminie lub kwocie. Priority: nice-to-have
+  > Rewizja 2026-10-10: wydzielone z FR-010 i obniżone do nice-to-have — przy grupowaniu po etapach lista pozostaje czytelna dla małej liczby klientów (`target_scale.users: small`).
 - FR-011: Użytkownik może wygenerować dla klienta treść ponaglenia (zgodnie z FR-008) i skopiować ją do schowka. Treść zawiera dla każdej pozycji numer, kwotę, termin, liczbę dni po terminie, odsetki i rekompensatę oraz sumę całkowitą. Priority: must-have
   > Socrates: Counter-argument considered: "bez faktycznej wysyłki wartość jest ograniczona — użytkownik i tak musi ręcznie wkleić i wysłać e-mail". Resolution: kept as written — wysyłka jest świadomie poza zakresem MVP (backlog).
   > Rewizja 2026-09-16: ponaglenie zawsze per klient (wcześniej sprzeczność z FR-008); doprecyzowano zawartość.
-- FR-014: Użytkownik może edytować 4 szablony treści ponagleń (po jednym na ton etapu). Priority: must-have
+- FR-014: Użytkownik może edytować 4 szablony treści ponagleń (po jednym na ton etapu). Priority: nice-to-have
   > Rewizja 2026-09-16: dodane — ton i treść ponagleń muszą być dopasowywalne do stylu komunikacji użytkownika.
+  > Rewizja 2026-10-10: priorytet obniżony do nice-to-have — wycięte z MVP zgodnie z Open Question #1; ponaglenia w MVP korzystają ze stałych szablonów dla 4 tonów.
 - FR-012: Użytkownik widzi dashboard z prognozą wpływów na 30 dni: suma nieopłaconych faktur z terminem w ciągu 30 dni oraz osobno suma faktur już przeterminowanych (bez anulowanych, bez odsetek). Priority: nice-to-have
   > Socrates: Counter-argument considered: "prognoza bez historii spłacalności klienta może być zbyt optymistyczna". Resolution: kept as written — prosta prognoza terminowa jest świadomym kompromisem MVP; wagowanie wg historii trafia do backlogu.
   > Rewizja 2026-09-16: priorytet obniżony do nice-to-have (spójność z Secondary Success Criteria); prognoza obejmuje też faktury już zaległe.
@@ -159,3 +173,4 @@ Rejestracja i logowanie: email + hasło; użytkownik może się wylogować. Mode
 ## Open Questions
 
 1. **Czy zakres MVP zmieści się w budżecie 3 tygodni po godzinach?** — Z przeglądu spójności w notatkach kształtu: MVP ma 13 FR must-have przy budżecie 3 tygodni po godzinach, więc zakres jest ciasny. Jeśli prace się opóźnią, pierwsze do ograniczenia są FR-014 (edytowalne szablony) i sortowanie w FR-010. Owner: user. Block: no.
+   > **Rozstrzygnięte 2026-10-10:** oba wycięte z MVP — FR-014 obniżony do nice-to-have, a filtrowanie i sortowanie wydzielone z FR-010 do FR-015 (nice-to-have).
