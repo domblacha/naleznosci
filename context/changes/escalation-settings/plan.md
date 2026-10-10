@@ -386,33 +386,33 @@ Jedno dodatkowe zapytanie (`maybeSingle` po kluczu głównym) na stronach `/` i 
 
 #### Automated
 
-- [x] 3.1 Typy i Astro przechodzą: `npx astro check`
-- [x] 3.2 Lint przechodzi: `npm run lint`
-- [x] 3.3 Testy jednostkowe przechodzą: `npm test`
-- [x] 3.4 Build przechodzi: `npm run build`
-- [x] 3.5 Smoke nadal przechodzi: `npm run smoke`
-- [x] 3.6 W `src/components/invoices/` nie ma importów `DEFAULT_THRESHOLDS` ani `DEFAULT_CHARGE_SETTINGS`: `grep -rE "DEFAULT_(THRESHOLDS|CHARGE_SETTINGS)" src/components/invoices` nic nie zwraca
+- [x] 3.1 Typy i Astro przechodzą: `npx astro check` — 5caef88
+- [x] 3.2 Lint przechodzi: `npm run lint` — 5caef88
+- [x] 3.3 Testy jednostkowe przechodzą: `npm test` — 5caef88
+- [x] 3.4 Build przechodzi: `npm run build` — 5caef88
+- [x] 3.5 Smoke nadal przechodzi: `npm run smoke` — 5caef88
+- [x] 3.6 W `src/components/invoices/` nie ma importów `DEFAULT_THRESHOLDS` ani `DEFAULT_CHARGE_SETTINGS`: `grep -rE "DEFAULT_(THRESHOLDS|CHARGE_SETTINGS)" src/components/invoices` nic nie zwraca — 5caef88
 
 #### Manual
 
-- [x] 3.7 Po zapisaniu przez API progów 1/2/3/4 faktura 2 dni po terminie trafia na `/` do „Etap 2 · od 2 dni po terminie”, a jej ponaglenie ma ton etapu 2
-- [x] 3.8 Po zapisaniu innej stopy i kwot odsetki i rekompensata na `/` oraz podgląd „Zapłacona” odpowiadają nowym ustawieniom, a kwoty w `/history` się nie zmieniają
+- [x] 3.7 Po zapisaniu przez API progów 1/2/3/4 faktura 2 dni po terminie trafia na `/` do „Etap 2 · od 2 dni po terminie”, a jej ponaglenie ma ton etapu 2 — 5caef88
+- [x] 3.8 Po zapisaniu innej stopy i kwot odsetki i rekompensata na `/` oraz podgląd „Zapłacona” odpowiadają nowym ustawieniom, a kwoty w `/history` się nie zmieniają — 5caef88
 
 ### Phase 4: Ekran `/settings`
 
 #### Automated
 
-- [ ] 4.1 Typy i Astro przechodzą: `npx astro check`
-- [ ] 4.2 Lint przechodzi (bez literałów kolorów i klas palety): `npm run lint`
-- [ ] 4.3 Testy jednostkowe przechodzą: `npm test`
-- [ ] 4.4 Build przechodzi: `npm run build`
-- [ ] 4.5 Smoke nadal przechodzi: `npm run smoke`
+- [x] 4.1 Typy i Astro przechodzą: `npx astro check`
+- [x] 4.2 Lint przechodzi (bez literałów kolorów i klas palety): `npm run lint`
+- [x] 4.3 Testy jednostkowe przechodzą: `npm test`
+- [x] 4.4 Build przechodzi: `npm run build`
+- [x] 4.5 Smoke nadal przechodzi: `npm run smoke`
 
 #### Manual
 
-- [ ] 4.6 Niezalogowany użytkownik wchodzący na `/settings` trafia na `/auth/signin`
-- [ ] 4.7 Nowy użytkownik widzi na `/settings` wartości domyślne (3/7/14/30, 13,75, 170,00 / 297,50 / 425,00)
-- [ ] 4.8 Zapis nierosnących progów lub stopy 13,755 pokazuje błąd przy polu i nic nie zapisuje
-- [ ] 4.9 Zapis poprawnych ustawień pokazuje „Zapisano ustawienia”, wartości zostają po odświeżeniu, a `/` od razu liczy się z nowych ustawień
-- [ ] 4.10 „Przywróć domyślne”, a potem „Zapisz”, wraca do wartości domyślnych
-- [ ] 4.11 `/dev/ui` pokazuje stany formularza ustawień poprawnie w trybie jasnym i ciemnym
+- [x] 4.6 Niezalogowany użytkownik wchodzący na `/settings` trafia na `/auth/signin`
+- [x] 4.7 Nowy użytkownik widzi na `/settings` wartości domyślne (3/7/14/30, 13,75, 170,00 / 297,50 / 425,00)
+- [x] 4.8 Zapis nierosnących progów lub stopy 13,755 pokazuje błąd przy polu i nic nie zapisuje
+- [x] 4.9 Zapis poprawnych ustawień pokazuje „Zapisano ustawienia”, wartości zostają po odświeżeniu, a `/` od razu liczy się z nowych ustawień
+- [x] 4.10 „Przywróć domyślne”, a potem „Zapisz”, wraca do wartości domyślnych
+- [x] 4.11 `/dev/ui` pokazuje stany formularza ustawień poprawnie w trybie jasnym i ciemnym

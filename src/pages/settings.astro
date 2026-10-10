@@ -1,0 +1,40 @@
+---
+import Topbar from "@/components/Topbar.astro";
+import Layout from "@/layouts/Layout.astro";
+import { SettingsForm } from "@/components/settings/SettingsForm";
+import { createClient } from "@/lib/supabase";
+import { getSettings } from "@/lib/services/settings";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import type { EscalationSettings } from "@/types";
+
+export const prerender = false;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+let settings: EscalationSettings | null = null;
+let loadError: string | null = null;
+if (!supabase) {
+  loadError = "Ustawienia są niedostępne: brak konfiguracji serwera.";
+} else {
+  try {
+    settings = await getSettings(supabase);
+  } catch {
+    loadError = "Nie udało się wczytać ustawień. Odśwież stronę.";
+  }
+}
+---
+
+<Layout title="Ustawienia">
+  <div class="min-h-screen p-4">
+    <Topbar />
+    <main class="mx-auto max-w-3xl space-y-4 py-8">
+      <h1 class="text-3xl font-bold text-foreground">Ustawienia</h1>
+      {loadError || !settings ? (
+        <Alert variant="destructive">
+          <AlertDescription>{loadError}</AlertDescription>
+        </Alert>
+      ) : (
+        <SettingsForm initialSettings={settings} client:load />
+      )}
+    </main>
+  </div>
+</Layout>

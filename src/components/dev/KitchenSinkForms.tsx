@@ -15,6 +15,8 @@ import { InvoiceFormView, PauseEscalationControl } from "@/components/invoices/I
 import { InvoicesManager } from "@/components/invoices/InvoicesManager";
 import { PaymentFormView } from "@/components/invoices/PaymentDialog";
 import { ReminderDialogView } from "@/components/invoices/ReminderDialog";
+import { settingsInputText } from "@/components/hooks/use-settings-form";
+import { SettingsFormView } from "@/components/settings/SettingsForm";
 import { amountInputText } from "@/lib/format";
 import { chargesAsOf, chargeSettingsFrom, DEFAULT_ESCALATION_SETTINGS } from "@/lib/charges";
 import { isInvoiceLocked } from "@/lib/invoice-lock";
@@ -93,6 +95,13 @@ const sampleInvoices: Invoice[] = [
   sampleInvoice(5, 0, "FV/2026/10/002", 10000, "2026-10-04"),
   sampleInvoice(6, 1, "FV/2026/10/005", 75000, "2026-10-20"),
 ];
+
+const defaultSettingsText = settingsInputText(DEFAULT_ESCALATION_SETTINGS);
+const customSettingsText = settingsInputText({
+  thresholds: [5, 10, 21, 45],
+  annualRateBp: 1150,
+  compensationGrosze: [17000, 30000, 43000],
+});
 
 const sampleReminder = buildClientReminders(
   sampleInvoices,
@@ -479,6 +488,71 @@ export function KitchenSinkForms() {
           pending
           preview={chargesAsOf(sampleInvoices[0], "2026-08-10", chargeSettingsFrom(DEFAULT_ESCALATION_SETTINGS))}
           onPaidOnChange={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Ustawienia: domyślne">
+        <SettingsFormView
+          idPrefix="ks-settings-default"
+          values={defaultSettingsText}
+          errors={{}}
+          pending={false}
+          saved={false}
+          onFieldChange={noop}
+          onReset={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Ustawienia: błędy pól (nierosnące progi, zła stopa)">
+        <SettingsFormView
+          idPrefix="ks-settings-errors"
+          values={{ ...defaultSettingsText, threshold2: "3", threshold4: "14", annualRate: "13,755" }}
+          errors={{
+            threshold2: "Próg musi być większy niż próg poprzedniego etapu",
+            threshold4: "Próg musi być większy niż próg poprzedniego etapu",
+            annualRate: "Podaj stopę od 0 do 100 z najwyżej 2 miejscami po przecinku, np. 13,75",
+          }}
+          pending={false}
+          saved={false}
+          onFieldChange={noop}
+          onReset={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Ustawienia: błąd serwera">
+        <SettingsFormView
+          idPrefix="ks-settings-server-error"
+          values={customSettingsText}
+          errors={{}}
+          serverError="Coś poszło nie tak. Spróbuj ponownie."
+          pending={false}
+          saved={false}
+          onFieldChange={noop}
+          onReset={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Ustawienia: pending">
+        <SettingsFormView
+          idPrefix="ks-settings-pending"
+          values={customSettingsText}
+          errors={{}}
+          pending
+          saved={false}
+          onFieldChange={noop}
+          onReset={noop}
+          onSubmit={noop}
+        />
+      </Section>
+      <Section title="Ustawienia: po zapisie">
+        <SettingsFormView
+          idPrefix="ks-settings-saved"
+          values={customSettingsText}
+          errors={{}}
+          pending={false}
+          saved
+          onFieldChange={noop}
+          onReset={noop}
           onSubmit={noop}
         />
       </Section>
