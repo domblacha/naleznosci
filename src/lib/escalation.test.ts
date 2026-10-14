@@ -48,6 +48,23 @@ describe("escalationGroup", () => {
   it("skips the pre-threshold window when the first threshold is 1", () => {
     expect(escalationGroup(1, [1, 2, 3, 4])).toBe("stage_1");
   });
+
+  it("classifies by custom thresholds [5, 10, 20, 40] (inclusive)", () => {
+    const cases: [number, string][] = [
+      [4, "pre_threshold"],
+      [5, "stage_1"],
+      [9, "stage_1"],
+      [10, "stage_2"],
+      [19, "stage_2"],
+      [20, "stage_3"],
+      [39, "stage_3"],
+      [40, "stage_4"],
+      [365, "stage_4"],
+    ];
+    for (const [days, group] of cases) {
+      expect(escalationGroup(days, [5, 10, 20, 40]), `${days} days`).toBe(group);
+    }
+  });
 });
 
 describe("todayInPoland", () => {
@@ -59,6 +76,21 @@ describe("todayInPoland", () => {
   it("switches the day at midnight in winter time (CET)", () => {
     expect(todayInPoland(new Date("2026-12-31T22:59:59Z"))).toBe("2026-12-31");
     expect(todayInPoland(new Date("2026-12-31T23:00:00Z"))).toBe("2027-01-01");
+  });
+
+  it("switches the day at midnight on the eve of the spring DST change (29.03)", () => {
+    expect(todayInPoland(new Date("2026-03-28T22:59:59Z"))).toBe("2026-03-28");
+    expect(todayInPoland(new Date("2026-03-28T23:00:00Z"))).toBe("2026-03-29");
+  });
+
+  it("switches the day at midnight on the eve of the autumn DST change (still CEST)", () => {
+    expect(todayInPoland(new Date("2026-10-24T21:59:59Z"))).toBe("2026-10-24");
+    expect(todayInPoland(new Date("2026-10-24T22:00:00Z"))).toBe("2026-10-25");
+  });
+
+  it("switches the day at midnight on the autumn DST change day (25.10, back to CET)", () => {
+    expect(todayInPoland(new Date("2026-10-25T22:59:59Z"))).toBe("2026-10-25");
+    expect(todayInPoland(new Date("2026-10-25T23:00:00Z"))).toBe("2026-10-26");
   });
 });
 
@@ -113,6 +145,21 @@ describe("groupInvoices", () => {
     );
     expect(result.map((g) => g.group)).toEqual(["stage_4", "stage_2", "pre_threshold", "current", "paused"]);
     expect(result[0].items.map((i) => i.number)).toEqual(["FV/4", "FV/2", "FV/10"]);
+  });
+
+  it("passes thresholds through: 4 days overdue is stage_1 by default and pre_threshold with [5, 10, 20, 40]", () => {
+    const items = [{ number: "FV/1", dueDate: "2026-10-09" }];
+    expect(groupInvoices(items, today).map((g) => g.group)).toEqual(["stage_1"]);
+    expect(groupInvoices(items, today, [5, 10, 20, 40]).map((g) => g.group)).toEqual(["pre_threshold"]);
+  });
+
+  it("resumes a paused invoice 40 days overdue straight into stage_4, skipping stages 1-3 (FR-013)", () => {
+    const paused = { number: "FV/1", dueDate: "2026-09-03", pausedOn: "2026-10-10" };
+    const resumed = { ...paused, pausedOn: null };
+    expect(groupInvoices([paused], today).map((g) => g.group)).toEqual(["paused"]);
+    expect(groupInvoices([resumed], today)).toEqual([
+      { group: "stage_4", items: [{ number: "FV/1", dueDate: "2026-09-03", pausedOn: null, daysOverdue: 40 }] },
+    ]);
   });
 });
 

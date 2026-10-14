@@ -32,6 +32,13 @@ describe("interestGrosze", () => {
     expect(interestGrosze(1824, 1, 1000)).toBe(0);
   });
 
+  it("rounds half up at the default rate over many days", () => {
+    // 400000 * 1375 * 30 / 3650000 = 4520,5479...
+    expect(interestGrosze(400000, 30)).toBe(4521);
+    // 100000 * 1375 * 7 / 3650000 = 263,6986...
+    expect(interestGrosze(100000, 7)).toBe(264);
+  });
+
   it("keeps precision for the largest amount", () => {
     expect(interestGrosze(99999999999, 3650)).toBe(137499999999);
   });
@@ -91,6 +98,13 @@ describe("chargesAsOf", () => {
 
   it("depends only on the given day, not on today's date", () => {
     expect(chargesAsOf(invoice, "2026-09-11")).toEqual({ days: 10, interestGrosze: 465, compensationGrosze: 17000 });
+  });
+
+  it("keeps accruing interest while escalation is paused (FR-007)", () => {
+    // Wstrzymanie zatrzymuje tylko eskalację; dodatkowe pole pausedOn nie zmienia kwot.
+    const paused = { ...invoice, pausedOn: "2026-09-15" };
+    expect(chargesAsOf(paused, "2026-10-11")).toEqual({ days: 40, interestGrosze: 1860, compensationGrosze: 17000 });
+    expect(chargesAsOf(invoice, "2026-10-11")).toEqual({ days: 40, interestGrosze: 1860, compensationGrosze: 17000 });
   });
 });
 
@@ -188,6 +202,17 @@ describe("paymentSnapshot and frozenChargesAsOf", () => {
     const snapshot = paymentSnapshot(invoices[3], DEFAULT_CHARGE_SETTINGS);
     expect(snapshot.compensationGrosze).toBe(0);
     expect(frozenChargesAsOf(invoices[3], snapshot, "2026-10-11").compensationGrosze).toBe(0);
+  });
+
+  it("stops interest on the payment date", () => {
+    const paid = { dueDate: "2026-09-01", amountGrosze: 100000, paidOn: "2026-09-11" };
+    const snapshot = { rateBp: 1375, compensationGrosze: 17000 };
+    // Historia podaje paidOn jako asOf (PaidInvoicesManager.tsx:90), więc późniejsze „dziś” nie wpływa na wynik.
+    expect(frozenChargesAsOf(paid, snapshot, paid.paidOn)).toEqual({
+      days: 10,
+      interestGrosze: 377,
+      compensationGrosze: 17000,
+    });
   });
 
   it("changing settings does not change the result for the same snapshot", () => {

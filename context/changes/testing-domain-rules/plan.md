@@ -505,20 +505,20 @@ Nie dotyczy. Bez zmian w bazie.
 
 #### Automated
 
-- [x] 1.1 Testy jednostkowe przechodzą: `npm test`
-- [x] 1.2 Lint przechodzi: `npm run lint`
-- [x] 1.3 W zmienionych testach nie zostało porównanie wyniku funkcji z jej własnym wywołaniem (poza testem różnicowym)
+- [x] 1.1 Testy jednostkowe przechodzą: `npm test` — 4a4d0e9
+- [x] 1.2 Lint przechodzi: `npm run lint` — 4a4d0e9
+- [x] 1.3 W zmienionych testach nie zostało porównanie wyniku funkcji z jej własnym wywołaniem (poza testem różnicowym) — 4a4d0e9
 
 #### Manual
 
-- [x] 1.4 Nowy punkt Guardrails w PRD ma brzmienie zgodne z art. 10 ust. 1 ustawy
+- [x] 1.4 Nowy punkt Guardrails w PRD ma brzmienie zgodne z art. 10 ust. 1 ustawy — 4a4d0e9
 
 ### Phase 2: Brakujące przypadki etapu i kwot
 
 #### Automated
 
-- [ ] 2.1 Testy jednostkowe przechodzą: `npm test`
-- [ ] 2.2 Lint przechodzi: `npm run lint`
+- [x] 2.1 Testy jednostkowe przechodzą: `npm test`
+- [x] 2.2 Lint przechodzi: `npm run lint`
 
 ### Phase 3: Jedno źródło kwot
 
