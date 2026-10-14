@@ -55,6 +55,8 @@ npm run dev
 - `npm run lint` - Run ESLint with type-checked rules
 - `npm run lint:fix` - Auto-fix ESLint issues
 - `npm run format` - Run Prettier
+- `npm test` - Run unit tests (no database needed)
+- `npm run test:integration` - Run API integration tests against the local Supabase (requires `npx supabase start`; creates and deletes `int-*@example.com` accounts, does not reset the database)
 - `npm run smoke` - Smoke test the auth flow against a running server (`BASE_URL`, defaults to `http://localhost:4321`)
 
 ## Project Structure
