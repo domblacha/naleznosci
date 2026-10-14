@@ -1,4 +1,4 @@
-import { compensationGrosze, DEFAULT_CHARGE_SETTINGS, interestGrosze, type ChargeSettings } from "@/lib/charges";
+import { chargesAsOf, DEFAULT_CHARGE_SETTINGS, type ChargeSettings } from "@/lib/charges";
 import { DEFAULT_THRESHOLDS, groupInvoices, type EscalationThresholds } from "@/lib/escalation";
 import { formatAmount, formatDate } from "@/lib/format";
 import { bankAccountClause, EMPTY_SENDER_PROFILE, senderBlock } from "@/lib/sender-profile";
@@ -43,13 +43,7 @@ export function buildClientReminders(
     if (!(group in STAGE_BY_GROUP)) continue;
     const stage = STAGE_BY_GROUP[group as keyof typeof STAGE_BY_GROUP];
     for (const invoice of items) {
-      const interest = interestGrosze(invoice.amountGrosze, invoice.daysOverdue, settings.annualRateBp);
-      const compensation = compensationGrosze(
-        invoice.amountGrosze,
-        invoice.daysOverdue,
-        invoice.clientChargesCompensation,
-        settings.compensationTiers,
-      );
+      const { interestGrosze: interest, compensationGrosze: compensation } = chargesAsOf(invoice, today, settings);
       const reminder = byClient.get(invoice.clientId) ?? {
         clientId: invoice.clientId,
         clientName: invoice.clientName,

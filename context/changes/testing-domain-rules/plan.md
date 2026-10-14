@@ -517,22 +517,22 @@ Nie dotyczy. Bez zmian w bazie.
 
 #### Automated
 
-- [x] 2.1 Testy jednostkowe przechodzą: `npm test`
-- [x] 2.2 Lint przechodzi: `npm run lint`
+- [x] 2.1 Testy jednostkowe przechodzą: `npm test` — fcb22f0
+- [x] 2.2 Lint przechodzi: `npm run lint` — fcb22f0
 
 ### Phase 3: Jedno źródło kwot
 
 #### Automated
 
-- [ ] 3.1 Testy jednostkowe przechodzą bez zmian w testach: `npm test`
-- [ ] 3.2 Lint przechodzi: `npm run lint`
-- [ ] 3.3 Typy przechodzą: `npx astro check`
-- [ ] 3.4 W komponentach nie ma bezpośrednich wywołań prymitywów kwot (poza `src/components/dev/`)
+- [x] 3.1 Testy jednostkowe przechodzą bez zmian w testach: `npm test`
+- [x] 3.2 Lint przechodzi: `npm run lint`
+- [x] 3.3 Typy przechodzą: `npx astro check`
+- [x] 3.4 W komponentach nie ma bezpośrednich wywołań prymitywów kwot (poza `src/components/dev/`)
 
 #### Manual
 
-- [ ] 3.5 Na `/invoices` kwoty faktur przeterminowanych i wstrzymanych są takie same jak przed zmianą, bieżące pokazują „—”
-- [ ] 3.6 Na `/` suma ponaglenia i treść w dialogu są takie same jak przed zmianą
+- [x] 3.5 Na `/invoices` kwoty faktur przeterminowanych i wstrzymanych są takie same jak przed zmianą, bieżące pokazują „—”
+- [x] 3.6 Na `/` suma ponaglenia i treść w dialogu są takie same jak przed zmianą
 
 ### Phase 4: Zgodność ponaglenia
 
