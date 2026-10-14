@@ -1,7 +1,7 @@
 ---
 change_id: testing-api-state-and-isolation
 title: Testy integracyjne przejść stanu, izolacji użytkowników i walidacji API
-status: implementing
+status: implemented
 created: 2026-10-14
 updated: 2026-10-14
 archived_at: null

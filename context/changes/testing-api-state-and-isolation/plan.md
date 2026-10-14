@@ -470,10 +470,10 @@ w `afterAll` i w `globalSetup`.
 
 #### Automated
 
-- [x] 4.1 `npm run test:integration` przechodzi, w tym `validation.int.test.ts` i `db-gaps.int.test.ts` (luki raportowane jako oczekiwane porażki)
-- [x] 4.2 `npm test`, `npm run lint` i `npx astro check` przechodzą
+- [x] 4.1 `npm run test:integration` przechodzi, w tym `validation.int.test.ts` i `db-gaps.int.test.ts` (luki raportowane jako oczekiwane porażki) — c34589b
+- [x] 4.2 `npm test`, `npm run lint` i `npx astro check` przechodzą — c34589b
 
 #### Manual
 
-- [x] 4.3 Podmiana schematu w `PUT /api/settings` na `z.any()` czerwieni przypadek progów niemonotonicznych; po przywróceniu jest zielony
-- [x] 4.4 Wpisy w `test-plan.md` §4, §6.3–§6.5 i README są zrozumiałe bez czytania tego planu
+- [x] 4.3 Podmiana schematu w `PUT /api/settings` na `z.any()` czerwieni przypadek progów niemonotonicznych; po przywróceniu jest zielony — c34589b
+- [x] 4.4 Wpisy w `test-plan.md` §4, §6.3–§6.5 i README są zrozumiałe bez czytania tego planu — c34589b
