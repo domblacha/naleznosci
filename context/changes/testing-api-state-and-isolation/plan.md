@@ -447,24 +447,24 @@ w `afterAll` i w `globalSetup`.
 
 #### Automated
 
-- [x] 2.1 `npm run test:integration` przechodzi, w tym trzy nowe pliki
-- [x] 2.2 `npm test`, `npm run lint` i `npx astro check` przechodzą
+- [x] 2.1 `npm run test:integration` przechodzi, w tym trzy nowe pliki — 4222d55
+- [x] 2.2 `npm test`, `npm run lint` i `npx astro check` przechodzą — 4222d55
 
 #### Manual
 
-- [x] 2.3 Usunięcie `.is("cancelled_on", null)` z `listOpenInvoices` czerwieni test filtra; po przywróceniu jest zielony
-- [x] 2.4 Usunięcie `.not("paid_on", "is", null)` z gałęzi cofnięcia wpłaty w `setInvoicePayment` czerwieni przypadek „cofnięcie wpłaty otwartej”; po przywróceniu jest zielony
+- [x] 2.3 Usunięcie `.is("cancelled_on", null)` z `listOpenInvoices` czerwieni test filtra; po przywróceniu jest zielony — 4222d55
+- [x] 2.4 Usunięcie `.not("paid_on", "is", null)` z gałęzi cofnięcia wpłaty w `setInvoicePayment` czerwieni przypadek „cofnięcie wpłaty otwartej”; po przywróceniu jest zielony — 4222d55
 
 ### Phase 3: Izolacja użytkowników (#5)
 
 #### Automated
 
-- [ ] 3.1 `npm run test:integration` przechodzi, w tym `isolation.int.test.ts`
-- [ ] 3.2 `npm test`, `npm run lint` i `npx astro check` przechodzą
+- [x] 3.1 `npm run test:integration` przechodzi, w tym `isolation.int.test.ts`
+- [x] 3.2 `npm test`, `npm run lint` i `npx astro check` przechodzą
 
 #### Manual
 
-- [ ] 3.3 Tymczasowe poluzowanie polityki `select` na `invoices` czerwieni testy odczytów (zmiana w Studio na `using (true)`, potem przywrócenie tym samym SQL-em co w migracji `create_invoices`, bez `db reset`)
+- [x] 3.3 Tymczasowe poluzowanie polityki `select` na `invoices` czerwieni testy odczytów (zmiana w Studio na `using (true)`, potem przywrócenie tym samym SQL-em co w migracji `create_invoices`, bez `db reset`)
 
 ### Phase 4: Walidacja serwera (#6), luki bazy i dokumentacja
 
