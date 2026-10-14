@@ -433,27 +433,27 @@ w `afterAll` i w `globalSetup`.
 
 #### Automated
 
-- [x] 1.1 `npm test` przechodzi i nie uruchamia żadnego pliku `*.int.test.ts`
-- [x] 1.2 `npm run test:integration` przechodzi na działającym lokalnym Supabase
-- [x] 1.3 `npm run lint` przechodzi
-- [x] 1.4 `npx astro check` przechodzi
+- [x] 1.1 `npm test` przechodzi i nie uruchamia żadnego pliku `*.int.test.ts` — 81086d7
+- [x] 1.2 `npm run test:integration` przechodzi na działającym lokalnym Supabase — 81086d7
+- [x] 1.3 `npm run lint` przechodzi — 81086d7
+- [x] 1.4 `npx astro check` przechodzi — 81086d7
 
 #### Manual
 
-- [x] 1.5 Przy zatrzymanym Supabase `npm run test:integration` kończy się czytelnym komunikatem o `npx supabase start`
-- [x] 1.6 Po przebiegu Studio (`localhost:54323` → Authentication) nie pokazuje kont `int-*@example.com`, a dane dev użytkownika są nietknięte
+- [x] 1.5 Przy zatrzymanym Supabase `npm run test:integration` kończy się czytelnym komunikatem o `npx supabase start` — 81086d7
+- [x] 1.6 Po przebiegu Studio (`localhost:54323` → Authentication) nie pokazuje kont `int-*@example.com`, a dane dev użytkownika są nietknięte — 81086d7
 
 ### Phase 2: Przejścia stanu (#4) i filtr list
 
 #### Automated
 
-- [ ] 2.1 `npm run test:integration` przechodzi, w tym trzy nowe pliki
-- [ ] 2.2 `npm test`, `npm run lint` i `npx astro check` przechodzą
+- [x] 2.1 `npm run test:integration` przechodzi, w tym trzy nowe pliki
+- [x] 2.2 `npm test`, `npm run lint` i `npx astro check` przechodzą
 
 #### Manual
 
-- [ ] 2.3 Usunięcie `.is("cancelled_on", null)` z `listOpenInvoices` czerwieni test filtra; po przywróceniu jest zielony
-- [ ] 2.4 Usunięcie `.not("paid_on", "is", null)` z gałęzi cofnięcia wpłaty w `setInvoicePayment` czerwieni przypadek „cofnięcie wpłaty otwartej”; po przywróceniu jest zielony
+- [x] 2.3 Usunięcie `.is("cancelled_on", null)` z `listOpenInvoices` czerwieni test filtra; po przywróceniu jest zielony
+- [x] 2.4 Usunięcie `.not("paid_on", "is", null)` z gałęzi cofnięcia wpłaty w `setInvoicePayment` czerwieni przypadek „cofnięcie wpłaty otwartej”; po przywróceniu jest zielony
 
 ### Phase 3: Izolacja użytkowników (#5)
 
