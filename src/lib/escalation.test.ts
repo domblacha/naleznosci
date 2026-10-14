@@ -2,30 +2,30 @@ import { describe, expect, it } from "vitest";
 import { daysOverdue, escalationGroup, GROUP_ORDER, groupInvoices, todayInPoland } from "@/lib/escalation";
 
 describe("daysOverdue", () => {
-  it("zwraca 0, gdy termin jest dziś", () => {
+  it("returns 0 when the due date is today", () => {
     expect(daysOverdue("2026-10-13", "2026-10-13")).toBe(0);
   });
 
-  it("zwraca liczbę ujemną, gdy termin jeszcze nie minął", () => {
+  it("returns a negative number when the due date has not passed", () => {
     expect(daysOverdue("2026-10-14", "2026-10-13")).toBe(-1);
   });
 
-  it("liczy dni kalendarzowe po terminie", () => {
+  it("counts calendar days after the due date", () => {
     expect(daysOverdue("2026-10-10", "2026-10-13")).toBe(3);
   });
 
-  it("nie przesuwa wyniku przy zmianie czasu", () => {
+  it("does not shift the result across DST changes", () => {
     expect(daysOverdue("2026-10-24", "2026-10-26")).toBe(2);
     expect(daysOverdue("2026-03-28", "2026-03-30")).toBe(2);
   });
 
-  it("liczy przez koniec roku", () => {
+  it("counts across the year end", () => {
     expect(daysOverdue("2026-12-30", "2027-01-02")).toBe(3);
   });
 });
 
 describe("escalationGroup", () => {
-  it("klasyfikuje według domyślnych progów (włącznie)", () => {
+  it("classifies by default thresholds (inclusive)", () => {
     const cases: [number, string][] = [
       [-5, "current"],
       [0, "current"],
@@ -41,22 +41,22 @@ describe("escalationGroup", () => {
       [365, "stage_4"],
     ];
     for (const [days, group] of cases) {
-      expect(escalationGroup(days), `${days} dni`).toBe(group);
+      expect(escalationGroup(days), `${days} days`).toBe(group);
     }
   });
 
-  it("pomija okno przed progiem, gdy pierwszy próg to 1", () => {
+  it("skips the pre-threshold window when the first threshold is 1", () => {
     expect(escalationGroup(1, [1, 2, 3, 4])).toBe("stage_1");
   });
 });
 
 describe("todayInPoland", () => {
-  it("przełącza dzień o północy czasu letniego (CEST)", () => {
+  it("switches the day at midnight in summer time (CEST)", () => {
     expect(todayInPoland(new Date("2026-10-12T21:59:59Z"))).toBe("2026-10-12");
     expect(todayInPoland(new Date("2026-10-12T22:00:00Z"))).toBe("2026-10-13");
   });
 
-  it("przełącza dzień o północy czasu zimowego (CET)", () => {
+  it("switches the day at midnight in winter time (CET)", () => {
     expect(todayInPoland(new Date("2026-12-31T22:59:59Z"))).toBe("2026-12-31");
     expect(todayInPoland(new Date("2026-12-31T23:00:00Z"))).toBe("2027-01-01");
   });
@@ -73,37 +73,37 @@ describe("groupInvoices", () => {
     { number: "FV/5", dueDate: "2026-10-05" },
   ];
 
-  it("zwraca tylko niepuste grupy od etapu 4", () => {
+  it("returns only non-empty groups, starting from stage 4", () => {
     const result = groupInvoices(invoices, today);
     expect(result.map((g) => g.group)).toEqual(["stage_4", "stage_2", "pre_threshold", "current"]);
   });
 
-  it("sortuje w grupie od najstarszego terminu, remis po numerze", () => {
+  it("sorts within a group by oldest due date, ties by number", () => {
     const stage4 = groupInvoices(invoices, today)[0];
     expect(stage4.items.map((i) => i.number)).toEqual(["FV/4", "FV/2", "FV/10"]);
     expect(stage4.items.map((i) => i.daysOverdue)).toEqual([73, 42, 42]);
   });
 
-  it("jest deterministyczne i nie zmienia wejścia", () => {
+  it("does not mutate the input", () => {
     const before = invoices.map((i) => i.number);
-    expect(groupInvoices(invoices, today)).toEqual(groupInvoices(invoices, today));
+    groupInvoices(invoices, today);
     expect(invoices.map((i) => i.number)).toEqual(before);
   });
 
-  it("kieruje wstrzymaną fakturę 40 dni po terminie do grupy paused, a nie do stage_4", () => {
+  it("routes a paused invoice 40 days overdue to paused, not stage_4", () => {
     const result = groupInvoices([{ number: "FV/1", dueDate: "2026-09-03", pausedOn: "2026-10-10" }], today);
     expect(result).toEqual([
       { group: "paused", items: [{ number: "FV/1", dueDate: "2026-09-03", pausedOn: "2026-10-10", daysOverdue: 40 }] },
     ]);
   });
 
-  it("kieruje wstrzymaną fakturę bieżącą do grupy paused", () => {
+  it("routes a paused current invoice to paused", () => {
     const result = groupInvoices([{ number: "FV/1", dueDate: "2026-10-20", pausedOn: "2026-10-10" }], today);
     expect(result.map((g) => g.group)).toEqual(["paused"]);
     expect(result[0].items[0].daysOverdue).toBe(-7);
   });
 
-  it("grupuje elementy bez wstrzymania jak dotąd, a wstrzymane stawia na końcu", () => {
+  it("groups unpaused items as before and puts paused ones last", () => {
     const result = groupInvoices(
       [
         ...invoices.map((i) => ({ ...i, pausedOn: null })),
@@ -117,7 +117,7 @@ describe("groupInvoices", () => {
 });
 
 describe("GROUP_ORDER", () => {
-  it("kończy się grupą paused po bieżących", () => {
+  it("ends with the paused group after current", () => {
     expect(GROUP_ORDER).toEqual(["stage_4", "stage_3", "stage_2", "stage_1", "pre_threshold", "current", "paused"]);
   });
 });

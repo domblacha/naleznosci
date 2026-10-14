@@ -44,8 +44,8 @@ const sampleInvoices: Invoice[] = [
   inv(ZABKA, "FV/2026/10/005", 75000, "2026-10-20"),
 ];
 
-describe("buildClientReminders: wybór faktur", () => {
-  it("bierze tylko etapy 1-4, pomija bieżące i przed progiem", () => {
+describe("buildClientReminders: invoice selection", () => {
+  it("takes only stages 1-4, skips current and pre-threshold", () => {
     const reminders = buildClientReminders(sampleInvoices, TODAY);
     const acme = reminders.find((r) => r.clientId === ACME.id);
     expect(acme?.items.map((i) => i.number)).toEqual(["FV/2026/08/001", "FV/2026/08/002", "FV/2026/09/007"]);
@@ -53,7 +53,7 @@ describe("buildClientReminders: wybór faktur", () => {
     expect(zabka?.items.map((i) => i.number)).toEqual(["FV/2026/09/004", "FV/2026/09/010"]);
   });
 
-  it("pomija klienta mającego wyłącznie faktury bieżące lub przed progiem", () => {
+  it("skips a client with only current or pre-threshold invoices", () => {
     const reminders = buildClientReminders(
       [inv(ACME, "A/1", 10000, "2026-10-04"), inv(ACME, "A/2", 10000, "2026-10-20")],
       TODAY,
@@ -62,20 +62,37 @@ describe("buildClientReminders: wybór faktur", () => {
   });
 });
 
-describe("buildClientReminders: wstrzymane faktury", () => {
+describe("buildClientReminders: paused invoices", () => {
   const paused = (invoice: Invoice): Invoice => ({ ...invoice, pausedOn: "2026-10-01" });
 
-  it("pomija wstrzymaną fakturę 40 dni po terminie; etap i sumy odpowiadają niewstrzymanej pozycji", () => {
+  it("skips a paused invoice 40 days overdue; stage and totals match the unpaused item", () => {
     const active = inv(ACME, "A/1", 123456, "2026-08-20");
     const reminders = buildClientReminders([active, paused(inv(ACME, "A/2", 650000, "2026-08-26"))], TODAY);
-    const [expected] = buildClientReminders([active], TODAY);
-    expect(reminders).toHaveLength(1);
-    expect(reminders[0].items.map((i) => i.number)).toEqual(["A/1"]);
-    expect(reminders[0].stage).toBe(4);
-    expect(reminders[0]).toEqual(expected);
+    expect(reminders).toEqual([
+      {
+        clientId: ACME.id,
+        clientName: ACME.name,
+        chargesCompensation: true,
+        stage: 4,
+        items: [
+          {
+            number: "A/1",
+            amountGrosze: 123456,
+            dueDate: "2026-08-20",
+            daysOverdue: 46,
+            interestGrosze: 2139,
+            compensationGrosze: 17000,
+          },
+        ],
+        principalGrosze: 123456,
+        interestGrosze: 2139,
+        compensationGrosze: 17000,
+        totalGrosze: 142595,
+      },
+    ]);
   });
 
-  it("wstrzymana faktura na etapie 4 nie podnosi etapu ponaglenia", () => {
+  it("a paused stage-4 invoice does not raise the reminder stage", () => {
     const reminders = buildClientReminders(
       [inv(ACME, "A/1", 10000, "2026-09-25"), paused(inv(ACME, "A/2", 10000, "2026-08-26"))],
       TODAY,
@@ -83,7 +100,7 @@ describe("buildClientReminders: wstrzymane faktury", () => {
     expect(reminders.map((r) => [r.stage, r.items.map((i) => i.number)])).toEqual([[2, ["A/1"]]]);
   });
 
-  it("pomija klienta, którego jedyna faktura po terminie jest wstrzymana", () => {
+  it("skips a client whose only overdue invoice is paused", () => {
     const reminders = buildClientReminders(
       [paused(inv(ACME, "A/1", 10000, "2026-08-26")), inv(ACME, "A/2", 10000, "2026-10-20")],
       TODAY,
@@ -92,8 +109,8 @@ describe("buildClientReminders: wstrzymane faktury", () => {
   });
 });
 
-describe("buildClientReminders: etap", () => {
-  it("bierze maksimum etapów pozycji, także gdy wyższy etap nie jest pierwszy na wejściu", () => {
+describe("buildClientReminders: stage", () => {
+  it("takes the maximum item stage, even when the higher stage is not first in the input", () => {
     const reminders = buildClientReminders(
       [
         inv(ACME, "A/1", 10000, "2026-10-01"),
@@ -106,7 +123,7 @@ describe("buildClientReminders: etap", () => {
     expect(reminders[0].stage).toBe(4);
   });
 
-  it("respektuje granice progów", () => {
+  it("respects threshold boundaries", () => {
     const at = (days: number) => {
       const due = new Date(Date.UTC(2026, 9, 5 - days)).toISOString().slice(0, 10);
       return buildClientReminders([inv(ACME, "A/1", 10000, due)], TODAY);
@@ -117,8 +134,8 @@ describe("buildClientReminders: etap", () => {
   });
 });
 
-describe("buildClientReminders: grupowanie i kolejność", () => {
-  it("daje po jednym ponagleniu na klienta, etap malejąco, potem nazwa", () => {
+describe("buildClientReminders: grouping and order", () => {
+  it("yields one reminder per client, by stage descending, then name", () => {
     const reminders = buildClientReminders(sampleInvoices, TODAY);
     expect(reminders.map((r) => [r.clientName, r.stage])).toEqual([
       ["Acme Sp. z o.o.", 4],
@@ -126,7 +143,7 @@ describe("buildClientReminders: grupowanie i kolejność", () => {
     ]);
   });
 
-  it("przy równym etapie sortuje po nazwie klienta", () => {
+  it("sorts by client name when stages are equal", () => {
     const reminders = buildClientReminders(
       [inv(ZABKA, "Z/1", 10000, "2026-09-25"), inv(ACME, "A/1", 10000, "2026-09-25")],
       TODAY,
@@ -135,8 +152,8 @@ describe("buildClientReminders: grupowanie i kolejność", () => {
   });
 });
 
-describe("buildClientReminders: sumy", () => {
-  it("liczy sumy Acme (z rekompensatą)", () => {
+describe("buildClientReminders: totals", () => {
+  it("computes Acme totals (with compensation)", () => {
     const acme = buildClientReminders(sampleInvoices, TODAY)[0];
     expect(acme.principalGrosze).toBe(873356);
     expect(acme.interestGrosze).toBe(12517);
@@ -145,7 +162,7 @@ describe("buildClientReminders: sumy", () => {
     expect(acme.items.map((i) => i.daysOverdue)).toEqual([46, 41, 9]);
   });
 
-  it("liczy sumy Żabki (bez rekompensaty)", () => {
+  it("computes Żabka totals (without compensation)", () => {
     const zabka = buildClientReminders(sampleInvoices, TODAY)[1];
     expect(zabka.principalGrosze).toBe(300050);
     expect(zabka.interestGrosze).toBe(754);
@@ -157,7 +174,7 @@ describe("buildClientReminders: sumy", () => {
 describe("renderReminder", () => {
   const [acme, zabka] = buildClientReminders(sampleInvoices, TODAY);
 
-  it("renderuje pełny tekst Acme (etap 4)", () => {
+  it("renders the full Acme text (stage 4)", () => {
     const expected = `Ostateczne przedsądowe wezwanie do zapłaty
 05.10.2026
 
@@ -180,7 +197,7 @@ Z poważaniem`;
     expect(renderReminder(acme, TODAY)).toBe(expected);
   });
 
-  it("renderuje Żabkę (etap 3) bez rekompensaty", () => {
+  it("renders Żabka (stage 3) without compensation", () => {
     const text = renderReminder(zabka, TODAY);
     expect(text).toContain("Wezwanie do zapłaty");
     expect(text).not.toMatch(/rekompensat/i);
@@ -188,7 +205,7 @@ Z poważaniem`;
     expect(text).toContain(`Razem do zapłaty: 3008,04${NB}zł`);
   });
 
-  it("po renderze żaden z 4 szablonów nie zawiera nawiasów klamrowych", () => {
+  it("none of the 4 templates contains curly braces after rendering", () => {
     for (const stage of [1, 2, 3, 4] as const) {
       const text = renderReminder({ ...acme, stage }, TODAY);
       expect(text).not.toMatch(/[{}]/);
@@ -196,7 +213,7 @@ Z poważaniem`;
     expect(Object.keys(REMINDER_TEMPLATES)).toHaveLength(4);
   });
 
-  it("nie podstawia pól drugi raz w nazwie klienta i zostawia nieznane pola", () => {
+  it("does not substitute fields twice in the client name and leaves unknown fields", () => {
     const tricky = { ...acme, clientName: "Firma {data}" };
     const text = renderReminder(tricky, TODAY, EMPTY_SENDER_PROFILE, {
       ...REMINDER_TEMPLATES,
@@ -205,17 +222,17 @@ Z poważaniem`;
     expect(text).toBe("Firma {data} / 05.10.2026 / {nieznane}");
   });
 
-  it("używa 'dzień' przy 1 dniu po terminie (progi [1, 2, 3, 4])", () => {
+  it("uses 'dzień' for 1 day overdue (thresholds [1, 2, 3, 4])", () => {
     const [reminder] = buildClientReminders([inv(ACME, "A/1", 10000, "2026-10-04")], TODAY, [1, 2, 3, 4]);
     expect(renderReminder(reminder, TODAY)).toContain("1 dzień po terminie");
   });
 
-  it("liczy termin zapłaty przez koniec miesiąca (28.10 -> 04.11)", () => {
+  it("computes the payment deadline across the month end (28.10 -> 04.11)", () => {
     const text = renderReminder(acme, "2026-10-28");
     expect(text).toContain("do 04.11.2026");
   });
 
-  describe("dane nadawcy", () => {
+  describe("sender profile", () => {
     const FULL: SenderProfile = {
       companyName: "Firma Testowa Sp. z o.o.",
       nip: "5260250995",
@@ -223,7 +240,7 @@ Z poważaniem`;
       bankAccount: "61109010140000071219812874",
     };
 
-    it("pełny profil: blok nadawcy kończy etap 4, a rachunek stoi w zdaniu o terminie", () => {
+    it("full profile: the sender block ends stage 4 and the account is in the deadline sentence", () => {
       const text = renderReminder(acme, TODAY, FULL);
       expect(text).toContain("uregulowana do 12.10.2026 na rachunek nr 61 1090 1014 0000 0712 1981 2874, sprawa");
       expect(
@@ -231,20 +248,20 @@ Z poważaniem`;
       ).toBe(true);
     });
 
-    it("profil z samym kontem kończy się na 'Z poważaniem' i ma zdanie z rachunkiem", () => {
+    it("account-only profile ends with 'Z poważaniem' and has the account sentence", () => {
       const text = renderReminder(acme, TODAY, { ...EMPTY_SENDER_PROFILE, bankAccount: FULL.bankAccount });
       expect(text.endsWith("Z poważaniem")).toBe(true);
       expect(text).toContain("do 12.10.2026 na rachunek nr 61 1090 1014 0000 0712 1981 2874, sprawa");
     });
 
-    it("profil bez konta nie ma 'na rachunek', a blok nadawcy zostaje", () => {
+    it("profile without an account has no 'na rachunek' but keeps the sender block", () => {
       const text = renderReminder(acme, TODAY, { ...FULL, bankAccount: null });
       expect(text).not.toContain("na rachunek");
       expect(text).toContain("do 12.10.2026, sprawa");
       expect(text.endsWith("NIP: 5260250995")).toBe(true);
     });
 
-    it("adres z pustymi liniami i spacjami nie daje pustych linii w bloku", () => {
+    it("an address with blank lines and spaces yields no blank lines in the block", () => {
       const text = renderReminder(acme, TODAY, {
         ...EMPTY_SENDER_PROFILE,
         address: "  ul. Prosta 1  \n\n   \n00-001 Warszawa\n",
@@ -252,12 +269,12 @@ Z poważaniem`;
       expect(text.endsWith("Z poważaniem\nul. Prosta 1\n00-001 Warszawa")).toBe(true);
     });
 
-    it("nazwa firmy z polem w nawiasach nie jest podstawiana ponownie", () => {
+    it("a company name with a braced field is not substituted again", () => {
       const text = renderReminder(acme, TODAY, { ...EMPTY_SENDER_PROFILE, companyName: "Firma {klient}" });
       expect(text.endsWith("Z poważaniem\nFirma {klient}")).toBe(true);
     });
 
-    it("przy pełnym profilu żaden z 4 szablonów nie zostawia nawiasów klamrowych", () => {
+    it("with a full profile none of the 4 templates leaves curly braces", () => {
       for (const stage of [1, 2, 3, 4] as const) {
         const text = renderReminder({ ...acme, stage }, TODAY, FULL);
         expect(text).not.toMatch(/[{}]/);
