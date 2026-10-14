@@ -538,9 +538,9 @@ Nie dotyczy. Bez zmian w bazie.
 
 #### Automated
 
-- [x] 4.1 Testy jednostkowe przechodzą: `npm test`
-- [x] 4.2 Lint przechodzi: `npm run lint`
+- [x] 4.1 Testy jednostkowe przechodzą: `npm test` — f564d59
+- [x] 4.2 Lint przechodzi: `npm run lint` — f564d59
 
 #### Manual
 
-- [x] 4.3 `test-plan.md` §3, §6.1, §6.2 i §6.5 opisują wzorce zgodnie z tym, co faktycznie powstało w testach
+- [x] 4.3 `test-plan.md` §3, §6.1, §6.2 i §6.5 opisują wzorce zgodnie z tym, co faktycznie powstało w testach — f564d59
