@@ -7,7 +7,7 @@ import { InvoiceFormDialog } from "@/components/invoices/InvoiceFormDialog";
 import { PaymentDialog } from "@/components/invoices/PaymentDialog";
 import { INACTIVE_PANEL, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useReloadOnBfcacheRestore } from "@/components/hooks/use-reload-on-bfcache-restore";
-import { chargeSettingsFrom, compensationGrosze, interestGrosze } from "@/lib/charges";
+import { chargeSettingsFrom, chargesAsOf } from "@/lib/charges";
 import { groupInvoices, type EscalationGroup, type EscalationThresholds } from "@/lib/escalation";
 import { formatAmount, formatDate } from "@/lib/format";
 import type { Client, EscalationSettings, Invoice } from "@/types";
@@ -41,12 +41,14 @@ function groupLabels([t1, t2, t3, t4]: EscalationThresholds): Record<EscalationG
 interface InvoiceGroupsProps {
   list: { group: EscalationGroup; items: (Invoice & { daysOverdue: number })[] }[];
   labels: ReturnType<typeof groupLabels>;
+  /** YYYY-MM-DD, "today" in Poland, computed on the server. */
+  today: string;
   chargeSettings: ReturnType<typeof chargeSettingsFrom>;
   onEdit: (invoice: Invoice, opener: HTMLElement) => void;
   onPay: (invoiceId: string, opener: HTMLElement) => void;
 }
 
-function InvoiceGroups({ list, labels, chargeSettings, onEdit, onPay }: InvoiceGroupsProps) {
+function InvoiceGroups({ list, labels, today, chargeSettings, onEdit, onPay }: InvoiceGroupsProps) {
   return list.map(({ group, items }) => (
     <section key={group} className="space-y-2">
       <h2 className="text-foreground text-sm font-semibold">
@@ -76,21 +78,12 @@ function InvoiceGroups({ list, labels, chargeSettings, onEdit, onPay }: InvoiceG
               <TableCell className="text-right">
                 {invoice.daysOverdue <= 0
                   ? "—"
-                  : formatAmount(
-                      interestGrosze(invoice.amountGrosze, invoice.daysOverdue, chargeSettings.annualRateBp),
-                    )}
+                  : formatAmount(chargesAsOf(invoice, today, chargeSettings).interestGrosze)}
               </TableCell>
               <TableCell className="text-right">
                 {invoice.daysOverdue <= 0
                   ? "—"
-                  : formatAmount(
-                      compensationGrosze(
-                        invoice.amountGrosze,
-                        invoice.daysOverdue,
-                        invoice.clientChargesCompensation,
-                        chargeSettings.compensationTiers,
-                      ),
-                    )}
+                  : formatAmount(chargesAsOf(invoice, today, chargeSettings).compensationGrosze)}
               </TableCell>
               <TableCell className="space-x-2 text-right">
                 <Button
@@ -251,6 +244,7 @@ export function InvoicesManager({ initialInvoices, clients, today, settings }: P
                 <InvoiceGroups
                   list={escalationGroups}
                   labels={labels}
+                  today={today}
                   chargeSettings={chargeSettings}
                   onEdit={openEditDialog}
                   onPay={openPayDialog}
@@ -264,6 +258,7 @@ export function InvoicesManager({ initialInvoices, clients, today, settings }: P
                 <InvoiceGroups
                   list={groups.filter((g) => g.group === "paused")}
                   labels={labels}
+                  today={today}
                   chargeSettings={chargeSettings}
                   onEdit={openEditDialog}
                   onPay={openPayDialog}

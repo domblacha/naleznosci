@@ -41,6 +41,7 @@ Deterministyczna eskalacja — stałe, konfigurowalne progi dni po terminie — 
 ### Guardrails
 
 - Wyliczenia odsetek i rekompensaty są poprawne: odsetki = kwota × roczna stopa × dni po terminie / 365, rekompensata = kwota z progu odpowiadającego wartości faktury (0 dla klientów z wyłączoną rekompensatą), wszystkie kwoty zaokrąglone do grosza.
+- Granice progów rekompensaty są ustawowe (art. 10 ust. 1 ustawy o przeciwdziałaniu nadmiernym opóźnieniom w transakcjach handlowych): próg 1 — wartość faktury nie przekracza 5 000 zł; próg 2 — wartość wyższa niż 5 000 zł i niższa niż 50 000 zł; próg 3 — wartość równa lub wyższa niż 50 000 zł. Granice są stałe, a użytkownik zmienia tylko kwoty progów (FR-009).
 - Etap eskalacji jest deterministyczny — ta sama faktura, ta sama data i te same ustawienia zawsze dają ten sam etap, bez losowości ani niespójności.
 
 ## User Stories

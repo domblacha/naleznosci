@@ -29,3 +29,10 @@
 - **Problem**: commit fazy wylądowałby na main albo na nieaktualnej bazie
 - **Rule**: Przed pierwszą fazą nowej zmiany przełącz się na main, zrób `git pull`, a potem utwórz branch `feat/<change-id>` (`git switch -c`). Nigdy nie commituj fazy bezpośrednio na main ani na branchu utworzonym z nieaktualnego main.
 - **Applies to**: implement
+
+## Tytuły testów po angielsku
+
+- **Context**: tytuły `describe`/`it` we wszystkich plikach `*.test.ts` (Vitest)
+- **Problem**: testy dostawały polskie tytuły i trzeba je było tłumaczyć po fakcie (testing-domain-rules, faza 1)
+- **Rule**: Nazwy testów (describe/it) piszemy po angielsku. Komentarze w kodzie zostają po polsku; polskie literały (dane fixture'ów, cytowany tekst ponaglenia) zostają bez zmian.
+- **Applies to**: plan, implement, impl-review
