@@ -70,7 +70,7 @@ go, gdy na dysku pojawiają się artefakty.
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
 | 1 | Reguły domenowe: etap, kwoty, ponaglenie | Dowieść, że etap, kwoty i treść ponaglenia są poprawne na granicach wg niezależnych wyroczni i że ponaglenie zgadza się z listą | #1, #2, #3 | unit | change opened | testing-domain-rules |
-| 2 | Przejścia stanu i izolacja przez API | Dowieść, że niedozwolone przejścia, cudze id i wartości spoza zakresu są odrzucane bez zmiany w bazie | #4, #5, #6 | integration (Vitest + lokalny Supabase) | not started | — |
+| 2 | Przejścia stanu i izolacja przez API | Dowieść, że niedozwolone przejścia, cudze id i wartości spoza zakresu są odrzucane bez zmiany w bazie; ponaglenie i lista nie obejmują faktur zapłaconych ani anulowanych (filtr `listOpenInvoices`) | #4, #5, #6 | integration (Vitest + lokalny Supabase) | not started | — |
 | 3 | Bramki jakości | Uruchamiać testy integracyjne w CI na PR i dać agentowi szybki sygnał po edycji | cross-cutting | CI gate + post-edit hook | not started | — |
 
 Kolejność: faza 1 jest najtańsza i trafia w główną obawę (Q1); faza 2
@@ -117,13 +117,27 @@ odpowiednia faza zostanie dowieziona.
 
 ### 6.1 Test reguły domenowej (etap, kwoty)
 
-- TBD — see §3 Phase 1 (wzorzec: przypadki brzegowe etapu i kwot z
-  wyrocznią z PRD, nie z implementacji).
+- Oczekiwana wartość to literał policzony wzorem z PRD (`kwota × bp × dni /
+  3 650 000`, połowa w górę) skryptem poza `src/`. Nigdy wynik funkcji
+  produkcyjnej ani `DEFAULT_*` w roli oczekiwania (jako wejście wolno).
+- Granice: próg−1 i próg (progi są włączne), a dla kwot także granice progów
+  rekompensaty (art. 10 ust. 1 ustawy, PRD Guardrails).
+- Osobno progi niestandardowe i ich przekazywanie przez `groupInvoices`.
+- Gdy literał z planu nie zgadza się z kodem, to znalezisko do zgłoszenia, a nie
+  powód do poprawienia literału.
+- Przykłady: `src/lib/escalation.test.ts`, `src/lib/charges.test.ts`.
 
 ### 6.2 Test zgodności ponaglenia z listą
 
-- TBD — see §3 Phase 1 (wzorzec: klient z mieszanką stanów faktur →
-  pozycje, ton i suma ponaglenia).
+- Fixture jednego klienta z fakturami w różnych stanach (etapy 1–4, wstrzymana,
+  sprzed progu, bieżąca) i drugiego bez rekompensaty.
+- Asercje na pozycje (kolejność, odsetki, rekompensata), ton najwyższego etapu,
+  sumy oraz brak „rekompensat” w tekście. Bez snapshotu całej treści.
+- Suma = suma pozycji po zaokrągleniu (przypadek, w którym zaokrąglenie sumy
+  dałoby inny wynik).
+- Wybór szablonu sprawdzamy na własnych szablonach-znacznikach przekazanych do
+  `renderReminder`, bez kopiowania `REMINDER_TEMPLATES`.
+- Przykład: `src/lib/reminder.test.ts`.
 
 ### 6.3 Test przejścia stanu przez API
 
@@ -137,7 +151,10 @@ odpowiednia faza zostanie dowieziona.
 
 ### 6.5 Per-rollout-phase notes
 
-- (puste)
+- Faza 1 (`testing-domain-rules`): wyrocznie z literałów, luki etapu i kwot
+  uzupełnione, a `/invoices` i ponaglenie liczą kwoty przez `chargesAsOf`.
+  Wykluczenie faktur zapłaconych i anulowanych z ponaglenia gwarantuje tylko SQL
+  w `listOpenInvoices`, więc sprawdza je faza 2 na prawdziwej bazie.
 
 ## 7. What We Deliberately Don't Test
 

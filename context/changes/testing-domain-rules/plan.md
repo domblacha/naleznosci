@@ -524,23 +524,23 @@ Nie dotyczy. Bez zmian w bazie.
 
 #### Automated
 
-- [x] 3.1 Testy jednostkowe przechodzą bez zmian w testach: `npm test`
-- [x] 3.2 Lint przechodzi: `npm run lint`
-- [x] 3.3 Typy przechodzą: `npx astro check`
-- [x] 3.4 W komponentach nie ma bezpośrednich wywołań prymitywów kwot (poza `src/components/dev/`)
+- [x] 3.1 Testy jednostkowe przechodzą bez zmian w testach: `npm test` — 9c11816
+- [x] 3.2 Lint przechodzi: `npm run lint` — 9c11816
+- [x] 3.3 Typy przechodzą: `npx astro check` — 9c11816
+- [x] 3.4 W komponentach nie ma bezpośrednich wywołań prymitywów kwot (poza `src/components/dev/`) — 9c11816
 
 #### Manual
 
-- [x] 3.5 Na `/invoices` kwoty faktur przeterminowanych i wstrzymanych są takie same jak przed zmianą, bieżące pokazują „—”
-- [x] 3.6 Na `/` suma ponaglenia i treść w dialogu są takie same jak przed zmianą
+- [x] 3.5 Na `/invoices` kwoty faktur przeterminowanych i wstrzymanych są takie same jak przed zmianą, bieżące pokazują „—” — 9c11816
+- [x] 3.6 Na `/` suma ponaglenia i treść w dialogu są takie same jak przed zmianą — 9c11816
 
 ### Phase 4: Zgodność ponaglenia
 
 #### Automated
 
-- [ ] 4.1 Testy jednostkowe przechodzą: `npm test`
-- [ ] 4.2 Lint przechodzi: `npm run lint`
+- [x] 4.1 Testy jednostkowe przechodzą: `npm test`
+- [x] 4.2 Lint przechodzi: `npm run lint`
 
 #### Manual
 
-- [ ] 4.3 `test-plan.md` §3, §6.1, §6.2 i §6.5 opisują wzorce zgodnie z tym, co faktycznie powstało w testach
+- [x] 4.3 `test-plan.md` §3, §6.1, §6.2 i §6.5 opisują wzorce zgodnie z tym, co faktycznie powstało w testach

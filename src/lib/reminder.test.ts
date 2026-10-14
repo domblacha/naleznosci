@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { chargeSettingsFrom } from "@/lib/charges";
 import { buildClientReminders, renderReminder } from "@/lib/reminder";
 import { REMINDER_TEMPLATES } from "@/lib/reminder-templates";
 import { EMPTY_SENDER_PROFILE } from "@/lib/sender-profile";
@@ -282,5 +283,83 @@ Z poważaniem`;
         expect(text.endsWith("NIP: 5260250995")).toBe(true);
       }
     });
+  });
+});
+
+describe("buildClientReminders: client with invoices in mixed states", () => {
+  const NOW = "2026-10-14";
+  const mixed: Invoice[] = [
+    inv(ACME, "A5", 999900, "2026-09-04", "a5"),
+    inv(ACME, "A1", 100000, "2026-10-11", "a1"),
+    inv(ACME, "A7", 70000, "2026-10-14", "a7"),
+    inv(ACME, "A3", 300000, "2026-09-30", "a3"),
+    inv(ACME, "A6", 50000, "2026-10-12", "a6"),
+    inv(ACME, "A4", 400000, "2026-09-14", "a4"),
+    inv(ACME, "A2", 200000, "2026-10-07", "a2"),
+  ].map((invoice) => (invoice.number === "A5" ? { ...invoice, pausedOn: "2026-09-20" } : invoice));
+  const clientB: Invoice[] = [inv(ZABKA, "B2", 100000, "2026-10-10"), inv(ZABKA, "B1", 100000, "2026-10-07")];
+
+  it("takes exactly stages 1-4 in due-date order, with the highest stage and summed totals", () => {
+    const [a] = buildClientReminders([...mixed, ...clientB], NOW);
+    expect(a.clientId).toBe(ACME.id);
+    expect(a.stage).toBe(4);
+    expect(a.items.map((i) => [i.number, i.daysOverdue, i.interestGrosze, i.compensationGrosze])).toEqual([
+      ["A4", 30, 4521, 17000],
+      ["A3", 14, 1582, 17000],
+      ["A2", 7, 527, 17000],
+      ["A1", 3, 113, 17000],
+    ]);
+    expect(a.principalGrosze).toBe(1000000);
+    expect(a.interestGrosze).toBe(6743);
+    expect(a.compensationGrosze).toBe(68000);
+    expect(a.totalGrosze).toBe(1074743);
+  });
+
+  it("client without compensation: stage 2, no compensation anywhere, and the order is higher stage first", () => {
+    const reminders = buildClientReminders([...mixed, ...clientB], NOW);
+    expect(reminders.map((r) => r.clientId)).toEqual([ACME.id, ZABKA.id]);
+    const b = reminders[1];
+    expect(b.stage).toBe(2);
+    expect(b.items.map((i) => [i.number, i.interestGrosze, i.compensationGrosze])).toEqual([
+      ["B1", 264, 0],
+      ["B2", 151, 0],
+    ]);
+    expect(b.compensationGrosze).toBe(0);
+    expect(b.totalGrosze).toBe(200415);
+    expect(renderReminder(b, NOW)).not.toMatch(/rekompensat/i);
+  });
+});
+
+describe("buildClientReminders: total equals sum of rounded items", () => {
+  it("two items with 0.6 gr interest each total 2 gr, not 1 gr", () => {
+    const settings = chargeSettingsFrom({
+      thresholds: [3, 7, 14, 30],
+      annualRateBp: 1000,
+      compensationGrosze: [10000, 20000, 30000],
+    });
+    const [reminder] = buildClientReminders(
+      [inv(ACME, "A/1", 730, "2026-10-02"), inv(ACME, "A/2", 730, "2026-10-02")],
+      TODAY,
+      [3, 7, 14, 30],
+      settings,
+    );
+    expect(reminder.interestGrosze).toBe(2);
+    expect(reminder.totalGrosze).toBe(21462);
+    expect(renderReminder(reminder, TODAY)).toContain(`Odsetki: 0,02${NB}zł`);
+  });
+});
+
+describe("renderReminder: template selection", () => {
+  const markers = { 1: "ETAP1 {klient}", 2: "ETAP2 {klient}", 3: "ETAP3 {klient}", 4: "ETAP4 {klient}" };
+
+  it.each([
+    [1, "2026-10-02"],
+    [2, "2026-09-28"],
+    [3, "2026-09-21"],
+    [4, "2026-09-05"],
+  ] as const)("a single invoice at stage %i renders the stage template", (stage, dueDate) => {
+    const [reminder] = buildClientReminders([inv(ACME, "A/1", 10000, dueDate)], TODAY);
+    expect(reminder.stage).toBe(stage);
+    expect(renderReminder(reminder, TODAY, EMPTY_SENDER_PROFILE, markers)).toBe(`ETAP${stage} ${ACME.name}`);
   });
 });
