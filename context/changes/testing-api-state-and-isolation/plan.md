@@ -459,21 +459,21 @@ w `afterAll` i w `globalSetup`.
 
 #### Automated
 
-- [x] 3.1 `npm run test:integration` przechodzi, w tym `isolation.int.test.ts`
-- [x] 3.2 `npm test`, `npm run lint` i `npx astro check` przechodzą
+- [x] 3.1 `npm run test:integration` przechodzi, w tym `isolation.int.test.ts` — 7ece4a7
+- [x] 3.2 `npm test`, `npm run lint` i `npx astro check` przechodzą — 7ece4a7
 
 #### Manual
 
-- [x] 3.3 Tymczasowe poluzowanie polityki `select` na `invoices` czerwieni testy odczytów (zmiana w Studio na `using (true)`, potem przywrócenie tym samym SQL-em co w migracji `create_invoices`, bez `db reset`)
+- [x] 3.3 Tymczasowe poluzowanie polityki `select` na `invoices` czerwieni testy odczytów (zmiana w Studio na `using (true)`, potem przywrócenie tym samym SQL-em co w migracji `create_invoices`, bez `db reset`) — 7ece4a7
 
 ### Phase 4: Walidacja serwera (#6), luki bazy i dokumentacja
 
 #### Automated
 
-- [ ] 4.1 `npm run test:integration` przechodzi, w tym `validation.int.test.ts` i `db-gaps.int.test.ts` (luki raportowane jako oczekiwane porażki)
-- [ ] 4.2 `npm test`, `npm run lint` i `npx astro check` przechodzą
+- [x] 4.1 `npm run test:integration` przechodzi, w tym `validation.int.test.ts` i `db-gaps.int.test.ts` (luki raportowane jako oczekiwane porażki)
+- [x] 4.2 `npm test`, `npm run lint` i `npx astro check` przechodzą
 
 #### Manual
 
-- [ ] 4.3 Podmiana schematu w `PUT /api/settings` na `z.any()` czerwieni przypadek progów niemonotonicznych; po przywróceniu jest zielony
-- [ ] 4.4 Wpisy w `test-plan.md` §4, §6.3–§6.5 i README są zrozumiałe bez czytania tego planu
+- [x] 4.3 Podmiana schematu w `PUT /api/settings` na `z.any()` czerwieni przypadek progów niemonotonicznych; po przywróceniu jest zielony
+- [x] 4.4 Wpisy w `test-plan.md` §4, §6.3–§6.5 i README są zrozumiałe bez czytania tego planu

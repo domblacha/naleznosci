@@ -69,8 +69,8 @@ go, gdy na dysku pojawiają się artefakty.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
-| 1 | Reguły domenowe: etap, kwoty, ponaglenie | Dowieść, że etap, kwoty i treść ponaglenia są poprawne na granicach wg niezależnych wyroczni i że ponaglenie zgadza się z listą | #1, #2, #3 | unit | change opened | testing-domain-rules |
-| 2 | Przejścia stanu i izolacja przez API | Dowieść, że niedozwolone przejścia, cudze id i wartości spoza zakresu są odrzucane bez zmiany w bazie; ponaglenie i lista nie obejmują faktur zapłaconych ani anulowanych (filtr `listOpenInvoices`) | #4, #5, #6 | integration (Vitest + lokalny Supabase) | not started | — |
+| 1 | Reguły domenowe: etap, kwoty, ponaglenie | Dowieść, że etap, kwoty i treść ponaglenia są poprawne na granicach wg niezależnych wyroczni i że ponaglenie zgadza się z listą | #1, #2, #3 | unit | complete | testing-domain-rules |
+| 2 | Przejścia stanu i izolacja przez API | Dowieść, że niedozwolone przejścia, cudze id i wartości spoza zakresu są odrzucane bez zmiany w bazie; ponaglenie i lista nie obejmują faktur zapłaconych ani anulowanych (filtr `listOpenInvoices`) | #4, #5, #6 | integration (Vitest + lokalny Supabase) | change opened | testing-api-state-and-isolation |
 | 3 | Bramki jakości | Uruchamiać testy integracyjne w CI na PR i dać agentowi szybki sygnał po edycji | cross-cutting | CI gate + post-edit hook | not started | — |
 
 Kolejność: faza 1 jest najtańsza i trafia w główną obawę (Q1); faza 2
@@ -89,7 +89,7 @@ ręczny `npm run smoke` (HTTP), który nie działa w CI.
 | Layer | Tool | Version | Notes |
 |---|---|---|---|
 | unit | Vitest | 5.0.3 | Istniejący runner; `npm test` działa w CI |
-| integration (API + baza) | Vitest + lokalny Supabase (CLI) | 5.0.3 / 2.117.0 | none yet — see Phase 2; prawdziwa baza zamiast mocków |
+| integration (API + baza) | Vitest (projekt `integration`) + lokalny Supabase (CLI) | 5.0.3 / 2.117.0 | `npm run test:integration`; wymaga działającego `npx supabase start`; prawdziwa baza zamiast mocków, pliki `*.int.test.ts` |
 | HTTP smoke | `scripts/smoke.mjs` | n/a | Ręczny, przeciw działającemu serwerowi; poza CI |
 | e2e | none | — | Świadomie pominięte (patrz §3) |
 | accessibility | none | — | Poza zakresem (§7: wygląd UI) |
@@ -141,13 +141,25 @@ odpowiednia faza zostanie dowieziona.
 
 ### 6.3 Test przejścia stanu przez API
 
-- TBD — see §3 Phase 2 (wzorzec: niedozwolone przejście → 4xx i
-  niezmieniony wiersz; dozwolone → spójny wiersz).
+- Macierz stan × akcja jako `it.each`: każdy przypadek asertuje status, kod
+  błędu w ciele i pełny wiersz przez `readRow` przed i po wywołaniu.
+- Fixtures stanów wstawiamy klientem właściciela przez PostgREST
+  (`insertClient`, `insertInvoice` z `src/test/integration/harness.ts`), a samo
+  testowane przejście zawsze idzie przez handler (`callRoute`).
+- Daty daleko od „dziś” (`DATES`), wyrocznie z wartości zapisanych przez test.
+- Przykład: `src/lib/services/invoice-transitions.int.test.ts`.
 
 ### 6.4 Test izolacji i walidacji nowego endpointu
 
-- TBD — see §3 Phase 2 (wzorzec: drugie konto na cudzym id; wartości
-  spoza zakresu wysłane z pominięciem formularza).
+- Nowy endpoint: konto B woła go na zasobie A będącym w stanie, w którym ta
+  sama akcja A by się udała (inaczej 404 wynika ze stanu, nie z własności);
+  oczekiwane 404 i wiersz A bez zmian. Dodaj też trasę do listy „bez sesji”
+  (401).
+- Walidacja: jeden przypadek 400 na endpoint z ciałem — `error:"invalid_input"`,
+  `fieldErrors` ze wskazanym polem i stan (wiersz lub liczba wierszy) bez zmian.
+  Granice schematów zostają w testach unit.
+- Przykłady: `src/lib/services/isolation.int.test.ts`,
+  `src/lib/services/validation.int.test.ts`.
 
 ### 6.5 Per-rollout-phase notes
 
@@ -155,6 +167,15 @@ odpowiednia faza zostanie dowieziona.
   uzupełnione, a `/invoices` i ponaglenie liczą kwoty przez `chargesAsOf`.
   Wykluczenie faktur zapłaconych i anulowanych z ponaglenia gwarantuje tylko SQL
   w `listOpenInvoices`, więc sprawdza je faza 2 na prawdziwej bazie.
+- Faza 2 (`testing-api-state-and-isolation`): niedozwolone przejście stanu
+  zwraca 404 `not_found` (nie 409) i testy utrwalają ten kontrakt; 409 dotyczy
+  tylko `locked`, `duplicate_*`, `client_inactive`, `has_open_invoices`. Luki
+  bazy, które `src/lib/services/db-gaps.int.test.ts` dowodzi testami `it.fails`
+  (zmiana kwoty zapłaconej i anulowanej faktury, zmiana terminu faktury po
+  terminie bez wstrzymania, `paid_on` w przyszłości), są kandydatem na osobną
+  zmianę (trigger blokady / check daty); po załataniu luki test zaczerwieni się
+  i trzeba zdjąć `.fails`. Reguły „wpłata przed wystawieniem” nie ma w schemacie
+  (brak daty wystawienia), więc nie jest testowana.
 
 ## 7. What We Deliberately Don't Test
 
