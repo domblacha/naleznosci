@@ -197,10 +197,10 @@ README opisuje Należności zamiast startera.
 
 #### Automated
 
-- [x] 2.1 Brak śladów startera: `git grep -nI -i -E '10x|astro-starter|przeprogramowani|starter|template\.png|favicon\.png' -- ':!context' ':!.claude/skills'` nie zwraca trafień
-- [x] 2.2 Brak sekcji licencji: `! grep -n '^## License' README.md`
-- [x] 2.3 Formatowanie README: `npx prettier --check README.md`
+- [x] 2.1 Brak śladów startera: `git grep -nI -i -E '10x|astro-starter|przeprogramowani|starter|template\.png|favicon\.png' -- ':!context' ':!.claude/skills'` nie zwraca trafień — 87f427d
+- [x] 2.2 Brak sekcji licencji: `! grep -n '^## License' README.md` — 87f427d
+- [x] 2.3 Formatowanie README: `npx prettier --check README.md` — 87f427d
 
 #### Manual
 
-- [x] 2.4 README czyta się jako dokumentacja Należności: tytuł, opis i Getting Started są spójne, a kotwica `#supabase-configuration` nadal działa na GitHubie
+- [x] 2.4 README czyta się jako dokumentacja Należności: tytuł, opis i Getting Started są spójne, a kotwica `#supabase-configuration` nadal działa na GitHubie — 87f427d
