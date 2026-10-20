@@ -1,10 +1,10 @@
 ---
 change_id: rebrand-naleznosci
 title: Usunięcie śladów 10x Astro Starter i opisanie aplikacji jako Należności
-status: implemented
+status: archived
 created: 2026-10-20
 updated: 2026-10-20
-archived_at: null
+archived_at: 2026-10-20T20:27:00Z
 ---
 
 ## Notes
