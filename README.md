@@ -59,6 +59,8 @@ npm run dev
 - `npm run test:integration` - Run API integration tests against the local Supabase (requires `npx supabase start`; creates and deletes `int-*@example.com` accounts, does not reset the database)
 - `npm run smoke` - Smoke test the auth flow against a running server (`BASE_URL`, defaults to `http://localhost:4321`)
 
+Claude Code agent hooks (`.claude/settings.json`, scripts in `.claude/hooks/`): after every `Edit`/`Write` the edited file is linted and its related unit tests run (`PostToolUse`); at the end of a turn with changes the changed files are linted and `npm test` and `astro check` run once (`Stop`, one retry). Check they are loaded with `/hooks` in a fresh session; `scripts/__tests__/agent-hooks.test.ts` (part of `npm test`) proves the scripts.
+
 ## Project Structure
 
 ```md
