@@ -1,10 +1,10 @@
 ---
 change_id: testing-quality-gates
 title: Bramki jakości — testy integracyjne w CI na PR i post-edit hook dla agenta
-status: implemented
+status: archived
 created: 2026-10-20
 updated: 2026-10-20
-archived_at: null
+archived_at: 2026-10-20T10:00:36Z
 ---
 
 ## Notes
