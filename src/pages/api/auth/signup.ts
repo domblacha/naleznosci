@@ -15,11 +15,16 @@ export const POST: APIRoute = async (context) => {
   if (!supabase) {
     return context.redirect("/auth/signup?error=config_missing");
   }
-  const { error } = await supabase.auth.signUp(parsed.data);
+  const { data, error } = await supabase.auth.signUp(parsed.data);
 
   if (error) {
     return context.redirect(`/auth/signup?error=${encodeURIComponent(error.code ?? "unknown")}`);
   }
 
-  return context.redirect("/auth/confirm-email");
+  // Bez sesji (włączone potwierdzanie maila w Supabase) użytkownik musi najpierw potwierdzić adres.
+  if (!data.session) {
+    return context.redirect("/auth/signin?error=email_not_confirmed");
+  }
+
+  return context.redirect("/");
 };

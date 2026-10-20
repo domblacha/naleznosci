@@ -92,7 +92,7 @@ function clientSteps() {
     [
       "user B: signup",
       () => request("/api/auth/signup", { method: "POST", form: { email: emailB, password }, jar: jarB }),
-      { status: 302, location: "/auth/confirm-email" },
+      { status: 302, check: (a) => a.location === "/" },
     ],
     [
       "user B: signin",
@@ -671,8 +671,9 @@ const steps = [
   [
     "signup creates account",
     () => request("/api/auth/signup", { method: "POST", form: { email, password } }),
-    { status: 302, location: "/auth/confirm-email" },
+    { status: 302, check: (a) => a.location === "/" },
   ],
+  ["home renders right after signup", () => request("/"), { status: 200 }],
   [
     "signin rejects wrong password",
     () => request("/api/auth/signin", { method: "POST", form: { email, password: "wrong" } }),
