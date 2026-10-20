@@ -129,14 +129,14 @@ Rejestracja kończy się na `/` (lub na signin z komunikatem, gdy brak sesji); e
 
 #### Automated
 
-- [x] 1.1 Lint przechodzi: `npm run lint`
-- [x] 1.2 Typy przechodzą: `npx astro check`
-- [x] 1.3 Testy jednostkowe przechodzą: `npm test`
-- [x] 1.4 Build przechodzi: `npm run build`
-- [x] 1.5 Brak odwołań do strony w kodzie: `grep -rn "confirm-email" src scripts README.md CLAUDE.md` nic nie zwraca
-- [x] 1.6 Smoke test przechodzi na dev serwerze z lokalnym Supabase: `npm run smoke`
+- [x] 1.1 Lint przechodzi: `npm run lint` — 4b100f1
+- [x] 1.2 Typy przechodzą: `npx astro check` — 4b100f1
+- [x] 1.3 Testy jednostkowe przechodzą: `npm test` — 4b100f1
+- [x] 1.4 Build przechodzi: `npm run build` — 4b100f1
+- [x] 1.5 Brak odwołań do strony w kodzie: `grep -rn "confirm-email" src scripts README.md CLAUDE.md` nic nie zwraca — 4b100f1
+- [x] 1.6 Smoke test przechodzi na dev serwerze z lokalnym Supabase: `npm run smoke` — 4b100f1
 
 #### Manual
 
-- [x] 1.7 Rejestracja nowego konta w przeglądarce kończy się na `/` z widokiem zalogowanego użytkownika, bez ekranu „Rejestracja udana”
-- [x] 1.8 Wejście na `/auth/confirm-email` zwraca 404
+- [x] 1.7 Rejestracja nowego konta w przeglądarce kończy się na `/` z widokiem zalogowanego użytkownika, bez ekranu „Rejestracja udana” — 4b100f1
+- [x] 1.8 Wejście na `/auth/confirm-email` zwraca 404 — 4b100f1
