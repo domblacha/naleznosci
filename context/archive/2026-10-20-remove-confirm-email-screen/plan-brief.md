@@ -16,22 +16,24 @@ Rejestracja kończy się na stronie głównej z zalogowanym użytkownikiem. Gdyb
 
 ## Key Decisions Made
 
-| Decision                    | Choice                                          | Why (1 sentence)                                                                 |
-| --------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------- |
-| Redirect po rejestracji     | Zależny od `data.session`                        | Odporny na późniejsze włączenie „Confirm email” w Supabase.                       |
-| Fallback bez sesji          | `/auth/signin?error=email_not_confirmed`         | Istniejący komunikat z `auth-errors.ts`, zero nowego UI dla gałęzi dziś martwej. |
-| Smoke test                  | Location `/` + nowy krok `GET /` → 200           | Sprawdza, że sesja faktycznie się zapisała, a nie tylko nagłówek redirectu.       |
-| Liczba faz                  | Jedna                                           | Kilka linii zmian w jednej spójnej całości.                                      |
+| Decision                | Choice                                   | Why (1 sentence)                                                                 |
+| ----------------------- | ---------------------------------------- | -------------------------------------------------------------------------------- |
+| Redirect po rejestracji | Zależny od `data.session`                | Odporny na późniejsze włączenie „Confirm email” w Supabase.                      |
+| Fallback bez sesji      | `/auth/signin?error=email_not_confirmed` | Istniejący komunikat z `auth-errors.ts`, zero nowego UI dla gałęzi dziś martwej. |
+| Smoke test              | Location `/` + nowy krok `GET /` → 200   | Sprawdza, że sesja faktycznie się zapisała, a nie tylko nagłówek redirectu.      |
+| Liczba faz              | Jedna                                    | Kilka linii zmian w jednej spójnej całości.                                      |
 
 ## Scope
 
 **In scope:**
+
 - Warunek redirectu w `signup.ts`
 - Usunięcie `src/pages/auth/confirm-email.astro`
 - `scripts/smoke.mjs` (2× Location, nowy krok)
 - `README.md` (tabela Auth routes), `CLAUDE.md` (lista stron auth)
 
 **Out of scope:**
+
 - Weryfikacja maila, SMTP, trasa `/auth/confirm` (wariant B)
 - Mechanizm `?info=` / informacyjny komunikat na signin
 - Zmiany w `supabase/config.toml`, middleware, `SignUpForm.tsx`, `auth-errors.ts`
@@ -42,9 +44,9 @@ Rejestracja kończy się na stronie głównej z zalogowanym użytkownikiem. Gdyb
 
 ## Phases at a Glance
 
-| Phase                                         | What it delivers                                   | Key risk                                                     |
-| --------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------ |
-| 1. Redirect po rejestracji i usunięcie ekranu | Rejestracja → `/`, strona usunięta, smoke i docs   | Smoke wymaga działającego lokalnego Supabase i dev serwera   |
+| Phase                                         | What it delivers                                 | Key risk                                                   |
+| --------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------- |
+| 1. Redirect po rejestracji i usunięcie ekranu | Rejestracja → `/`, strona usunięta, smoke i docs | Smoke wymaga działającego lokalnego Supabase i dev serwera |
 
 **Prerequisites:** lokalny Supabase (`npx supabase start`) do smoke testu; świeży branch `feat/remove-confirm-email-screen` z aktualnego `main`.
 **Estimated effort:** jedna krótka sesja.

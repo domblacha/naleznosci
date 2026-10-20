@@ -1,10 +1,10 @@
 ---
 change_id: remove-confirm-email-screen
 title: Usunięcie ekranu confirm-email — po rejestracji prosto na stronę główną
-status: implemented
+status: archived
 created: 2026-10-20
 updated: 2026-10-20
-archived_at: null
+archived_at: 2026-10-20T19:56:12Z
 ---
 
 ## Notes
