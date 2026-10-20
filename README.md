@@ -170,12 +170,12 @@ This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/) as
 
 Deployment runs in GitHub Actions (`.github/workflows/ci.yml`). Workers Builds is disconnected, so the workflow is the only thing that deploys.
 
-| Event          | Jobs                                                                                      |
-| -------------- | ----------------------------------------------------------------------------------------- |
-| Pull request   | `checks`: `astro sync` → lint → `astro check` → `npm test` → build                        |
-| Push to `main` | `checks`, then `deploy`: build → `supabase link` + `supabase db push` → `wrangler deploy` |
+| Event          | Jobs                                                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pull request   | `checks`: `astro sync` → lint → `astro check` → `npm test` → build; `integration`: `supabase start` → `npm run test:integration`            |
+| Push to `main` | `checks` and `integration` in parallel, then `deploy` once both are green: build → `supabase link` + `supabase db push` → `wrangler deploy` |
 
-`deploy` runs in strict order: a broken build never touches the database, and code never ships ahead of the schema it needs. Runs are serialized (`concurrency: production`, no cancellation), so a second merge waits for a migration in progress.
+`deploy` runs in strict order: a broken build or a red integration test never touches the database, and code never ships ahead of the schema it needs. Runs are serialized (`concurrency: production`, no cancellation), so a second merge waits for a migration in progress.
 
 **Work on a branch and merge through a PR — never push to `main` directly.** Branch protection is not available on the free plan for private repos, so this is a convention. Review migration SQL on the PR: merging applies it to production.
 

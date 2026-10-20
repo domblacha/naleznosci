@@ -1,0 +1,1 @@
+-- Brak danych seed: lokalna baza powstaje wyłącznie z migracji.
