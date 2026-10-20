@@ -269,28 +269,28 @@ Brak zmian schematu. Rollback: przywrócenie `needs: checks` w `deploy` i usuni�
 
 #### Automated
 
-- [x] 1.1 Workflow parsuje się i ma job `integration` oraz `deploy.needs: [checks, integration]`
-- [x] 1.2 `npx supabase start -x <ta sama lista>` lokalnie podnosi stos, a `npm run test:integration` przechodzi (102 passed | 4 expected fail)
-- [x] 1.3 `npm run lint` i `npm test` przechodzą
+- [x] 1.1 Workflow parsuje się i ma job `integration` oraz `deploy.needs: [checks, integration]` — c4a2aa2
+- [x] 1.2 `npx supabase start -x <ta sama lista>` lokalnie podnosi stos, a `npm run test:integration` przechodzi (102 passed | 4 expected fail) — c4a2aa2
+- [x] 1.3 `npm run lint` i `npm test` przechodzą — c4a2aa2
 
 #### Manual
 
-- [x] 1.4 Na PR job `integration` jest zielony i widoczny jako osobny status; zanotowany czas joba (3 min 1 s)
-- [ ] 1.5 Tymczasowy commit z zepsutą asercją czyni `integration` czerwonym; commit wycofany przed merge
-- [ ] 1.6 Po merge na `main` `deploy` startuje dopiero po zielonych `checks` i `integration`
+- [x] 1.4 Na PR job `integration` jest zielony i widoczny jako osobny status; zanotowany czas joba (3 min 1 s) — c4a2aa2
+- [x] 1.5 Tymczasowy commit z zepsutą asercją czyni `integration` czerwonym; commit wycofany przed merge — c4a2aa2
+- [x] 1.6 Po merge na `main` `deploy` startuje dopiero po zielonych `checks` i `integration` — c4a2aa2
 
 ### Phase 2: Hooki agenta przez `/10x-configure-hook`
 
 #### Automated
 
-- [ ] 2.1 `npm test` przechodzi i uruchamia `scripts/__tests__/agent-hooks.test.ts`
-- [ ] 2.2 Celowe zepsucie jednego skryptu czerwieni odpowiedni przypadek; po przywróceniu znów zielono
-- [ ] 2.3 Baseline: skrypt `Stop` na czystym drzewie kończy się sukcesem
-- [ ] 2.4 `npm run lint` i `npx astro check` przechodzą
-- [ ] 2.5 `git check-ignore -v .claude/settings.json` nic nie zwraca
+- [x] 2.1 `npm test` przechodzi i uruchamia `scripts/__tests__/agent-hooks.test.ts` — 08a7464
+- [x] 2.2 Celowe zepsucie jednego skryptu czerwieni odpowiedni przypadek; po przywróceniu znów zielono — 08a7464
+- [x] 2.3 Baseline: skrypt `Stop` na czystym drzewie kończy się sukcesem — 08a7464
+- [x] 2.4 `npm run lint` i `npx astro check` przechodzą — 08a7464
+- [x] 2.5 `git check-ignore -v .claude/settings.json` nic nie zwraca — 08a7464
 
 #### Manual
 
-- [ ] 2.6 W nowej sesji `/hooks` pokazuje `PostToolUse` i `Stop` z projektu
-- [ ] 2.7 Agent poproszony o edycję z błędem lintu dostaje sygnał i poprawia go w tej samej turze
-- [ ] 2.8 Plik nadpisany przez shell z błędem lintu zostaje odesłany przez hook `Stop`
+- [x] 2.6 W nowej sesji `/hooks` pokazuje `PostToolUse` i `Stop` z projektu — 08a7464
+- [x] 2.7 Agent poproszony o edycję z błędem lintu dostaje sygnał i poprawia go w tej samej turze — 08a7464
+- [x] 2.8 Plik nadpisany przez shell z błędem lintu zostaje odesłany przez hook `Stop` — 08a7464

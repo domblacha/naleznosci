@@ -71,7 +71,7 @@ go, gdy na dysku pojawiają się artefakty.
 |---|---|---|---|---|---|---|
 | 1 | Reguły domenowe: etap, kwoty, ponaglenie | Dowieść, że etap, kwoty i treść ponaglenia są poprawne na granicach wg niezależnych wyroczni i że ponaglenie zgadza się z listą | #1, #2, #3 | unit | complete | testing-domain-rules |
 | 2 | Przejścia stanu i izolacja przez API | Dowieść, że niedozwolone przejścia, cudze id i wartości spoza zakresu są odrzucane bez zmiany w bazie; ponaglenie i lista nie obejmują faktur zapłaconych ani anulowanych (filtr `listOpenInvoices`) | #4, #5, #6 | integration (Vitest + lokalny Supabase) | complete | testing-api-state-and-isolation |
-| 3 | Bramki jakości | Uruchamiać testy integracyjne w CI na PR i dać agentowi szybki sygnał po edycji | cross-cutting | CI gate + post-edit hook | change opened | testing-quality-gates |
+| 3 | Bramki jakości | Uruchamiać testy integracyjne w CI na PR i dać agentowi szybki sygnał po edycji | cross-cutting | CI gate + post-edit hook | complete | testing-quality-gates |
 
 Kolejność: faza 1 jest najtańsza i trafia w główną obawę (Q1); faza 2
 wymaga infrastruktury testowej z bazą; faza 3 utrwala poziom dopiero, gdy
@@ -106,8 +106,8 @@ ręczny `npm run smoke` (HTTP), który nie działa w CI.
 |---|---|---|---|
 | lint + astro check | local (lint-staged) + CI | required | dryf składni i typów |
 | unit (`npm test`) | CI na PR i przed deploy | required | regresje reguł domenowych; wzmocnione po §3 Phase 1 |
-| integration (API + lokalny Supabase) | CI na PR | required after §3 Phase 3 | niedozwolone przejścia stanu, IDOR, brak walidacji serwera |
-| post-edit hook (lint + powiązane testy) | local (pętla agenta) | recommended after §3 Phase 3 | regresje w momencie edycji |
+| integration (API + lokalny Supabase) | CI na PR i przed deploy (job `integration`) | required | niedozwolone przejścia stanu, IDOR, brak walidacji serwera |
+| post-edit hook (lint + powiązane testy) | local (pętla agenta): `PostToolUse` per edycja, `Stop` na koniec tury | recommended | regresje w momencie edycji; siatka na koniec tury (lint zmienionych plików, `npm test`, `astro check`) |
 | HTTP smoke | ręcznie przed/po aktualizacji zależności | optional | awarie środowiskowe auth i podstawowych przepływów |
 
 ## 6. Cookbook Patterns
@@ -176,6 +176,11 @@ odpowiednia faza zostanie dowieziona.
   zmianę (trigger blokady / check daty); po załataniu luki test zaczerwieni się
   i trzeba zdjąć `.fails`. Reguły „wpłata przed wystawieniem” nie ma w schemacie
   (brak daty wystawienia), więc nie jest testowana.
+- Faza 3 (`testing-quality-gates`): job `integration` w CI biegnie na PR i push
+  do `main`, a `deploy` zależy od niego (`needs: [checks, integration]`). Gdy luka
+  z `db-gaps.int.test.ts` zostanie załatana, `it.fails` zaczerwieni CI — zdejmij
+  `.fails`. Hooki agenta (`.claude/settings.json`, `.claude/hooks/`) dowodzi
+  `scripts/__tests__/agent-hooks.test.ts`, uruchamiany przez `npm test`.
 
 ## 7. What We Deliberately Don't Test
 
