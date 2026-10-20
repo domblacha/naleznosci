@@ -71,7 +71,7 @@ describe("user isolation through the API", () => {
     users = await createTestUsers(["a", "b", "c"]);
     ({ a, b, c } = users);
     clientAId = String((await insertClient(a.client)).id);
-    expect((await callRoute(saveSettings, { as: a, method: "PUT", body: SETTINGS_A })).status).toBe(201);
+    expect((await callRoute(saveSettings, { as: a, method: "PUT", body: SETTINGS_A })).status).toBe(200);
     expect((await callRoute(saveSenderProfile, { as: a, method: "PUT", body: PROFILE_A })).status).toBe(200);
   });
 
