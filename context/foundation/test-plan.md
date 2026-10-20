@@ -71,7 +71,7 @@ go, gdy na dysku pojawiają się artefakty.
 |---|---|---|---|---|---|---|
 | 1 | Reguły domenowe: etap, kwoty, ponaglenie | Dowieść, że etap, kwoty i treść ponaglenia są poprawne na granicach wg niezależnych wyroczni i że ponaglenie zgadza się z listą | #1, #2, #3 | unit | complete | testing-domain-rules |
 | 2 | Przejścia stanu i izolacja przez API | Dowieść, że niedozwolone przejścia, cudze id i wartości spoza zakresu są odrzucane bez zmiany w bazie; ponaglenie i lista nie obejmują faktur zapłaconych ani anulowanych (filtr `listOpenInvoices`) | #4, #5, #6 | integration (Vitest + lokalny Supabase) | complete | testing-api-state-and-isolation |
-| 3 | Bramki jakości | Uruchamiać testy integracyjne w CI na PR i dać agentowi szybki sygnał po edycji | cross-cutting | CI gate + post-edit hook | change opened | testing-quality-gates |
+| 3 | Bramki jakości | Uruchamiać testy integracyjne w CI na PR i dać agentowi szybki sygnał po edycji | cross-cutting | CI gate + post-edit hook | complete | testing-quality-gates |
 
 Kolejność: faza 1 jest najtańsza i trafia w główną obawę (Q1); faza 2
 wymaga infrastruktury testowej z bazą; faza 3 utrwala poziom dopiero, gdy

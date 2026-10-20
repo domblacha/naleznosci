@@ -283,14 +283,14 @@ Brak zmian schematu. Rollback: przywrócenie `needs: checks` w `deploy` i usuni�
 
 #### Automated
 
-- [x] 2.1 `npm test` przechodzi i uruchamia `scripts/__tests__/agent-hooks.test.ts`
-- [x] 2.2 Celowe zepsucie jednego skryptu czerwieni odpowiedni przypadek; po przywróceniu znów zielono
-- [x] 2.3 Baseline: skrypt `Stop` na czystym drzewie kończy się sukcesem
-- [x] 2.4 `npm run lint` i `npx astro check` przechodzą
-- [x] 2.5 `git check-ignore -v .claude/settings.json` nic nie zwraca
+- [x] 2.1 `npm test` przechodzi i uruchamia `scripts/__tests__/agent-hooks.test.ts` — 08a7464
+- [x] 2.2 Celowe zepsucie jednego skryptu czerwieni odpowiedni przypadek; po przywróceniu znów zielono — 08a7464
+- [x] 2.3 Baseline: skrypt `Stop` na czystym drzewie kończy się sukcesem — 08a7464
+- [x] 2.4 `npm run lint` i `npx astro check` przechodzą — 08a7464
+- [x] 2.5 `git check-ignore -v .claude/settings.json` nic nie zwraca — 08a7464
 
 #### Manual
 
-- [x] 2.6 W nowej sesji `/hooks` pokazuje `PostToolUse` i `Stop` z projektu
-- [x] 2.7 Agent poproszony o edycję z błędem lintu dostaje sygnał i poprawia go w tej samej turze
-- [x] 2.8 Plik nadpisany przez shell z błędem lintu zostaje odesłany przez hook `Stop`
+- [x] 2.6 W nowej sesji `/hooks` pokazuje `PostToolUse` i `Stop` z projektu — 08a7464
+- [x] 2.7 Agent poproszony o edycję z błędem lintu dostaje sygnał i poprawia go w tej samej turze — 08a7464
+- [x] 2.8 Plik nadpisany przez shell z błędem lintu zostaje odesłany przez hook `Stop` — 08a7464
