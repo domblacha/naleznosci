@@ -1,10 +1,10 @@
 ---
 change_id: husky-git-hooks
 title: Aktywacja husky z pre-commit (lint-staged + astro check) i pre-push (npm test)
-status: implemented
+status: archived
 created: 2026-10-20
 updated: 2026-10-20
-archived_at: null
+archived_at: 2026-10-20T19:54:50Z
 ---
 
 ## Notes
