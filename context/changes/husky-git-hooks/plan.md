@@ -208,9 +208,9 @@ Istniejące klony dostają hooki po najbliższym `npm install`. Do tego czasu gi
 
 #### Automated
 
-- [x] 2.1 `npx prettier --check context/foundation/test-plan.md README.md CLAUDE.md` przechodzi
+- [x] 2.1 `npx prettier --check context/foundation/test-plan.md README.md CLAUDE.md` przechodzi — aedd432
 
 #### Manual
 
-- [x] 2.2 Wiersze §5 w `test-plan.md` zgadzają się z treścią `.husky/pre-commit` i `.husky/pre-push`
-- [x] 2.3 Akapit README opisuje wszystkie trzy elementy: instalację przez `prepare`, sprawdzanie całego drzewa przez `astro check` i `--no-verify`
+- [x] 2.2 Wiersze §5 w `test-plan.md` zgadzają się z treścią `.husky/pre-commit` i `.husky/pre-push` — aedd432
+- [x] 2.3 Akapit README opisuje wszystkie trzy elementy: instalację przez `prepare`, sprawdzanie całego drzewa przez `astro check` i `--no-verify` — aedd432
