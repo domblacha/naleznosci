@@ -275,7 +275,7 @@ Brak zmian schematu. Rollback: przywrócenie `needs: checks` w `deploy` i usuni�
 
 #### Manual
 
-- [ ] 1.4 Na PR job `integration` jest zielony i widoczny jako osobny status; zanotowany czas joba
+- [x] 1.4 Na PR job `integration` jest zielony i widoczny jako osobny status; zanotowany czas joba (3 min 1 s)
 - [ ] 1.5 Tymczasowy commit z zepsutą asercją czyni `integration` czerwonym; commit wycofany przed merge
 - [ ] 1.6 Po merge na `main` `deploy` startuje dopiero po zielonych `checks` i `integration`
 
