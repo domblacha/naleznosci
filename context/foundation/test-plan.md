@@ -19,9 +19,9 @@ Testy w tym projekcie podlegają trzem nienegocjowalnym zasadom:
 2. **Obawy użytkownika są pełnoprawnym dowodem.** Ryzyka zakotwiczone w
    „właściciel obawia się X, a awaria ujawniłaby się w obszarze Y” ważą
    tyle samo co linie PRD czy dane o churnie.
-3. **Ryzyka to scenariusze, nie miejsca w kodzie.** Ten plan opisuje, *co
-   może się zepsuć* i *dlaczego uważamy to za prawdopodobne* — na podstawie
-   dokumentów, wywiadu i *sygnału* z kodu (churn, struktura, baza testów).
+3. **Ryzyka to scenariusze, nie miejsca w kodzie.** Ten plan opisuje, _co
+   może się zepsuć_ i _dlaczego uważamy to za prawdopodobne_ — na podstawie
+   dokumentów, wywiadu i _sygnału_ z kodu (churn, struktura, baza testów).
    NIE twierdzi, że wie, która linia odpowiada za awarię. Tę wiedzę
    wytwarza `/10x-research` w każdej fazie wdrożenia. Jeśli plan i research
    różnią się co do miejsca awarii, prawdą jest research.
@@ -35,31 +35,31 @@ Zakres hot-spotów użyty do oceny prawdopodobieństwa: `src/`,
 ## 2. Risk Map
 
 Najważniejsze scenariusze awarii, uporządkowane wg wpływ × prawdopodobieństwo.
-Kolumna Source cytuje *dowód, który wyniósł ryzyko na listę* — nigdy plik
+Kolumna Source cytuje _dowód, który wyniósł ryzyko na listę_ — nigdy plik
 jako „miejsce awarii” (patrz §1, zasada 3).
 
-| # | Risk (failure scenario) | Impact | Likelihood | Source (evidence — not anchor) |
-|---|---|---|---|---|
-| 1 | Faktura trafia do złego etapu eskalacji: granica dnia wg czasu polskiego, progi włączne, progi z ustawień użytkownika zamiast domyślnych, przeskok etapu po wznowieniu wstrzymanej faktury | High | High | interview Q1, Q3; PRD Guardrails, FR-005, FR-013, NFR (czas polski); hot-spot dir `src/lib` (62 commits/30d) |
-| 2 | Ponaglenie niezgodne z listą: obejmuje faktury wstrzymane, sprzed pierwszego progu lub zamknięte (zapłacone, anulowane), ma ton innego etapu niż najwyższy u klienta albo suma różni się od sumy pozycji | High | High | interview Q1, Q4; PRD FR-008, FR-011, US-01, US-02; hot-spot dir `src/components/invoices` (37 commits/30d) |
-| 3 | Błędne odsetki lub rekompensata: zaokrąglenie do grosza, odsetki rosnące po dacie wpłaty, zmiana ustawień przeliczająca historię zapłaconych faktur, wstrzymanie zatrzymujące odsetki, rekompensata naliczona klientowi z wyłączonym przełącznikiem | High | Medium | interview Q3; PRD Guardrails, FR-007, FR-009; `archive/2026-10-10-escalation-settings` (migawka stopy i rekompensaty przy wpłacie) |
-| 4 | API przejść stanu faktury przyjmuje niedozwoloną kombinację albo zostawia niespójny stan: zapłata faktury anulowanej, edycja kwoty lub terminu po terminie bez wstrzymania, cofnięcie wpłaty bez wyczyszczenia migawki, przywrócenie anulowanej z zajętym numerem, otwarcie faktury u usuniętego klienta, usunięcie klienta z otwartą fakturą | High | High | interview Q3, Q4; PRD FR-002, FR-003, FR-004, FR-013; hot-spot dirs `src/pages/api` (17 commits/30d), `src/lib/services` (20 commits/30d); warstwa API bez testów automatycznych (profil bazy testów) |
-| 5 | **Nadużycie (IDOR):** użytkownik B odczytuje lub zmienia klienta, fakturę, ustawienia albo profil nadawcy użytkownika A, podając cudze id | High | Medium | PRD NFR (izolacja danych), Access Control; roadmap S-02 Risk (wzorzec izolacji powielany w każdym wycinku); izolację sprawdza tylko `npm run smoke`, poza CI |
-| 6 | **Nadużycie (walidacja po stronie serwera):** wywołanie API z pominięciem formularza zapisuje wartości spoza zakresu (ujemna lub zerowa kwota, progi niemonotoniczne, ujemna stopa, data wpłaty sprzed wystawienia) i psuje etapy lub kwoty wszystkich faktur | High | Low | PRD FR-009, FR-004; CLAUDE.md (zod w każdym endpoincie — zasada, nie dowód egzekucji) |
+| #   | Risk (failure scenario)                                                                                                                                                                                                                                                                                                                       | Impact | Likelihood | Source (evidence — not anchor)                                                                                                                                                                        |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Faktura trafia do złego etapu eskalacji: granica dnia wg czasu polskiego, progi włączne, progi z ustawień użytkownika zamiast domyślnych, przeskok etapu po wznowieniu wstrzymanej faktury                                                                                                                                                    | High   | High       | interview Q1, Q3; PRD Guardrails, FR-005, FR-013, NFR (czas polski); hot-spot dir `src/lib` (62 commits/30d)                                                                                          |
+| 2   | Ponaglenie niezgodne z listą: obejmuje faktury wstrzymane, sprzed pierwszego progu lub zamknięte (zapłacone, anulowane), ma ton innego etapu niż najwyższy u klienta albo suma różni się od sumy pozycji                                                                                                                                      | High   | High       | interview Q1, Q4; PRD FR-008, FR-011, US-01, US-02; hot-spot dir `src/components/invoices` (37 commits/30d)                                                                                           |
+| 3   | Błędne odsetki lub rekompensata: zaokrąglenie do grosza, odsetki rosnące po dacie wpłaty, zmiana ustawień przeliczająca historię zapłaconych faktur, wstrzymanie zatrzymujące odsetki, rekompensata naliczona klientowi z wyłączonym przełącznikiem                                                                                           | High   | Medium     | interview Q3; PRD Guardrails, FR-007, FR-009; `archive/2026-10-10-escalation-settings` (migawka stopy i rekompensaty przy wpłacie)                                                                    |
+| 4   | API przejść stanu faktury przyjmuje niedozwoloną kombinację albo zostawia niespójny stan: zapłata faktury anulowanej, edycja kwoty lub terminu po terminie bez wstrzymania, cofnięcie wpłaty bez wyczyszczenia migawki, przywrócenie anulowanej z zajętym numerem, otwarcie faktury u usuniętego klienta, usunięcie klienta z otwartą fakturą | High   | High       | interview Q3, Q4; PRD FR-002, FR-003, FR-004, FR-013; hot-spot dirs `src/pages/api` (17 commits/30d), `src/lib/services` (20 commits/30d); warstwa API bez testów automatycznych (profil bazy testów) |
+| 5   | **Nadużycie (IDOR):** użytkownik B odczytuje lub zmienia klienta, fakturę, ustawienia albo profil nadawcy użytkownika A, podając cudze id                                                                                                                                                                                                     | High   | Medium     | PRD NFR (izolacja danych), Access Control; roadmap S-02 Risk (wzorzec izolacji powielany w każdym wycinku); izolację sprawdza tylko `npm run smoke`, poza CI                                          |
+| 6   | **Nadużycie (walidacja po stronie serwera):** wywołanie API z pominięciem formularza zapisuje wartości spoza zakresu (ujemna lub zerowa kwota, progi niemonotoniczne, ujemna stopa, data wpłaty sprzed wystawienia) i psuje etapy lub kwoty wszystkich faktur                                                                                 | High   | Low        | PRD FR-009, FR-004; CLAUDE.md (zod w każdym endpoincie — zasada, nie dowód egzekucji)                                                                                                                 |
 
 Awaria Cloudflare lub Supabase (High × Low) należy do observability, nie do
 testów — poza tą mapą.
 
 ### Risk Response Guidance
 
-| Risk | What would prove protection | Must challenge | Context `/10x-research` must ground | Likely cheapest layer | Anti-pattern to avoid |
-|---|---|---|---|---|---|
-| #1 | Etap jest poprawny na granicach: dzień terminu (bieżąca), próg−1 i próg, po ostatnim progu (etap 4), północ czasu polskiego przy runtime w UTC, niestandardowe progi z ustawień, wznowienie po długim wstrzymaniu przeskakuje kilka etapów | „Reguła w lib ma testy, więc każdy widok liczy etap tak samo” | Skąd widoki biorą „dziś” i ustawienia użytkownika; czy istnieją ścieżki liczące etap poza wspólną regułą; które przypadki brzegowe już są pokryte | unit (uzupełnienie istniejących testów) | Oczekiwany etap wyliczony tym samym kodem albo przepisany z wyniku implementacji |
-| #2 | Dla klienta z mieszanką faktur (etapy 1–4, wstrzymane, sprzed progu, zapłacone, anulowane) ponaglenie zawiera dokładnie faktury z etapów 1–4 widoczne na liście, ton najwyższego etapu i sumę równą sumie pozycji; dane nadawcy pojawiają się tylko, gdy są uzupełnione | „Grupy listy i filtr ponaglenia pochodzą z tych samych danych” | Jak lista i ponaglenie dostają dane i ustawienia; czy mogą się rozjechać (np. inne ustawienia, inne „dziś”); co jest liczone w przeglądarce, a co na serwerze | unit kompozycji; integration tylko jeśli dane składa strona | Snapshot całej treści bez asercji na pozycje, ton i sumę |
-| #3 | Kwoty zgodne z ręcznie policzonymi przykładami (wzór z PRD, połowa w górę), łącznie z progami rekompensaty na granicach kwot; zapłacona faktura zachowuje kwoty po zmianie ustawień; wstrzymanie nie zatrzymuje odsetek | „Zgodność z obecnym wynikiem oznacza poprawność” | Gdzie powstaje i jest czytana migawka przy wpłacie; jak cofnięcie wpłaty obchodzi się z migawką; jednostki (grosze, punkty bazowe) | unit; integration dla migawki | Wyrocznia skopiowana z kodu produkcyjnego zamiast z PRD |
-| #4 | Macierz stan × akcja: każde niedozwolone przejście zwraca 4xx i nie zmienia wiersza w bazie; każde dozwolone zostawia spójny wiersz (daty stanu, migawka, blokada edycji) | „Kod 409 z API oznacza, że baza też to blokuje” — i odwrotnie | Kontrakt endpointów (kody, ciała błędów), constrainty i triggery w migracjach, tłumaczenie błędów bazy na odpowiedzi | integration na lokalnym Supabase (prawdziwe RLS, constrainty, triggery) | Mockowanie klienta Supabase; testowanie tylko ścieżki sukcesu |
-| #5 | Drugi zalogowany użytkownik dostaje 404/403 (lub pusty wynik) na każdym endpointcie z `[id]` i na odczytach, a dane właściciela pozostają niezmienione | „Zalogowany = właściciel zasobu” | Polityki RLS per operacja, sposób ustalania właściciela w API, złożony klucz obcy klient–właściciel | integration z dwoma kontami | Test wyłącznie na danych jednego użytkownika |
-| #6 | Wartości spoza zakresu wysłane bezpośrednio do API są odrzucane z 400, a stan w bazie nie zmienia się | „Formularz waliduje, więc API też” | Które schematy walidują które endpointy; czy schemat serwera = schemat formularza; reguły niemonotonicznych progów | unit schematów + pojedynczy integration na endpoint | Testowanie samego formularza w UI |
+| Risk | What would prove protection                                                                                                                                                                                                                                             | Must challenge                                                 | Context `/10x-research` must ground                                                                                                                           | Likely cheapest layer                                                   | Anti-pattern to avoid                                                            |
+| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| #1   | Etap jest poprawny na granicach: dzień terminu (bieżąca), próg−1 i próg, po ostatnim progu (etap 4), północ czasu polskiego przy runtime w UTC, niestandardowe progi z ustawień, wznowienie po długim wstrzymaniu przeskakuje kilka etapów                              | „Reguła w lib ma testy, więc każdy widok liczy etap tak samo”  | Skąd widoki biorą „dziś” i ustawienia użytkownika; czy istnieją ścieżki liczące etap poza wspólną regułą; które przypadki brzegowe już są pokryte             | unit (uzupełnienie istniejących testów)                                 | Oczekiwany etap wyliczony tym samym kodem albo przepisany z wyniku implementacji |
+| #2   | Dla klienta z mieszanką faktur (etapy 1–4, wstrzymane, sprzed progu, zapłacone, anulowane) ponaglenie zawiera dokładnie faktury z etapów 1–4 widoczne na liście, ton najwyższego etapu i sumę równą sumie pozycji; dane nadawcy pojawiają się tylko, gdy są uzupełnione | „Grupy listy i filtr ponaglenia pochodzą z tych samych danych” | Jak lista i ponaglenie dostają dane i ustawienia; czy mogą się rozjechać (np. inne ustawienia, inne „dziś”); co jest liczone w przeglądarce, a co na serwerze | unit kompozycji; integration tylko jeśli dane składa strona             | Snapshot całej treści bez asercji na pozycje, ton i sumę                         |
+| #3   | Kwoty zgodne z ręcznie policzonymi przykładami (wzór z PRD, połowa w górę), łącznie z progami rekompensaty na granicach kwot; zapłacona faktura zachowuje kwoty po zmianie ustawień; wstrzymanie nie zatrzymuje odsetek                                                 | „Zgodność z obecnym wynikiem oznacza poprawność”               | Gdzie powstaje i jest czytana migawka przy wpłacie; jak cofnięcie wpłaty obchodzi się z migawką; jednostki (grosze, punkty bazowe)                            | unit; integration dla migawki                                           | Wyrocznia skopiowana z kodu produkcyjnego zamiast z PRD                          |
+| #4   | Macierz stan × akcja: każde niedozwolone przejście zwraca 4xx i nie zmienia wiersza w bazie; każde dozwolone zostawia spójny wiersz (daty stanu, migawka, blokada edycji)                                                                                               | „Kod 409 z API oznacza, że baza też to blokuje” — i odwrotnie  | Kontrakt endpointów (kody, ciała błędów), constrainty i triggery w migracjach, tłumaczenie błędów bazy na odpowiedzi                                          | integration na lokalnym Supabase (prawdziwe RLS, constrainty, triggery) | Mockowanie klienta Supabase; testowanie tylko ścieżki sukcesu                    |
+| #5   | Drugi zalogowany użytkownik dostaje 404/403 (lub pusty wynik) na każdym endpointcie z `[id]` i na odczytach, a dane właściciela pozostają niezmienione                                                                                                                  | „Zalogowany = właściciel zasobu”                               | Polityki RLS per operacja, sposób ustalania właściciela w API, złożony klucz obcy klient–właściciel                                                           | integration z dwoma kontami                                             | Test wyłącznie na danych jednego użytkownika                                     |
+| #6   | Wartości spoza zakresu wysłane bezpośrednio do API są odrzucane z 400, a stan w bazie nie zmienia się                                                                                                                                                                   | „Formularz waliduje, więc API też”                             | Które schematy walidują które endpointy; czy schemat serwera = schemat formularza; reguły niemonotonicznych progów                                            | unit schematów + pojedynczy integration na endpoint                     | Testowanie samego formularza w UI                                                |
 
 ## 3. Phased Rollout
 
@@ -67,11 +67,11 @@ Każdy wiersz to osobna faza wdrożenia z własnym folderem zmiany
 (`/10x-new`). Status przechodzi od lewej do prawej; orkiestrator aktualizuje
 go, gdy na dysku pojawiają się artefakty.
 
-| # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
-|---|---|---|---|---|---|---|
-| 1 | Reguły domenowe: etap, kwoty, ponaglenie | Dowieść, że etap, kwoty i treść ponaglenia są poprawne na granicach wg niezależnych wyroczni i że ponaglenie zgadza się z listą | #1, #2, #3 | unit | complete | testing-domain-rules |
-| 2 | Przejścia stanu i izolacja przez API | Dowieść, że niedozwolone przejścia, cudze id i wartości spoza zakresu są odrzucane bez zmiany w bazie; ponaglenie i lista nie obejmują faktur zapłaconych ani anulowanych (filtr `listOpenInvoices`) | #4, #5, #6 | integration (Vitest + lokalny Supabase) | complete | testing-api-state-and-isolation |
-| 3 | Bramki jakości | Uruchamiać testy integracyjne w CI na PR i dać agentowi szybki sygnał po edycji | cross-cutting | CI gate + post-edit hook | complete | testing-quality-gates |
+| #   | Phase name                               | Goal (one line)                                                                                                                                                                                      | Risks covered | Test types                              | Status   | Change folder                   |
+| --- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------- | -------- | ------------------------------- |
+| 1   | Reguły domenowe: etap, kwoty, ponaglenie | Dowieść, że etap, kwoty i treść ponaglenia są poprawne na granicach wg niezależnych wyroczni i że ponaglenie zgadza się z listą                                                                      | #1, #2, #3    | unit                                    | complete | testing-domain-rules            |
+| 2   | Przejścia stanu i izolacja przez API     | Dowieść, że niedozwolone przejścia, cudze id i wartości spoza zakresu są odrzucane bez zmiany w bazie; ponaglenie i lista nie obejmują faktur zapłaconych ani anulowanych (filtr `listOpenInvoices`) | #4, #5, #6    | integration (Vitest + lokalny Supabase) | complete | testing-api-state-and-isolation |
+| 3   | Bramki jakości                           | Uruchamiać testy integracyjne w CI na PR i dać agentowi szybki sygnał po edycji                                                                                                                      | cross-cutting | CI gate + post-edit hook                | complete | testing-quality-gates           |
 
 Kolejność: faza 1 jest najtańsza i trafia w główną obawę (Q1); faza 2
 wymaga infrastruktury testowej z bazą; faza 3 utrwala poziom dopiero, gdy
@@ -86,15 +86,16 @@ node`, `src/**/*.test.ts`), 12 plików testów, wszystkie w `src/lib/`
 (czysta logika); API, middleware, RLS, triggery i UI pokrywa wyłącznie
 ręczny `npm run smoke` (HTTP), który nie działa w CI.
 
-| Layer | Tool | Version | Notes |
-|---|---|---|---|
-| unit | Vitest | 5.0.3 | Istniejący runner; `npm test` działa w CI |
+| Layer                    | Tool                                                    | Version         | Notes                                                                                                                      |
+| ------------------------ | ------------------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| unit                     | Vitest                                                  | 5.0.3           | Istniejący runner; `npm test` działa w CI                                                                                  |
 | integration (API + baza) | Vitest (projekt `integration`) + lokalny Supabase (CLI) | 5.0.3 / 2.117.0 | `npm run test:integration`; wymaga działającego `npx supabase start`; prawdziwa baza zamiast mocków, pliki `*.int.test.ts` |
-| HTTP smoke | `scripts/smoke.mjs` | n/a | Ręczny, przeciw działającemu serwerowi; poza CI |
-| e2e | none | — | Świadomie pominięte (patrz §3) |
-| accessibility | none | — | Poza zakresem (§7: wygląd UI) |
+| HTTP smoke               | `scripts/smoke.mjs`                                     | n/a             | Ręczny, przeciw działającemu serwerowi; poza CI                                                                            |
+| e2e                      | none                                                    | —               | Świadomie pominięte (patrz §3)                                                                                             |
+| accessibility            | none                                                    | —               | Poza zakresem (§7: wygląd UI)                                                                                              |
 
 **Stack grounding tools (current session):**
+
 - Docs: Context7 — dostępny; do weryfikacji API Vitest 5 i uruchamiania Supabase CLI w GitHub Actions w fazach 2–3; checked: 2026-10-13
 - Search: Exa.ai — dostępny; nieużyty przy pisaniu planu; checked: 2026-10-13
 - Runtime/browser: Claude in Chrome — dostępny; nieużyty (brak warstwy e2e); Playwright MCP not available in current session; checked: 2026-10-13
@@ -102,13 +103,13 @@ ręczny `npm run smoke` (HTTP), który nie działa w CI.
 
 ## 5. Quality Gates
 
-| Gate | Where | Required? | Catches |
-|---|---|---|---|
-| lint + astro check | local (lint-staged) + CI | required | dryf składni i typów |
-| unit (`npm test`) | CI na PR i przed deploy | required | regresje reguł domenowych; wzmocnione po §3 Phase 1 |
-| integration (API + lokalny Supabase) | CI na PR i przed deploy (job `integration`) | required | niedozwolone przejścia stanu, IDOR, brak walidacji serwera |
+| Gate                                    | Where                                                                 | Required?   | Catches                                                                                                |
+| --------------------------------------- | --------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------ |
+| lint + astro check                      | local git pre-commit (husky: lint-staged + astro check) + CI          | required    | dryf składni i typów                                                                                   |
+| unit (`npm test`)                       | local git pre-push (husky) + CI na PR i przed deploy                  | required    | regresje reguł domenowych; wzmocnione po §3 Phase 1                                                    |
+| integration (API + lokalny Supabase)    | CI na PR i przed deploy (job `integration`)                           | required    | niedozwolone przejścia stanu, IDOR, brak walidacji serwera                                             |
 | post-edit hook (lint + powiązane testy) | local (pętla agenta): `PostToolUse` per edycja, `Stop` na koniec tury | recommended | regresje w momencie edycji; siatka na koniec tury (lint zmienionych plików, `npm test`, `astro check`) |
-| HTTP smoke | ręcznie przed/po aktualizacji zależności | optional | awarie środowiskowe auth i podstawowych przepływów |
+| HTTP smoke                              | ręcznie przed/po aktualizacji zależności                              | optional    | awarie środowiskowe auth i podstawowych przepływów                                                     |
 
 ## 6. Cookbook Patterns
 
@@ -118,7 +119,7 @@ odpowiednia faza zostanie dowieziona.
 ### 6.1 Test reguły domenowej (etap, kwoty)
 
 - Oczekiwana wartość to literał policzony wzorem z PRD (`kwota × bp × dni /
-  3 650 000`, połowa w górę) skryptem poza `src/`. Nigdy wynik funkcji
+3 650 000`, połowa w górę) skryptem poza `src/`. Nigdy wynik funkcji
   produkcyjnej ani `DEFAULT_*` w roli oczekiwania (jako wejście wolno).
 - Granice: próg−1 i próg (progi są włączne), a dla kwot także granice progów
   rekompensaty (art. 10 ust. 1 ustawy, PRD Guardrails).

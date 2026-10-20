@@ -191,26 +191,26 @@ Istniejące klony dostają hooki po najbliższym `npm install`. Do tego czasu gi
 
 #### Automated
 
-- [x] 1.1 `npm run prepare` kończy się kodem 0
-- [x] 1.2 `git config core.hooksPath` zwraca `.husky/_`
-- [x] 1.3 `.husky/pre-push` istnieje i jest wykonywalny (`test -x .husky/pre-push`)
-- [x] 1.4 `npm run lint` przechodzi
-- [x] 1.5 `npm test` przechodzi
+- [x] 1.1 `npm run prepare` kończy się kodem 0 — c0236a2
+- [x] 1.2 `git config core.hooksPath` zwraca `.husky/_` — c0236a2
+- [x] 1.3 `.husky/pre-push` istnieje i jest wykonywalny (`test -x .husky/pre-push`) — c0236a2
+- [x] 1.4 `npm run lint` przechodzi — c0236a2
+- [x] 1.5 `npm test` przechodzi — c0236a2
 
 #### Manual
 
-- [x] 1.6 Commit zastagowanego pliku `.mjs` z błędem ESLint (np. nieużyta zmienna) jest odrzucony przez lint-staged
-- [x] 1.7 Commit pliku `.ts` z błędem typu, którego ESLint nie zgłasza (np. `const x: number = "a"`), jest odrzucony przez `astro check`
-- [x] 1.8 `git push --dry-run` z padającym testem jednostkowym jest odrzucony przez pre-push
-- [ ] 1.9 Poprawny commit przechodzi: lint-staged, potem `astro check`, w kilka sekund
+- [x] 1.6 Commit zastagowanego pliku `.mjs` z błędem ESLint (np. nieużyta zmienna) jest odrzucony przez lint-staged — c0236a2
+- [x] 1.7 Commit pliku `.ts` z błędem typu, którego ESLint nie zgłasza (np. `const x: number = "a"`), jest odrzucony przez `astro check` — c0236a2
+- [x] 1.8 `git push --dry-run` z padającym testem jednostkowym jest odrzucony przez pre-push — c0236a2
+- [x] 1.9 Poprawny commit przechodzi: lint-staged, potem `astro check`, w kilka sekund — c0236a2
 
 ### Phase 2: Dokumentacja bramek
 
 #### Automated
 
-- [ ] 2.1 `npx prettier --check context/foundation/test-plan.md README.md CLAUDE.md` przechodzi
+- [x] 2.1 `npx prettier --check context/foundation/test-plan.md README.md CLAUDE.md` przechodzi
 
 #### Manual
 
-- [ ] 2.2 Wiersze §5 w `test-plan.md` zgadzają się z treścią `.husky/pre-commit` i `.husky/pre-push`
-- [ ] 2.3 Akapit README opisuje wszystkie trzy elementy: instalację przez `prepare`, sprawdzanie całego drzewa przez `astro check` i `--no-verify`
+- [x] 2.2 Wiersze §5 w `test-plan.md` zgadzają się z treścią `.husky/pre-commit` i `.husky/pre-push`
+- [x] 2.3 Akapit README opisuje wszystkie trzy elementy: instalację przez `prepare`, sprawdzanie całego drzewa przez `astro check` i `--no-verify`

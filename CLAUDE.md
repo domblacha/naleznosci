@@ -34,5 +34,5 @@
 
 ## References
 
-- Scripts and pre-commit hooks (husky + lint-staged): @package.json
+- Scripts and git hooks in `.husky/` (pre-commit: lint-staged + `astro check`; pre-push: `npm test`): @package.json
 - Setup, env vars, local Supabase, deployment: @README.md
