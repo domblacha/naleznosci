@@ -182,25 +182,25 @@ README opisuje Należności zamiast startera.
 
 #### Automated
 
-- [x] 1.1 Lint przechodzi: `npm run lint`
-- [x] 1.2 Typy przechodzą: `npx astro check`
-- [x] 1.3 Testy jednostkowe przechodzą: `npm test`
-- [x] 1.4 Build przechodzi i zawiera faviconę: `npm run build && test -f dist/client/favicon.svg && test ! -e dist/client/favicon.png`
-- [x] 1.5 Diff `package-lock.json` zmienia wyłącznie pole `name`: `git diff package-lock.json`
+- [x] 1.1 Lint przechodzi: `npm run lint` — af921ac
+- [x] 1.2 Typy przechodzą: `npx astro check` — af921ac
+- [x] 1.3 Testy jednostkowe przechodzą: `npm test` — af921ac
+- [x] 1.4 Build przechodzi i zawiera faviconę: `npm run build && test -f dist/client/favicon.svg && test ! -e dist/client/favicon.png` — af921ac
+- [x] 1.5 Diff `package-lock.json` zmienia wyłącznie pole `name`: `git diff package-lock.json` — af921ac
 
 #### Manual
 
-- [x] 1.6 Po `npm run dev` karta przeglądarki pokazuje pomarańczową ikonę z białym „N” (czytelną w rozmiarze karty)
-- [x] 1.7 Po tymczasowym usunięciu `SUPABASE_KEY` z `.dev.vars` link w banerze prowadzi do `github.com/domblacha/naleznosci#supabase-configuration` (przywróć klucz i ubij dev server po sprawdzeniu)
+- [x] 1.6 Po `npm run dev` karta przeglądarki pokazuje pomarańczową ikonę z białym „N” (czytelną w rozmiarze karty) — af921ac
+- [x] 1.7 Po tymczasowym usunięciu `SUPABASE_KEY` z `.dev.vars` link w banerze prowadzi do `github.com/domblacha/naleznosci#supabase-configuration` (przywróć klucz i ubij dev server po sprawdzeniu) — af921ac
 
 ### Phase 2: README
 
 #### Automated
 
-- [ ] 2.1 Brak śladów startera: `git grep -nI -i -E '10x|astro-starter|przeprogramowani|starter|template\.png|favicon\.png' -- ':!context' ':!.claude/skills'` nie zwraca trafień
-- [ ] 2.2 Brak sekcji licencji: `! grep -n '^## License' README.md`
-- [ ] 2.3 Formatowanie README: `npx prettier --check README.md`
+- [x] 2.1 Brak śladów startera: `git grep -nI -i -E '10x|astro-starter|przeprogramowani|starter|template\.png|favicon\.png' -- ':!context' ':!.claude/skills'` nie zwraca trafień
+- [x] 2.2 Brak sekcji licencji: `! grep -n '^## License' README.md`
+- [x] 2.3 Formatowanie README: `npx prettier --check README.md`
 
 #### Manual
 
-- [ ] 2.4 README czyta się jako dokumentacja Należności: tytuł, opis i Getting Started są spójne, a kotwica `#supabase-configuration` nadal działa na GitHubie
+- [x] 2.4 README czyta się jako dokumentacja Należności: tytuł, opis i Getting Started są spójne, a kotwica `#supabase-configuration` nadal działa na GitHubie

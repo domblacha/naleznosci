@@ -1,8 +1,6 @@
-# 10x Astro Starter
+# Należności
 
-![](./public/template.png)
-
-A modern, opinionated starter template for building fast, accessible web applications.
+Należności is a receivables tracker for sole proprietors who invoice their own clients. It tracks overdue invoices, escalates them through configurable stages based on days past due, and calculates statutory interest and late-payment compensation automatically. For each client it generates one collective payment reminder covering all of their overdue invoices.
 
 ## Tech Stack
 
@@ -23,8 +21,8 @@ A modern, opinionated starter template for building fast, accessible web applica
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
+git clone https://github.com/domblacha/naleznosci.git
+cd naleznosci
 ```
 
 2. Install dependencies:
@@ -251,8 +249,4 @@ BASE_URL=http://localhost:4321 npm run smoke
 
 It needs a reachable Supabase instance (local or cloud) with email confirmation disabled. The client steps (create/edit, duplicates, isolation between two users) additionally require the `create_clients` migration to be applied on that instance; the invoice steps (including marking an invoice as paid and reopening it) require `create_invoices` and `add_invoice_paid_on`; the edit and cancel steps additionally require `add_invoice_cancelled_on`; the pause and resume steps require `add_invoice_paused_on`; the delete and restore client steps require `add_client_deactivated_on`; the `settingsSteps` group requires `create_user_settings`, and the `snapshotSteps` group requires both `create_user_settings` and `add_invoice_payment_snapshot`, and the `senderProfileSteps` group requires `create_sender_profiles`.
 
-> **Note:** this script exists primarily to guard the development of the starter itself — it is a fast sanity check that dependency upgrades did not break the build, the Cloudflare adapter or the Supabase auth flow. It is **not** a substitute for a real test suite. Once you build your own product on top of this starter, add proper tests (unit, integration, end-to-end) suited to your application.
-
-## License
-
-MIT
+> **Note:** this script is a fast regression check of the auth flow and the main app steps — run it after dependency upgrades or changes to the Cloudflare adapter. It complements `npm test` and `npm run test:integration`; it does **not** replace them.
