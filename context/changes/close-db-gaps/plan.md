@@ -241,11 +241,11 @@ testuje teraz reguły bazy bez `it.fails`.
 
 #### Automated
 
-- [x] 2.1 Lint i typy przechodzą: `npm run lint` oraz `npx astro check`
-- [x] 2.2 Testy jednostkowe przechodzą: `npm test`
-- [x] 2.3 Testy integracyjne przechodzą: `npm run test:integration`
+- [x] 2.1 Lint i typy przechodzą: `npm run lint` oraz `npx astro check` — 8ab994a
+- [x] 2.2 Testy jednostkowe przechodzą: `npm test` — 8ab994a
+- [x] 2.3 Testy integracyjne przechodzą: `npm run test:integration` — 8ab994a
 
 #### Manual
 
-- [x] 2.4 Smoke przechodzi na lokalnym dev serverze: `npm run smoke` (serwer ubity przed i po, zgodnie z lessons)
-- [x] 2.5 W aplikacji: edycja faktury przed terminem, zmiana daty wpłaty w `/history` i cofnięcie wpłaty działają jak dotąd
+- [x] 2.4 Smoke przechodzi na lokalnym dev serverze: `npm run smoke` (serwer ubity przed i po, zgodnie z lessons) — 8ab994a
+- [x] 2.5 W aplikacji: edycja faktury przed terminem, zmiana daty wpłaty w `/history` i cofnięcie wpłaty działają jak dotąd — 8ab994a

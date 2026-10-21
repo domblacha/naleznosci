@@ -1,7 +1,7 @@
 ---
 change_id: close-db-gaps
 title: Przeniesienie reguł edycji faktur do bazy, by zamknąć luki PostgREST
-status: implementing
+status: implemented
 created: 2026-10-21
 updated: 2026-10-21
 archived_at: null
