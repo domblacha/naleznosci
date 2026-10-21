@@ -178,7 +178,7 @@ Deployment runs in GitHub Actions (`.github/workflows/ci.yml`). Workers Builds i
 
 `deploy` runs in strict order: a broken build or a red integration test never touches the database, and code never ships ahead of the schema it needs. Runs are serialized (`concurrency: production`, no cancellation), so a second merge waits for a migration in progress.
 
-**Work on a branch and merge through a PR — never push to `main` directly.** Branch protection is not available on the free plan for private repos, so this is a convention. Review migration SQL on the PR: merging applies it to production.
+**Work on a branch and merge through a PR — never push to `main` directly.** The `main` ruleset (Settings → Rules → Rulesets) enforces it: direct pushes, force pushes and deletion of `main` are rejected, and a PR can be merged only when `checks` and `integration` are green on a branch up to date with `main` (no approvals required). Review migration SQL on the PR: merging applies it to production.
 
 ### Repository secrets
 
