@@ -228,24 +228,24 @@ testuje teraz reguły bazy bez `it.fails`.
 
 #### Automated
 
-- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up`
-- [x] 1.2 Testy integracyjne przechodzą, w `db-gaps.int.test.ts` nie ma `it.fails`: `npm run test:integration`
-- [x] 1.3 Lint i typy przechodzą: `npm run lint` oraz `npx astro check`
-- [x] 1.4 Testy jednostkowe przechodzą: `npm test`
+- [x] 1.1 Migracja stosuje się lokalnie bez utraty danych: `npx supabase migration up` — 5896670
+- [x] 1.2 Testy integracyjne przechodzą, w `db-gaps.int.test.ts` nie ma `it.fails`: `npm run test:integration` — 5896670
+- [x] 1.3 Lint i typy przechodzą: `npm run lint` oraz `npx astro check` — 5896670
+- [x] 1.4 Testy jednostkowe przechodzą: `npm test` — 5896670
 
 #### Manual
 
-- [x] 1.5 Przegląd SQL migracji: warunki na `old`, granica `old.due_date < dzień PL`, `is distinct from`, komentarz `UWAGA` przy strefie czasowej
+- [x] 1.5 Przegląd SQL migracji: warunki na `old`, granica `old.due_date < dzień PL`, `is distinct from`, komentarz `UWAGA` przy strefie czasowej — 5896670
 
 ### Phase 2: Mapowanie w serwisie i dokumentacja
 
 #### Automated
 
-- [ ] 2.1 Lint i typy przechodzą: `npm run lint` oraz `npx astro check`
-- [ ] 2.2 Testy jednostkowe przechodzą: `npm test`
-- [ ] 2.3 Testy integracyjne przechodzą: `npm run test:integration`
+- [x] 2.1 Lint i typy przechodzą: `npm run lint` oraz `npx astro check`
+- [x] 2.2 Testy jednostkowe przechodzą: `npm test`
+- [x] 2.3 Testy integracyjne przechodzą: `npm run test:integration`
 
 #### Manual
 
-- [ ] 2.4 Smoke przechodzi na lokalnym dev serverze: `npm run smoke` (serwer ubity przed i po, zgodnie z lessons)
-- [ ] 2.5 W aplikacji: edycja faktury przed terminem, zmiana daty wpłaty w `/history` i cofnięcie wpłaty działają jak dotąd
+- [x] 2.4 Smoke przechodzi na lokalnym dev serverze: `npm run smoke` (serwer ubity przed i po, zgodnie z lessons)
+- [x] 2.5 W aplikacji: edycja faktury przed terminem, zmiana daty wpłaty w `/history` i cofnięcie wpłaty działają jak dotąd

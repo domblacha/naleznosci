@@ -173,14 +173,14 @@ odpowiednia faza zostanie dowieziona.
   tylko `locked`, `duplicate_*`, `client_inactive`, `has_open_invoices`. Luki
   bazy, które `src/lib/services/db-gaps.int.test.ts` dowodzi testami `it.fails`
   (zmiana kwoty zapłaconej i anulowanej faktury, zmiana terminu faktury po
-  terminie bez wstrzymania, `paid_on` w przyszłości), są kandydatem na osobną
-  zmianę (trigger blokady / check daty); po załataniu luki test zaczerwieni się
-  i trzeba zdjąć `.fails`. Reguły „wpłata przed wystawieniem” nie ma w schemacie
+  terminie bez wstrzymania, `paid_on` w przyszłości), zamknęła zmiana
+  `close-db-gaps` (trigger `invoices_guard_locked_fields`); plik testuje teraz
+  reguły bazy bez `it.fails`. Reguły „wpłata przed wystawieniem” nie ma w schemacie
   (brak daty wystawienia), więc nie jest testowana.
 - Faza 3 (`testing-quality-gates`): job `integration` w CI biegnie na PR i push
-  do `main`, a `deploy` zależy od niego (`needs: [checks, integration]`). Gdy luka
-  z `db-gaps.int.test.ts` zostanie załatana, `it.fails` zaczerwieni CI — zdejmij
-  `.fails`. Hooki agenta (`.claude/settings.json`, `.claude/hooks/`) dowodzi
+  do `main`, a `deploy` zależy od niego (`needs: [checks, integration]`). Luki z
+  `db-gaps.int.test.ts` zamknęła zmiana `close-db-gaps`, więc w CI nie ma już
+  `it.fails`; plik testuje reguły bazy. Hooki agenta (`.claude/settings.json`, `.claude/hooks/`) dowodzi
   `scripts/__tests__/agent-hooks.test.ts`, uruchamiany przez `npm test`.
 
 ## 7. What We Deliberately Don't Test
