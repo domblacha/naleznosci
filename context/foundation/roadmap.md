@@ -3,13 +3,13 @@ project: Należności
 version: 1
 status: draft
 created: 2026-09-25
-updated: 2026-10-10
+updated: 2026-10-20
 prd_version: 1
 main_goal: speed
 top_blocker: none
 milestone_id: overdue-invoice-to-reminder-mvp
 milestone_seq: 1
-milestone_status: open
+milestone_status: done
 ---
 
 # Roadmap: Należności
@@ -20,7 +20,7 @@ milestone_status: open
 
 ## Milestone
 
-**M-1: MVP — od przeterminowanej faktury do ponaglenia** — Status: open
+**M-1: MVP — od przeterminowanej faktury do ponaglenia** — Status: done
 
 - **Intent:** Właściciel JDG może założyć konto, wprowadzić klientów i faktury, widzieć je w deterministycznych etapach eskalacji z poprawnie wyliczonymi odsetkami i rekompensatą, wygenerować jedno zbiorcze ponaglenie per klient oraz zamykać faktury (zapłata, anulowanie, wstrzymanie) — zakres wymagań koniecznych PRD bez edytowalnych szablonów ponagleń oraz bez filtrowania i sortowania listy.
 - **Source materials:** `context/foundation/prd.md` (v1)
@@ -39,20 +39,20 @@ Właściciel jednoosobowej działalności ręcznie pilnuje przeterminowanych fak
 
 ## At a glance
 
-| ID   | Change ID                       | Outcome (user can …)                                                                                       | Prerequisites | PRD refs                          | Status   |
-| ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------- | -------- |
-| F-01 | deploy-pipeline-with-migrations | (foundation) merge na `main` przechodzi kontrole, stosuje migracje na produkcji i dopiero wtedy wdraża kod | —             | NFR (izolacja danych właściciela) | done     |
-| S-01 | polish-auth-shell               | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny              | —             | FR-001                            | done     |
-| S-02 | add-and-edit-clients            | dodać i edytować klienta, a duplikat zostaje odrzucony                                                     | S-01, F-01    | FR-002                            | done     |
-| S-03 | invoice-escalation-list         | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur                           | S-02          | US-01, FR-003, FR-005, FR-010     | done     |
-| S-04 | interest-and-compensation       | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza                                 | S-03          | US-01, FR-007                     | done     |
-| S-05 | collective-reminder             | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka                                | S-04          | US-01, FR-008, FR-011             | done     |
-| S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | done     |
-| S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | done     |
-| S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | done     |
-| S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | done     |
-| S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | done     |
-| S-13 | sender-profile                  | podać dane nadawcy (firma, NIP, adres, numer konta), które ponaglenie wstawia samo                         | S-05          | — (poza PRD v1); FR-011           | done     |
+| ID   | Change ID                       | Outcome (user can …)                                                                                       | Prerequisites | PRD refs                          | Status |
+| ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------- | ------ |
+| F-01 | deploy-pipeline-with-migrations | (foundation) merge na `main` przechodzi kontrole, stosuje migracje na produkcji i dopiero wtedy wdraża kod | —             | NFR (izolacja danych właściciela) | done   |
+| S-01 | polish-auth-shell               | zarejestrować się, zalogować i wylogować w polskim interfejsie i trafić na pusty ekran główny              | —             | FR-001                            | done   |
+| S-02 | add-and-edit-clients            | dodać i edytować klienta, a duplikat zostaje odrzucony                                                     | S-01, F-01    | FR-002                            | done   |
+| S-03 | invoice-escalation-list         | dodać fakturę i zobaczyć ją w grupie właściwego etapu na liście otwartych faktur                           | S-02          | US-01, FR-003, FR-005, FR-010     | done   |
+| S-04 | interest-and-compensation       | zobaczyć odsetki i rekompensatę każdej przeterminowanej faktury, do grosza                                 | S-03          | US-01, FR-007                     | done   |
+| S-05 | collective-reminder             | wygenerować jedno zbiorcze ponaglenie dla klienta i skopiować je do schowka                                | S-04          | US-01, FR-008, FR-011             | done   |
+| S-06 | mark-invoice-paid               | oznaczyć fakturę jako zapłaconą z datą wpłaty i zobaczyć ją w historii                                     | S-04          | US-02, FR-004, FR-006, FR-010     | done   |
+| S-07 | invoice-edit-and-cancel         | edytować fakturę (z blokadą po terminie) i anulować ją z zachowaniem historii                              | S-03, S-06    | FR-003                            | done   |
+| S-08 | pause-and-resume-escalation     | wstrzymać i wznowić eskalację faktury                                                                      | S-04, S-07    | US-03, FR-013, FR-003             | done   |
+| S-09 | client-deactivate-restore       | dezaktywować i przywrócić klienta                                                                          | S-03          | FR-002                            | done   |
+| S-10 | escalation-settings             | skonfigurować progi dni, stopę odsetek i progi rekompensaty                                                | S-04          | FR-009                            | done   |
+| S-13 | sender-profile                  | podać dane nadawcy (firma, NIP, adres, numer konta), które ponaglenie wstawia samo                         | S-05          | — (poza PRD v1); FR-011           | done   |
 
 ## Streams
 
@@ -239,20 +239,20 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID                       | Suggested issue title                                       | Ready for `/10x-plan` | Notes                                              |
-| ---------- | ------------------------------- | ----------------------------------------------------------- | --------------------- | -------------------------------------------------- |
-| F-01       | deploy-pipeline-with-migrations | Potok CI/CD: kontrole na PR, migracje przed wdrożeniem kodu | no                    | Done 2026-10-05                                    |
-| S-01       | polish-auth-shell               | Polski interfejs konta i pusty ekran główny                 | no                    | Done 2026-09-29                                    |
-| S-02       | add-and-edit-clients            | Dodawanie i edycja klientów z wykrywaniem duplikatów        | no                    | Done 2026-10-05                                    |
-| S-03       | invoice-escalation-list         | Lista otwartych faktur pogrupowana po etapach eskalacji     | no                    | Done 2026-10-05; gwiazda przewodnia                |
-| S-04       | interest-and-compensation       | Odsetki i rekompensata przy przeterminowanych fakturach     | no                    | Done 2026-10-06                                    |
-| S-05       | collective-reminder             | Zbiorcze ponaglenie per klient do schowka                   | no                    | Done 2026-10-06                                    |
-| S-06       | mark-invoice-paid               | Oznaczanie faktury jako zapłaconej + widok historii         | no                    | Done 2026-10-07                                    |
-| S-07       | invoice-edit-and-cancel         | Edycja (z blokadą po terminie) i anulowanie faktury         | no                    | Done 2026-10-07                                    |
-| S-08       | pause-and-resume-escalation     | Wstrzymanie i wznowienie eskalacji faktury                  | no                    | Done 2026-10-08 (PR #14)                           |
-| S-09       | client-deactivate-restore       | Dezaktywacja i przywracanie klienta                         | no                    | Done 2026-10-10 (PR #15)                           |
-| S-10       | escalation-settings             | Ustawienia progów, stopy odsetek i rekompensaty             | no                    | Done 2026-10-10 (PR #16)                           |
-| S-13       | sender-profile                  | Profil nadawcy wstawiany do ponagleń                        | no                    | Done 2026-10-10 (PR #18)                           |
+| Roadmap ID | Change ID                       | Suggested issue title                                       | Ready for `/10x-plan` | Notes                               |
+| ---------- | ------------------------------- | ----------------------------------------------------------- | --------------------- | ----------------------------------- |
+| F-01       | deploy-pipeline-with-migrations | Potok CI/CD: kontrole na PR, migracje przed wdrożeniem kodu | no                    | Done 2026-10-05                     |
+| S-01       | polish-auth-shell               | Polski interfejs konta i pusty ekran główny                 | no                    | Done 2026-09-29                     |
+| S-02       | add-and-edit-clients            | Dodawanie i edycja klientów z wykrywaniem duplikatów        | no                    | Done 2026-10-05                     |
+| S-03       | invoice-escalation-list         | Lista otwartych faktur pogrupowana po etapach eskalacji     | no                    | Done 2026-10-05; gwiazda przewodnia |
+| S-04       | interest-and-compensation       | Odsetki i rekompensata przy przeterminowanych fakturach     | no                    | Done 2026-10-06                     |
+| S-05       | collective-reminder             | Zbiorcze ponaglenie per klient do schowka                   | no                    | Done 2026-10-06                     |
+| S-06       | mark-invoice-paid               | Oznaczanie faktury jako zapłaconej + widok historii         | no                    | Done 2026-10-07                     |
+| S-07       | invoice-edit-and-cancel         | Edycja (z blokadą po terminie) i anulowanie faktury         | no                    | Done 2026-10-07                     |
+| S-08       | pause-and-resume-escalation     | Wstrzymanie i wznowienie eskalacji faktury                  | no                    | Done 2026-10-08 (PR #14)            |
+| S-09       | client-deactivate-restore       | Dezaktywacja i przywracanie klienta                         | no                    | Done 2026-10-10 (PR #15)            |
+| S-10       | escalation-settings             | Ustawienia progów, stopy odsetek i rekompensaty             | no                    | Done 2026-10-10 (PR #16)            |
+| S-13       | sender-profile                  | Profil nadawcy wstawiany do ponagleń                        | no                    | Done 2026-10-10 (PR #18)            |
 
 ## Open Roadmap Questions
 
@@ -273,6 +273,8 @@ Poza F-01 każdy element techniczny wchodzi w pierwszy wycinek, który go potrze
 - **Reset hasła** — Why parked: PRD §Non-Goals; wymaga wysyłki e-mail.
 
 ## Milestone History
+
+- **M-1: MVP — od przeterminowanej faktury do ponaglenia** (`overdue-invoice-to-reminder-mvp`) — closed 2026-10-20. Wszystkie wymagania konieczne PRD v1 (FR-001 – FR-011, FR-013; US-01 – US-03) dowiezione w F-01, S-01 – S-10 i S-13 (dane nadawcy); FR-012, FR-014, FR-015 odłożone jako nice-to-have.
 
 ## Done
 
