@@ -18,6 +18,9 @@ const NUMBER_INDEX = "invoices_user_number_key";
 const CLIENT_OWNER_FKEY = "invoices_client_owner_fkey";
 // Exception text must match supabase/migrations/*_add_client_deactivated_on.sql (invoices_guard_client_active).
 const CLIENT_INACTIVE_MESSAGE = "client_inactive";
+// Exception texts must match supabase/migrations/*_guard_invoice_locked_fields.sql (invoices_guard_locked_fields).
+const INVOICE_LOCKED_MESSAGE = "invoice_locked";
+const INVOICE_CLOSED_MESSAGE = "invoice_closed";
 
 interface InvoiceRow {
   id: string;
@@ -66,6 +69,8 @@ function toErrorCode(error: { code?: string; message?: string; details?: string 
   if (error.code === UNIQUE_VIOLATION && text.includes(NUMBER_INDEX)) return "duplicate_number";
   if (error.code === FOREIGN_KEY_VIOLATION && text.includes(CLIENT_OWNER_FKEY)) return "client_not_found";
   if (error.code === RAISE_EXCEPTION && error.message === CLIENT_INACTIVE_MESSAGE) return "client_inactive";
+  if (error.code === RAISE_EXCEPTION && error.message === INVOICE_LOCKED_MESSAGE) return "locked";
+  if (error.code === RAISE_EXCEPTION && error.message === INVOICE_CLOSED_MESSAGE) return "not_found";
   return "unknown";
 }
 
